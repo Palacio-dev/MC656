@@ -1,0 +1,5 @@
+* Ana Beatriz Hidalgo (RA 248238)
+* Gabriel Cabral Romero Oliveira (RA 247700)
+* Lucas Palacio Almeida (RA 236380)
+* Lucas Ribeiro Bortoletto (RA 173422)
+* Maria Gabriela Lustosa (RA 188504) 
