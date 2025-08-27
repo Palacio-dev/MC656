@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Capacitor
+.capacitor/
+
+# Platform specific (opcional - você pode versionar estes)
+android/app/build/
+ios/App/build/
+
+# IDE
+.vscode/
+.idea/
