@@ -47,7 +47,7 @@ export default function ShoppingList() {
     return (
         <div className="max-w-md mx-auto bg-gradient-to-b from-purple-600 to-purple-700 min-h-screen">
             {/* Header */}
-            <div className="bg-purple-600 text-white p-4">
+            <div className="bg-purple-700 text-white p-4">
                 <h1 className="text-xl font-semibold">Lista de Compras</h1>
             </div>
 
