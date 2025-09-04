@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import './App.css'
+import './Styles/App.css';
 
 //pages Import
 import ShoppingList from "./Pages/ShoppingList";

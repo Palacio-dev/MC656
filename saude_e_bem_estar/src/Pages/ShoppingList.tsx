@@ -8,10 +8,7 @@ import CheckItem from "../Components/CheckItem";
  */
 export default function ShoppingList() {
     // Componente de exemplo mostrando uma lista completa
-    const [items, setItems] = useState([
-        { id: '1', text: 'Arroz', checked: false },
-        { id: '2', text: 'Feijão Preto', checked: false }
-    ]);
+    const [items, setItems] = useState<Array<{ id: string; text: string; checked: boolean }>>([]);
 
     const [newItem, setNewItem] = useState('');
 
@@ -45,10 +42,10 @@ export default function ShoppingList() {
         }
     };
     return (
-        <div className="max-w-md mx-auto bg-gradient-to-b from-purple-600 to-purple-700 min-h-screen">
+        <div className="fundo">
             {/* Header */}
-            <div className="bg-purple-700 text-white p-4">
-                <h1 className="text-xl font-semibold">Lista de Compras</h1>
+            <div className="header-top">
+                <h1 className="titulo">Lista de Compras</h1>
             </div>
 
             {/* Lista de itens */}

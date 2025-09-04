@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import '../Styles/checkitem.css';
 
 interface CheckItemProps {
   id?: string;
@@ -18,21 +19,22 @@ const CheckItem: React.FC<CheckItemProps> = ({
   const [checked, setChecked] = useState(isChecked);
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', padding: '10px', backgroundColor: 'white', margin: '5px 0', borderRadius: '8px', border: '1px solid #ccc' }}>
+    <div className='checkitem'>
       <input 
         type="checkbox" 
+        className='checkbox'
         checked={checked}
         onChange={() => {
           setChecked(!checked);
           onToggle?.(id, !checked);
         }}
       />
-      <span style={{ marginLeft: '10px', textDecoration: checked ? 'line-through' : 'none' }}>
+      <span className='textitem' style={{ textDecoration: checked ? 'line-through' : 'none' }}>
         {text}
       </span>
       <button 
+        className='buttonitem'
         onClick={() => onDelete?.(id)}
-        style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer' }}
       >
         🗑️
       </button>

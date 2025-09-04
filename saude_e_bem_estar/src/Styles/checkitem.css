@@ -1,0 +1,39 @@
+.CheckItem {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: white;
+    margin: 5px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    width: 100%;
+    min-width: 300px;
+    box-sizing: border-box;
+}
+
+.checkbox {
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    margin: 0;
+}
+
+.buttonitem {
+    margin-left: auto;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px; /* Aumenta o tamanho do ícone */
+    padding: 5px;
+}
+
+.buttonitem:hover {
+    background-color: #f0f0f0;
+    border-radius: 4px;
+}
+
+.textitem {
+    margin-left: 10px;
+    flex: 1; 
+    font-size: 24px;
+}
