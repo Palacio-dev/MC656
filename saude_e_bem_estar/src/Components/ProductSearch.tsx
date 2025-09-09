@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Papa from "papaparse";
 
-// Product type
 type Product = {
   name: string;
   calories: number;
@@ -20,11 +19,11 @@ async function loadCSV(): Promise<Product[]> {
     Papa.parse("/Assets/alimentos.csv", {
       download: true,
       header: true,
-      delimiter: ";", // 👈 important for your CSV
+      delimiter: ";", 
       dynamicTyping: true,
       complete: (results) => {
         allProducts = (results.data as any[])
-          .filter((row) => row.nome) // ignore empty rows
+          .filter((row) => row.nome) 
           .map((row) => ({
             name: row.nome,
             calories: row.energia_kcal,
