@@ -1,47 +1,17 @@
+// Mock papaparse module
+jest.mock("papaparse");
+
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
+// Mock do Papa.parse para simular carregamento do CSV
 import Search from "../Pages/Search";
 import { fetchProducts } from "../Components/ProductSearch";
 
-// Mock do Papa.parse para simular carregamento do CSV
-jest.mock("papaparse", () => ({
-  parse: jest.fn((file, options) => {
-    // Simula dados do CSV de alimentos
-    const mockData = [
-      {
-        nome: "Abacaxi, cozido, caramelado",
-        energia_kcal: 136,
-        carboidrato_total_g: 33.3,
-        proteina_g: 0.60,
-        lipidios_g: 0.26,
-        fibra_alimentar_g: 0.84
-      },
-      {
-        nome: "Abacate, polpa, in natura, Brasil",
-        energia_kcal: 76,
-        carboidrato_total_g: 5.84,
-        proteina_g: 1.15,
-        lipidios_g: 6.21,
-        fibra_alimentar_g: 4.03
-      },
-      {
-        nome: "Abóbora, moranga, refogada (c/ óleo, cebola e alho), s/ sal",
-        energia_kcal: 30,
-        carboidrato_total_g: 5.98,
-        proteina_g: 0.39,
-        lipidios_g: 0.80,
-        fibra_alimentar_g: 1.55
-      },
-    ];
-    
-    // Simula o comportamento assíncrono do Papa.parse
-    setTimeout(() => {
-      options.complete({ data: mockData });
-    }, 0);
-  })
-}));
+// Import Papa to get its type and then mock it
+import Papa from "papaparse";
 
 // Mock do localStorage
+
 const localStorageMock = {
   getItem: jest.fn(),
   setItem: jest.fn(),
@@ -53,8 +23,43 @@ Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 describe("ProductSearch", () => {
   beforeEach(() => {
     // Limpa os mocks antes de cada teste
-    jest.clearAllMocks();
+    // jest.clearAllMocks();
     localStorageMock.getItem.mockReturnValue(null);
+
+    // Set up the mock implementation for Papa.parse
+    (Papa.parse as jest.Mock).mockImplementation((file: any, options: any) => {
+      // Simula dados do CSV de alimentos
+      const mockData = [
+        {
+          nome: "Abacaxi, cozido, caramelado",
+          energia_kcal: 136,
+          carboidrato_total_g: 33.3,
+          proteina_g: 0.60,
+          lipidios_g: 0.26,
+          fibra_alimentar_g: 0.84
+        },
+        {
+          nome: "Abacate, polpa, in natura, Brasil",
+          energia_kcal: 76,
+          carboidrato_total_g: 5.84,
+          proteina_g: 1.15,
+          lipidios_g: 6.21,
+          fibra_alimentar_g: 4.03
+        },
+        {
+          nome: "Abóbora, moranga, refogada (c/ óleo, cebola e alho), s/ sal",
+          energia_kcal: 30,
+          carboidrato_total_g: 5.98,
+          proteina_g: 0.39,
+          lipidios_g: 0.80,
+          fibra_alimentar_g: 1.55
+        },
+      ];
+      // Simula o comportamento assíncrono do Papa.parse
+      setTimeout(() => {
+        options.complete({ data: mockData });
+      }, 0);
+    });
   });
 
   test("mostra o título corretamente", () => {
@@ -68,11 +73,11 @@ describe("ProductSearch", () => {
     const searchInput = screen.getByPlaceholderText("Search for a product...");
     
     // Digita "Abacaxi" no campo de busca
-    fireEvent.change(searchInput, { target: { value: "Abacaxi, cozido, caramelado" } });
+    fireEvent.change(searchInput, { target: { value: "Aba" } });
     
     // Aguarda as sugestões aparecerem
     await waitFor(() => {
-      expect(screen.getByText("Abacaxi, cozido, caramelado")).toBeInTheDocument();
+      return expect(screen.getByText("Abacaxi, cozido, caramelado")).toBeInTheDocument();
     });
   });
 
@@ -122,7 +127,7 @@ describe("ProductSearch", () => {
     
     // Verifica se os macronutrientes estão sendo exibidos corretamente
     await waitFor(() => {
-      expect(screen.getByText("Abacate, polpa, in natura, Brasil")).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 2, name: "Abacate, polpa, in natura, Brasil" })).toBeInTheDocument();
       expect(screen.getByText("Energia em kcal: 76")).toBeInTheDocument();
       expect(screen.getByText("Carboidratos: 5.84g")).toBeInTheDocument();
       expect(screen.getByText("Proteina: 1.15g")).toBeInTheDocument();
@@ -155,20 +160,20 @@ describe("ProductSearch", () => {
     fireEvent.change(searchInput, { target: { value: "Abacaxi, cozido, caramelado" } });
     
     await waitFor(() => {
-      const abacaxiOption = screen.getByText("Abacaxi, cozido, caramelado");
-      fireEvent.click(abacaxiOption);
+      const abacaxiOption = screen.getAllByText("Abacaxi, cozido, caramelado");
+      fireEvent.click(abacaxiOption[0]);
     });
     // Segunda busca - Feijão preto
     fireEvent.change(searchInput, { target: { value: "Abóbora, moranga, refogada (c/ óleo, cebola e alho), s/ sal" } });
     
     await waitFor(() => {
-      const aboboraOption = screen.getByText("Abóbora, moranga, refogada (c/ óleo, cebola e alho), s/ sal");
-      fireEvent.click(aboboraOption);
+      const aboboraOption = screen.getAllByText("Abóbora, moranga, refogada (c/ óleo, cebola e alho), s/ sal");
+      fireEvent.click(aboboraOption[0]);
     });
     
     // Verifica que mudou para informações da abobora
     await waitFor(() => {
-      expect(screen.getByText("Abóbora, moranga, refogada (c/ óleo, cebola e alho), s/ sal")).toBeInTheDocument();
+      expect(screen.getByRole("heading", { level: 2, name: "Abóbora, moranga, refogada (c/ óleo, cebola e alho), s/ sal" })).toBeInTheDocument();
       expect(screen.getByText("Energia em kcal: 30")).toBeInTheDocument();
       expect(screen.getByText("Carboidratos: 5.98g")).toBeInTheDocument();
       expect(screen.getByText("Proteina: 0.39g")).toBeInTheDocument();

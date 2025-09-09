@@ -35,7 +35,10 @@ async function loadCSV(): Promise<Product[]> {
           }));
         resolve(allProducts);
       },
-      error: (err) => reject(err),
+      error: (err) => {
+        console.error("Error loading CSV:", err);
+        reject(err)
+      },
     });
   });
 }
@@ -71,8 +74,9 @@ const ProductSearch: React.FC = () => {
 
   useEffect(() => {
     const loadSuggestions = async () => {
+      
       if (query.length > 1) {
-        const results = await fetchProducts(query);
+        const results = await fetchProducts(query)
         setSuggestions(results);
       } else {
         setSuggestions([]);
