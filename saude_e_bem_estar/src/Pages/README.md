@@ -1,0 +1,1 @@
+# Explicando o que cada pagina faz e como reutilizar ela

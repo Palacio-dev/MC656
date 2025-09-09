@@ -1,0 +1,1 @@
+# Explicando o que cada componente faz e como reutilizar ele

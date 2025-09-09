@@ -1,5 +1,6 @@
 import { useState } from "react";
 import CheckItem from "../Components/CheckItem";
+import ButtonAddItem from "../Components/ButtonAddItem";
 
 /**
  * ShoppingList - Uma pagina para adicionar itens de compra
@@ -8,12 +9,7 @@ import CheckItem from "../Components/CheckItem";
  */
 export default function ShoppingList() {
     // Componente de exemplo mostrando uma lista completa
-    const [items, setItems] = useState([
-        { id: '1', text: 'Arroz', checked: false },
-        { id: '2', text: 'Feijão Preto', checked: false }
-    ]);
-
-    const [newItem, setNewItem] = useState('');
+    const [items, setItems] = useState<Array<{ id: string; text: string; checked: boolean }>>([]);
 
     const handleToggleItem = (id: string, checked: boolean) => {
         setItems(prev =>
@@ -27,32 +23,24 @@ export default function ShoppingList() {
         setItems(prev => prev.filter(item => item.id !== id));
     };
 
-    const handleAddItem = () => {
-        if (newItem.trim()) {
-            const newId = (items.length + 1).toString();
-            setItems(prev => [...prev, {
-                id: newId,
-                text: newItem.trim(),
-                checked: false
-            }]);
-            setNewItem('');
-        }
+    const handleAddItem = (itemText: string) => {
+        const newId = (items.length + 1).toString();
+        setItems(prev => [...prev, {
+            id: newId,
+            text: itemText,
+            checked: false
+        }]);
     };
 
-    const handleKeyPress = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') {
-            handleAddItem();
-        }
-    };
     return (
-        <div className="max-w-md mx-auto bg-gradient-to-b from-purple-600 to-purple-700 min-h-screen">
+        <div className="fundo">
             {/* Header */}
-            <div className="bg-purple-600 text-white p-4">
-                <h1 className="text-xl font-semibold">Lista de Compras</h1>
+            <div className="header-top">
+                <h1 className="titulo">Lista de Compras</h1>
             </div>
 
             {/* Lista de itens */}
-            <div className="bg-purple-100 min-h-screen p-4 space-y-3">
+            <div className="body-list">
                 {items.map(item => (
                     <CheckItem
                         key={item.id}
@@ -64,23 +52,11 @@ export default function ShoppingList() {
                     />
                 ))}
 
-                {/* Adicionar novo item */}
-                <div className="flex items-center gap-2 mt-4">
-                    <button
-                        className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-xl font-bold hover:bg-purple-700 transition-colors"
-                        onClick={handleAddItem}
-                    >
-                        +
-                    </button>
-                    <input
-                        type="text"
-                        placeholder="Adicione genérico"
-                        value={newItem}
-                        onChange={(e) => setNewItem(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        className="flex-1 px-3 py-2 bg-white rounded-lg shadow-sm border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    />
-                </div>
+                {/* Componente para adicionar novo item */}
+                <ButtonAddItem 
+                    onAddItem={handleAddItem}
+                    placeholder="Adicione genérico"
+                />
             </div>
         </div>
     );
