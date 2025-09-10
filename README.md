@@ -16,39 +16,52 @@ A proposta é analisar dados alimentares e disponibilizar ferramentas que incent
 
 Nesse contexto, o projeto está alinhado com os Objetivos de Desenvolvimento Sustentável (ODS) da ONU, especialmente:
 
-ODS 2 – Fome Zero e Agricultura Sustentável
+-  ODS 2 – Fome Zero e Agricultura Sustentável
 
-2.1: Acabar com a fome e garantir o acesso a alimentos seguros, nutritivos e suficientes durante todo o ano
+      2.1: Acabar com a fome e garantir o acesso a alimentos seguros, nutritivos e suficientes durante todo o ano
 
-2.2: Acabar com todas as formas de má-nutrição
+      2.2: Acabar com todas as formas de má-nutrição
 
-ODS 3 – Saúde e Bem-Estar
+- ODS 3 – Saúde e Bem-Estar
 
-3.4: Reduzir as doenças não transmissíveis por meio da prevenção e promoção da saúde
+     3.4: Reduzir as doenças não transmissíveis por meio da prevenção e promoção da saúde
 
-3.5: Fortalecer a prevenção do uso nocivo de substâncias, incluindo o consumo prejudicial de alimentos ultraprocessados
+     3.5: Fortalecer a prevenção do uso nocivo de substâncias, incluindo o consumo prejudicial de alimentos ultraprocessados
 
 Ao alinhar dados nutricionais com esses objetivos globais, o projeto busca contribuir para a promoção de hábitos alimentares mais saudáveis e para uma melhor compreensão da relação entre nutrição e qualidade de vida.
 
-🛠️ Tecnologias Utilizadas
 
-React  
-TypeSript  
-Capacitor  
-Node.js  
-Jest  
+<h2 id="como-executar-o-projeto">⚙️ Como Executar o Projeto</h2>
+
+**Scripts:**
+1. Clonar o Repositório
+   ```
+    git clone https://github.com/Palacio-dev/MC656.git
+    cd MC656
+    cd saude_e_bem_estar
+   ```
+2. Instalar as Dependências
+    ```
+    npm install 
+    ```
+3. Fazer o build  
+   ```
+   npm run build  
+   ```
+4. Executar  
+   ```
+   npm start  
+   ```
+4. Para rodar os testes 
+   ```
+   npm test 
+   ```
 
 
-⚙️ Como Executar o Projeto
+### 📄 Licença
+Este projeto é de uso acadêmico e está sujeito às diretrizes da disciplina MC656 da Unicamp oferecida no segundo semestre de 2025.
 
- Clonar o repositório 
- git clone https://github.com/Palacio-dev/MC656.git
- cd saude_e_bem_estar
- Instalar as dependências
-    npm install  
-    npm run build  
-    npm start  
-    npm test  
+ 
 
 
    
