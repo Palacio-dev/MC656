@@ -1,11 +1,12 @@
 import { Router } from "express";
-import { pool } from "../db.js"; // repare no .. e no .js
+import { pool } from "../db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 const router = Router();
 const JWT_EXPIRES = "7d";
 const normalizeEmail = (e) => (e || "").trim().toLowerCase();
+
 
 router.post("/signup", async (req, res) => {
   try {
@@ -17,8 +18,8 @@ router.post("/signup", async (req, res) => {
     const emailNorm = normalizeEmail(email);
 
     const q = `INSERT INTO users (name, email, password_hash)
-               VALUES ($1, $2, $3)
-               RETURNING id, name, email, created_at`;
+              VALUES ($1, $2, $3)
+              RETURNING id, name, email`;
     const { rows } = await pool.query(q, [name, emailNorm, hash]);
     res.status(201).json({ user: rows[0] });
   } catch (err) {
@@ -27,6 +28,7 @@ router.post("/signup", async (req, res) => {
     res.status(500).json({ error: "Internal error" });
   }
 });
+
 
 router.post("/login", async (req, res) => {
   try {
@@ -46,6 +48,20 @@ router.post("/login", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal error" });
+  }
+});
+
+// verify if requested email is already registered
+router.get("/check-email", async (req, res) => {
+  try {
+    const { email } = req.query;
+    if (!email) return res.status(400).json({ error: "Informe o e-mail" });
+
+    const { rows } = await pool.query("SELECT 1 FROM public.users WHERE email=$1", [email.toLowerCase()]);
+    res.json({ exists: rows.length > 0 });
+  } catch (err) {
+    console.error("CHECK-EMAIL ERROR:", err);
+    res.status(500).json({ error: "Erro interno" });
   }
 });
 

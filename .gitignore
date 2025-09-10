@@ -21,8 +21,7 @@ ios/App/build/
 
 # Database info
 *.env
-auth-api/logindb/
-
+auth-api/.env
 # SO
 .DS_Store
 Thumbs.db

@@ -1,8 +1,15 @@
+:root {
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+               Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji",
+               "Segoe UI Emoji";
+}
+* { font-family: var(--font-sans); }
+
+/* container / header*/
 .container{
     display: flex;
     flex-direction: column;
-    margin: auto;
-    margin-top: 200px;
+    margin: 200px auto 30px;
     width: 600px;
     background: #fff;
     padding-bottom: 30px;
@@ -23,7 +30,6 @@
     font-weight: 700;
 }
 
-
 .underline{
     width: 61px;
     height: 6px;
@@ -31,80 +37,107 @@
     border-radius: 9px;
 }
 
-
-.inputs{
-    margin-top: 55px;
+/* sign up and login buttons */
+.mode-switch{
+    margin-top: 24px;
     display: flex;
-    flex-direction: column;
-    gap: 25px;
+    justify-content: center;
+    gap: 16px;
 }
 
+.toggle{
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 160px;
+    height: 46px;
+    padding: 0 18px;
+    color: #fff;
+    background: #4c00b4;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+}
+
+.gray{
+    background: #eaeaea;
+    color: #676767;
+}
+
+/* input boxes */
+.inputs{
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    }
 
 .input{
     display: flex;
     align-items: center;
-    margin: center;
-    margin: auto;
+    margin: 0 auto;
     width: 480px;
-    height: 80px;
+    height: 64px;
     background: #eaeaea;
-    border-radius: 6px;
+    border-radius: 8px;
 }
 
 .input img{
-    margin: 0px 30px;
-
+    margin: 0 18px;
 }
 
-
 .input input{
-    height: 50px;
-    width: 400px;
+    height: 42px;
+    width: 100%;
     background: transparent;
     border: none;
     outline: none;
-    color: #797979;
-    font-size: 19px;
+    color: #333;
+    font-size: 17px;
+    font-family: inherit;
 }
 
+/* messages / links */
+.msg{
+    margin-top: 10px;
+    text-align: center;
+    color: #c62828;
+    font-size: 15px;
+    padding: 0 12px;
+}
 
 .forgot-password{
-  padding-left: 62px;
-  margin-top: 27px;
-  color: #797979;
-  font-size: 18px;
+    text-align: center;
+    margin-top: 18px;
+    color: #797979;
+    font-size: 15px;
 }
-
 
 .forgot-password span{
     color: #4c00b4;
     cursor: pointer;
 }
 
-
-.submit-container{
-    display: flex;
-    gap: 30px;
-    margin: 60px auto;
-}
-
-
-.submit{
+/* submit button */
+.submit-wrap{
     display: flex;
     justify-content: center;
-    align-items: center;
-    width: 220px;
-    height: 59px;
-    color: #fff;
-    background: #4c00b4;
-    border-radius: 50px;
-    font-size: 19px;
-    font-weight: 700;
-    cursor: pointer;
+    margin: 28px auto 0;
 }
 
-
-.gray{
-    background: #eaeaea;
-    color: #676767;
+.submit{
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 220px;
+    height: 56px;
+    color: #fff;
+    background: #4c00b4;
+    border-radius: 999px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
 }
