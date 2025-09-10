@@ -1,29 +1,56 @@
 # Projeto de Engenharia de Software - MC656 2S25
-    Neste projeto, estamos criando um aplicativo que procura auxiliar as pessoas a montar uma melhor alimentação, ao auxiliar a montar uma boa alimentação e adquirir um melhor conhecimento sobre os valores nutricionais da comida
-    Esta ideia veio a partir de um incentivo do professor de relacionar o projeto a uma ods, em que nosso interesse se despertou nas seguintes ods:
-    - Fome Zero e Agricultura Sustentável
-    - Saúde e Bem-Estar
+
+## 👥 Integrantes 
+
+Maria Gabriela Lustosa Oliveira - RA: 188504  
+Gabriel Cabral Romero Oliveira - RA: 247700  
+Lucas Palacio Almeida - RA : 236380  
+Ana Beatriz Hidalgo - RA: 248238  
+Lucas Ribeiro Bortoletto - RA: 173422  
+
+🎯 Objetivo do Projeto  
+
+Este projeto tem como objetivo desenvolver um aplicativo que forneça informações nutricionais de alimentos e auxilie os usuários na construção de uma alimentação mais equilibrada e saudável.
+
+A proposta é analisar dados alimentares e disponibilizar ferramentas que incentivem escolhas nutricionais conscientes, permitindo que os usuários compreendam melhor como suas dietas impactam diretamente a saúde e o bem-estar.
+
+Nesse contexto, o projeto está alinhado com os Objetivos de Desenvolvimento Sustentável (ODS) da ONU, especialmente:
+
+ODS 2 – Fome Zero e Agricultura Sustentável
+
+2.1: Acabar com a fome e garantir o acesso a alimentos seguros, nutritivos e suficientes durante todo o ano
+
+2.2: Acabar com todas as formas de má-nutrição
+
+ODS 3 – Saúde e Bem-Estar
+
+3.4: Reduzir as doenças não transmissíveis por meio da prevenção e promoção da saúde
+
+3.5: Fortalecer a prevenção do uso nocivo de substâncias, incluindo o consumo prejudicial de alimentos ultraprocessados
+
+Ao alinhar dados nutricionais com esses objetivos globais, o projeto busca contribuir para a promoção de hábitos alimentares mais saudáveis e para uma melhor compreensão da relação entre nutrição e qualidade de vida.
+
+🛠️ Tecnologias Utilizadas
+
+React  
+TypeSript  
+Capacitor  
+Node.js  
+Jest  
 
 
-## Estruturação do projeto
-    No intuito de conseguir facilmente construir um aplicativo que rodaria em android e ios, escolhemos estruturar usando react com typescript junto do capacitor. Pois assim facilmente utilizamos a estrutura do react para criar nossas features, e assim exportar o site para um aplicativo utilizando o capacitor
+⚙️ Como Executar o Projeto
+
+ Clonar o repositório 
+ git clone https://github.com/Palacio-dev/MC656.git
+ cd saude_e_bem_estar
+ Instalar as dependências
+    npm install  
+    npm run build  
+    npm start  
+    npm test  
 
 
-    Sendo assim utilizamos uma separação de arquivos em src para conseguir um fácil escalonamento e organização
-    -saude_e_bem_estar/src
-        - Components: componentes criados para fácil reutilização nas páginas
-        - Pages: páginas estruturadas para interação com usuário
-        - Styles: estilização das páginas com App.css possuindo a estilização mais genérica e reutilizável, e para cada componente possui um .css para a estilização específica
-        - Testes: testes organizados para cada página criada e inteligível
-
-
-## Para rodar o site
-    Em aude_e_bem_estar/package-lock.json você encontra as dependencias necessarias para conseguir rodar a aplicação
-    Comandos importantes para a execução do site
-    - Verifique se você se encontra na pasta aude_e_bem_estar e em seguida faça npm build e npm start
    
-    Para rodar os testes:
-    - Verifique de estar na pasta aude_e_bem_estar e em seguida rode o comando npm test
 
 
-    Para mais informações leia o readme de cada pasta
