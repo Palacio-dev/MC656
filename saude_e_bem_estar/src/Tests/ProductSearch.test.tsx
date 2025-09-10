@@ -1,14 +1,13 @@
-// Mock papaparse module
-jest.mock("papaparse");
-
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 // Mock do Papa.parse para simular carregamento do CSV
 import Search from "../Pages/Search";
-import { fetchProducts } from "../Components/ProductSearch";
 
 // Import Papa to get its type and then mock it
 import Papa from "papaparse";
+
+// Mock papaparse module
+jest.mock("papaparse");
 
 // Mock do localStorage
 

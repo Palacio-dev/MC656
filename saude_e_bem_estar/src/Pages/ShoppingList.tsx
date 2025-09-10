@@ -1,6 +1,6 @@
 import { useState } from "react";
-import CheckItem from "../components/CheckItem";
-import ButtonAddItem from "../components/ButtonAddItem";
+import CheckItem from "../Components/CheckItem";
+import ButtonAddItem from "../Components/ButtonAddItem";
 
 /**
  * ShoppingList - Uma pagina para adicionar itens de compra

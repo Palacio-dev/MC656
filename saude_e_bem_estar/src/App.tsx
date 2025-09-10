@@ -1,10 +1,11 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './Styles/App.css';
-import LoginSignUp from './components/login_sign_up/LoginSignUp';
 
 //pages Import
+import LoginSignUp from './Components/login_sign_up/LoginSignUp';
 import ShoppingList from "./Pages/ShoppingList";
 import Search from "./Pages/Search";
+import Welcome from "./Pages/Welcome";
 
 export default function App() {
 
@@ -12,8 +13,9 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LoginSignUp />}/>
+        <Route path="/Welcome" element={<Welcome />} />
         <Route path="/BuscadeProdutos" element={<Search />} />
-        <Route path="/shoppinglist" element={<ShoppingList />} />
+        <Route path="/ListadeCompras" element={<ShoppingList />} />
       </Routes>
     </BrowserRouter>
   );
