@@ -106,3 +106,18 @@ html, body {
 .body-list{
   margin-top: 10px;
 }
+
+.button-container{
+  display: flex;
+  margin-bottom: 10px;
+  justify-items: center;
+}
+
+.button-navegate{
+  background: #8209B1;
+  display:flex;
+  margin: 10px;
+  color: #e2dede;
+  border-radius: 4px;
+  padding: 8px;
+}
