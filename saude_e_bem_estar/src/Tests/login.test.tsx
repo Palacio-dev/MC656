@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import LoginSignUp from "../Components/login_sign_up/LoginSignUp";
+import LoginSignUp from "../Pages/LoginSignUp";
 
 describe("LoginSignUp", () => {
     test("renderiza o componente de login e sign up", () => {

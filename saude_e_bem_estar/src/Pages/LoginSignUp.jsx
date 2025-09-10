@@ -1,13 +1,16 @@
-import React, { useState } from 'react'
-import validator from 'validator'
-import './LoginSignUp.css'
-import user_icon from '../assets/user.png'
-import email_icon from '../assets/email.png'
-import password_icon from '../assets/password.png'
+import React, { useState } from 'react';
+import { useNavigate } from "react-router-dom";
+import validator from 'validator';
+import '../Styles/LoginSignUp.css';
+import user_icon from '../Components/assets/user.png';
+import email_icon from '../Components/assets/email.png';
+import password_icon from '../Components/assets/password.png';
 
 
 
 const LoginSignUp = () => {
+    
+    const navigate = useNavigate();
     const [action, setAction] = useState('Login')
     const [form, setForm] = useState({ name: '', email: '', password: '' })
     const [msg, setMsg] = useState('')
@@ -67,6 +70,7 @@ const LoginSignUp = () => {
         if (!r.ok) throw new Error(data?.error || 'Erro no login')
         localStorage.setItem('token', data.token)
         setMsg('Login OK') /* successfully logged*/
+        navigate("/Welcome")
     } catch (err) {
         setMsg(err.message)
     } finally {
