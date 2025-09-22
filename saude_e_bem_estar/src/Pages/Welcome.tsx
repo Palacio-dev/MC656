@@ -12,8 +12,8 @@ export default function Welcome() {
             <h3>Escolha uma das interações</h3>
 
             <div className="button-container">
-                <button onClick={() => navigate("/BuscadeProdutos")} className="button-navegate"> Pesquise um produto </button>
-                <button onClick={() => navigate("/ListadeCompras")} className="button-navegate"> Monte sua lista de compras </button>
+                <button onClick={() => navigate("Search")} className="button-navegate"> Pesquise um produto </button>
+                <button onClick={() => navigate("ShoppingList")} className="button-navegate"> Monte sua lista de compras </button>
             </div>
         </div>
     );

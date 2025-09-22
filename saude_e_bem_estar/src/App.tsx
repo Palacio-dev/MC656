@@ -15,10 +15,10 @@ export default function App() {
         <Route path="/" element={<LoginSignUp />}/>
 
         {/* Rota pai apenas para organização (não renderiza conteúdo) */}
-        <Route path="/Welcome">
+        <Route path="Welcome">
           <Route index element={<Welcome />} />
-          <Route path="/BuscadeProdutos" element={<Search />} />
-          <Route path="/ListadeCompras" element={<ShoppingList />} />
+          <Route path="ShoppingList" element={<ShoppingList />} />
+          <Route path="Search" element={<Search />} />
         </Route>
       </Routes>
     </BrowserRouter>
