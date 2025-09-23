@@ -21,6 +21,5 @@
     "jsx": "react-jsx"
   },
   "include": [
-    "src"
-, "../auth-api/routes", "../auth-api/db.js"  ]
+    "src", "src/**/*", "../auth-api/routes", "../auth-api/db.js"  ]
 }
