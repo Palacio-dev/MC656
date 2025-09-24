@@ -100,11 +100,11 @@ const LoginSignUp: React.FC = () => {
     }
 
     // decide which handler to call
-    function onSubmit(e: React.FormEvent<HTMLFormElement>): void {
-        e.preventDefault();
-        if (action === 'Sign Up') handleSignup();
-        else handleLogin();
-    }
+    //function onSubmit(e: React.FormEvent<HTMLFormElement>): void {
+    //    e.preventDefault();
+    //    if (action === 'Sign Up') handleSignup();
+    //    else handleLogin();
+    //}
 
     const handleButtonClick = (): void => {
         if (action === 'Sign Up') handleSignup();
