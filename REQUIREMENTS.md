@@ -28,47 +28,42 @@ Cada cartão pode conter uma variedade de informações detalhadas para auxiliar
 Nesse sentido,um usuário poderia usar os cards para planejar as refeições da semana.
 
 
-
----
-
 ### Pontos Positivos:
+
 - Altas opções de personalização  
 - Flexibilidade na organização  
 - Adição de labels que indicam prioridade ou se já foi feito  
 
----
 
  ### Pontos Negativos:
+
 - Permite adição de imagens na personalização, o que depois dificulta a leitura de alguns cards  
 - Limitação de excluir cartões de um por um (não dá pra excluir vários de uma vez)  
 
----
+ ### Funcionalidades de Interesse:
 
-Funcionalidades de Interesse:
 - Fácil personalização e manuseio dos cartões
 
 
 ## 1.2 Cardápio semanal lista de compras 
+
 Esse aplicativo está disponível para Android e IOS e suas principais funcionalidades são um organizador das refeições semanais e lista de compras.
    
----
-
 ### Pontos positivos: 
+
 - Uma fácil visualização. 
 - Mantém uma lista de compras. 
 - Guarda, de maneira simples, receitas. 
 - Tem a possibilidade de criar um planejamento semanal de refeições 
 - Mostra via widget o planejamento
 
----
-
 ### Pontos negativos: 
+
 - Armazenar receitas por fotos, pode ser ruim de ler depois. 
 - Não faz a lista de compras a partir do planejamento semanal
 
----
-
 ### Funcionalidades de interesse:
+
 - Widgets seria o diferencial
 
 
@@ -93,6 +88,8 @@ Este aplicativo proporcina a opção de salvar receitas de redes sociais, como I
 - Converter medidas (pensar em adaptar para transformar de copos pra litros ou gramas) 
 - Adicionar os ingredientes das receitas em uma lista de compras 
 - Conseguir colocar a receita em um cardápio
+
+![Imagens de analise do ReciMe](./Imagens/ReciMe1.jpg) ![Imagens de analise do ReciMe](./Imagens/ReciMe2.jpg) ![Imagens de analise do ReciMe](./Imagens/ReciMe2.jpg) 
 
 
 ## 1.4 MyFitnessPal
