@@ -89,7 +89,8 @@ Este aplicativo proporcina a opção de salvar receitas de redes sociais, como I
 - Adicionar os ingredientes das receitas em uma lista de compras 
 - Conseguir colocar a receita em um cardápio
 
-![Imagens de analise do ReciMe](./Imagens/ReciMe1.jpg) ![Imagens de analise do ReciMe](./Imagens/ReciMe2.jpg) ![Imagens de analise do ReciMe](./Imagens/ReciMe2.jpg) 
+<img src="/Imagens/ReciMe1.jpg" width="300"> <img src="/Imagens/ReciMe2.jpg" width="300"> <img src="/Imagens/ReciMe3.jpg" width="300">
+
 
 
 ## 1.4 MyFitnessPal
