@@ -66,7 +66,7 @@ Esse aplicativo está disponível para Android e IOS e suas principais funcional
 
 - Widgets seria o diferencial
 
-
+<img src="/Imagens/Cardapio_Semanal_AppStore.jpeg" width="300"> <img src="/Imagens/Cardapio_Semanal_Planejador.jpeg" width="300"> <img src="/Imagens/Cardapio_Semanal_Widgets.jpeg" width="300">
 
 ## 1.3 ReciMe
 
