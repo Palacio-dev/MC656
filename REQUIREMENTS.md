@@ -44,6 +44,7 @@ Nesse sentido,um usuário poderia usar os cards para planejar as refeições da 
 
 - Fácil personalização e manuseio dos cartões
 
+<img src="/Imagens/Trello_boxes.png" width="395"> <img src="/Imagens/Trello_planejador.png" width="510">
 
 ## 1.2 Cardápio semanal lista de compras 
 
