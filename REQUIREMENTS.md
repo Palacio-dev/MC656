@@ -95,8 +95,6 @@ Este aplicativo proporcina a opção de salvar receitas de redes sociais, como I
 
 <img src="/Imagens/ReciMe1.jpg" width="300"> <img src="/Imagens/ReciMe2.jpg" width="300"> <img src="/Imagens/ReciMe3.jpg" width="300">
 
-
-
 ## 1.4 MyFitnessPal
 
 Este aplicativo serve para monitorar definir e monitorar metas de exercícios físicos, perda de peso, consumo de água e nutrição, este com sugestões de receitas saudáveis e contador de macronutrientes.
@@ -119,6 +117,7 @@ Este aplicativo serve para monitorar definir e monitorar metas de exercícios f�
 - Funcionalidade de diário em que é possível dividir sua alimentação diária por refeições e planejar sua futura alimentação
 - Contador nutricional robusto dividido em calorias, vitaminas, minerais e proteínas
 
+<img src="/Imagens/MyFitnessPal1.jpg" width="300"> <img src="/Imagens/MyFitnessPal2.jpg" width="300"> <img src="/Imagens/MyFitnessPal3.jpg" width="300">
 
 ## Observações Finais
 
