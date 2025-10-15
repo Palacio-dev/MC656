@@ -117,7 +117,7 @@ Este aplicativo serve para monitorar definir e monitorar metas de exercícios f�
 - Funcionalidade de diário em que é possível dividir sua alimentação diária por refeições e planejar sua futura alimentação
 - Contador nutricional robusto dividido em calorias, vitaminas, minerais e proteínas
 
-<img src="/Imagens/MyFitnessPal1.jpg" width="300"> <img src="/Imagens/MyFitnessPal2.jpg" width="300"> <img src="/Imagens/MyFitnessPal3.jpg" width="300">
+<img src="/Imagens/MyFitnessPal1.jpg" width="282"> <img src="/Imagens/MyFitnessPal2.jpg" width="300"> <img src="/Imagens/MyFitnessPal3.jpg" width="300">
 
 
 
