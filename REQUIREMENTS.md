@@ -5,8 +5,11 @@ No que tange à elicitação de requisitos,o grupo escolheu adotar para o projet
 
 ## Storyboarding
 
-Nesta etapa,para ilustrar a jornada do usuário do nosso sistema, em que contexto a interação dele ocorreria e as interações típicas, optamos por construir um Storyboard na plataforma Canva. O storyboard, com diversas cenas nas quais podem ser observadas a jornada do usuário, está anexado na imagem abaixo:
+Nesta etapa, para ilustrar a jornada do usuário do nosso sistema, em que contexto a interação dele ocorreria e as interações típicas, optamos por construir um Storyboard na plataforma Canva. O storyboard, com diversas cenas nas quais podem ser observadas a jornada do usuário, está anexado na sequência de imagens abaixo:
 
+<img src="/Imagens/storyboard_1.png" width="905">
+<img src="/Imagens/storyboard_2.png" width="905">
+<img src="/Imagens/storyboard_3.png" width="905">
 
 ## Benchmarking
 ## 1. Ferramentas analisadas
