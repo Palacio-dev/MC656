@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import ShoppingList from "../Pages/ShoppingList";
+import ShoppingList from "../Pages/ShoppingListDetail";
 
 describe("ShoppingList", () => {
   test("mostra o título corretamente", () => {

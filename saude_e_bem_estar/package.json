@@ -2,7 +2,6 @@
   "name": "saude_e_bem_estar",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:4000",
   "dependencies": {
     "@capacitor/android": "^7.4.3",
     "@capacitor/ios": "^7.4.3",
