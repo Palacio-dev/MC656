@@ -1,67 +1,87 @@
 import { useEffect, useMemo, useState } from "react";
-// fetch suggestions when query changes
-useEffect(() => {
-let cancelled = false;
-const load = async () => {
-if (query.length <= 1) {
-setSuggestions([]);
-return;
-}
-setLoading(true);
-try {
-const res = await productService.fetchProducts(query);
-if (!cancelled) setSuggestions(res);
-} catch (err) {
-console.error("Error fetching suggestions", err);
-} finally {
-if (!cancelled) setLoading(false);
-}
-};
-load();
-return () => {
-cancelled = true;
-};
-}, [query]);
+import { Product } from "../types/product";
+import * as productService from "../services/ProductService";
 
 
-const select = (p: Product) => {
-setSelected(p);
-setQuery("");
-setSuggestions([]);
-setHistory((prev) => {
-if (prev.find((h) => h.name === p.name)) return prev;
-return [p, ...prev].slice(0, 20);
-});
-};
+const STORAGE_KEY = "product-search-history";
 
 
-const clearHistory = () => {
-setHistory([]);
-setSelected(null);
-};
+export function useProductSearch() {
+  const [query, setQuery] = useState("");
+  const [suggestions, setSuggestions] = useState<Product[]>([]);
+  const [selected, setSelected] = useState<Product | null>(null);
+  const [history, setHistory] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
 
+  // load history once
+  useEffect(() => {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      try {
+        setHistory(JSON.parse(raw));
+      } catch (e) {
+        console.warn("Failed to parse history", e);
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }
+  }, []);
 
-const selectFromHistory = (p: Product) => select(p);
+  // persist history
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+  }, [history]);
 
+  // fetch suggestions when query changes
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      if (query.length <= 1) {
+        setSuggestions([]);
+        return;
+      }
+      setLoading(true);
+      try {
+        const res = await productService.fetchProducts(query);
+        if (!cancelled) setSuggestions(res);
+      } catch (err) {
+        console.error("Error fetching suggestions", err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [query]);
 
-const clearSelected = () => setSelected(null);
+  const select = (product: Product) => {
+    setSelected(product);
+    setQuery("");
+    setSuggestions([]);
+    if (!history.find((h) => h.name === product.name)) {
+      setHistory((prev) => [product, ...prev]);
+    }
+  };
 
+  const selectFromHistory = (product: Product) => {
+    setSelected(product);
+  };
 
-// derived values
-const hasSuggestions = useMemo(() => suggestions.length > 0, [suggestions]);
+  const clearHistory = () => {
+    setHistory([]);
+    localStorage.removeItem(STORAGE_KEY);
+  };
 
-
-return {
-query,
-setQuery,
-suggestions,
-hasSuggestions,
-selected,
-loading,
-history,
-select,
-clearHistory,
-selectFromHistory,
-clearSelected,
-} as const;
+  return {
+    query,
+    setQuery,
+    suggestions,
+    selected,
+    history,
+    loading,
+    select,
+    selectFromHistory,
+    clearHistory
+  };
 }

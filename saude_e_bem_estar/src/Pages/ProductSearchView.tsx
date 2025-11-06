@@ -7,23 +7,38 @@ import { SearchHistory } from "../Components/SearchHistory";
 
 
 const ProductSearchView: React.FC = () => {
-const vm = useProductSearch();
+  const vm = useProductSearch();
 
+  return (
+    <div className="p-6 grid gap-6">
+      <div className="shadow-lg border rounded-lg p-4 relative">
+        <SearchInput 
+          value={vm.query} 
+          onChange={vm.setQuery} 
+          placeholder="Search for a product..." 
+          loading={vm.loading}
+        />
+        {vm.suggestions.length > 0 && (
+          <SuggestionsList 
+            items={vm.suggestions} 
+            onSelect={vm.select} 
+          />
+        )}
+      </div>
 
-return (
-<div className="p-6 grid gap-6">
-<div className="shadow-lg border rounded-lg p-4 relative">
-<SearchInput value={vm.query} onChange={vm.setQuery} placeholder="Search for a product..." />
-<SuggestionsList items={vm.suggestions} onSelect={vm.select} />
-</div>
+      {vm.selected && (
+        <ProductDetails product={vm.selected} />
+      )}
 
-
-<ProductDetails product={vm.selected} />
-
-
-<SearchHistory history={vm.history} onSelect={vm.selectFromHistory} onClear={vm.clearHistory} />
-</div>
-);
+      {vm.history.length > 0 && (
+        <SearchHistory 
+          history={vm.history} 
+          onSelect={vm.selectFromHistory} 
+          onClear={vm.clearHistory} 
+        />
+      )}
+    </div>
+  );
 };
 
 
