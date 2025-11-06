@@ -1,6 +1,6 @@
 import { useState } from "react";
 import ListComponent from "../Components/ListComponent";
-import { ShoppingItem } from "../Types/ShoppingTypes";
+import { ShoppingItem, ShoppingList } from "../Types/ShoppingTypes";
 
 interface ShoppingListDetailProps {
     listId?: string;
@@ -12,10 +12,23 @@ interface ShoppingListDetailProps {
  * ShoppingListDetail - Página de detalhes de uma lista específica
  */
 export default function ShoppingListDetail({ 
+    listId,
     listName = "Lista de Compras",
     onBack 
 }: ShoppingListDetailProps) {
-    const [items, setItems] = useState<ShoppingItem[]>([]);
+    let idList : string = '0'
+    const itemSelecionado = localStorage.getItem("itemSelecionado");
+    if(itemSelecionado){
+        idList = itemSelecionado;
+    }
+    const list = localStorage.getItem(idList);
+    let listshopping: ShoppingList = {
+        id: '0', name: 'blabla', items: []
+    };
+    if(list){
+        listshopping = JSON.parse(list);
+    }
+    const [items, setItems] = useState<ShoppingItem[]>(listshopping.items || []);
 
     const handleToggleItem = (id: string, checked: boolean) => {
         setItems(prev =>
@@ -27,15 +40,18 @@ export default function ShoppingListDetail({
 
     const handleDeleteItem = (id: string) => {
         setItems(prev => prev.filter(item => item.id !== id));
+        localStorage.setItem(listshopping.id, JSON.stringify(listshopping));
     };
 
     const handleAddItem = (itemText: string) => {
-        const newId = Date.now().toString();
-        setItems(prev => [...prev, {
-            id: newId,
+        const newItem: ShoppingItem = {
+            id: Date.now().toString(),
             text: itemText,
             checked: false
-        }]);
+        };
+        setItems(prev => [...prev, newItem]);
+        listshopping.items.push(newItem);
+        localStorage.setItem(listshopping.id, JSON.stringify(listshopping));
     };
 
     return (
@@ -47,7 +63,7 @@ export default function ShoppingListDetail({
                         ← Voltar
                     </button>
                 )}
-                <h1 className="titulo">{listName}</h1>
+                <h1 className="titulo">{listshopping.name}</h1>
             </div>
 
             {/* Lista de itens */}

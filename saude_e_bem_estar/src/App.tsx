@@ -21,7 +21,7 @@ export default function App() {
           <Route path="ShoppingList" >
             <Route index element={<ShoppingListsPage />} />
             {/* Rota de detalhes - mostra uma lista específica */}
-            <Route path=":id" element={<ShoppingListDetailWrapper />} />
+            <Route path="DetalList" element={<ShoppingListDetail />} />
           </Route>
           <Route path="Search" element={<Search />} />
         </Route>
@@ -31,8 +31,7 @@ export default function App() {
 }
 
 // Wrapper para pegar o parâmetro da URL
-function ShoppingListDetailWrapper() {
-    const { id } = useParams<{ id: string }>();
+function ShoppingListDetailWrapper(id: string) {
     const navigate = useNavigate();
     
     return (

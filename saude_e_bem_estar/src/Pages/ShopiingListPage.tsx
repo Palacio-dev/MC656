@@ -9,8 +9,12 @@ import ButtonAddItem from "../Components/ButtonAddItem";
  * ShoppingListsPage - Página principal que lista todas as listas de compras
  */
 export default function ShoppingListsPage() {
-    const [lists, setLists] = useState<ShoppingList[]>([]);
+    const list = localStorage.getItem("listas")
+        ? JSON.parse(localStorage.getItem("listas")!)
+        : [];
+    const [lists, setLists] = useState<ShoppingList[]>(list);
     const navigate = useNavigate();
+    localStorage.setItem("itemSelecionado", '0')
 
     const handleCreateList = (listName: string) => {
         const newList: ShoppingList = {
@@ -18,18 +22,28 @@ export default function ShoppingListsPage() {
             name: listName,
             items: []
         };
-        setLists(prev => [...prev, newList]);
+        localStorage.setItem(newList.id, JSON.stringify(newList));
+        setLists(prev => {
+            const updated = [...prev, newList];
+            localStorage.setItem('listas', JSON.stringify(updated));
+            return updated;
+        });
     };
 
     const handleDeleteList = (id: string) => {
-        setLists(prev => prev.filter(list => list.id !== id));
+        setLists(prev => {
+            const updated = prev.filter(list => list.id !== id);
+            localStorage.setItem('listas', JSON.stringify(updated));
+            localStorage.removeItem(id);
+            return updated;
+        });
     };
 
     const handleSelectList = (id: string) => {
         // Aqui você pode navegar para a página de detalhes da lista
         // Se estiver usando React Router:
-        navigate(`/ShoppingList/${id}`);
-        console.log('Lista selecionada:', id);
+        localStorage.setItem("itemSelecionado", id)
+        navigate("DetalList");
     };
 
     return (
