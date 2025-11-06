@@ -1,58 +1,59 @@
-import { useState } from "react";
 import ListComponent from "../Components/ListComponent";
-import { ShoppingItem, ShoppingList } from "../Types/ShoppingTypes";
+import { useShoppingListDetailViewModel } from "../Hooks/useShoppingListDetailHook";
+import '../Styles/shoppinglistspage.css';
 
 interface ShoppingListDetailProps {
     listId?: string;
-    listName?: string;
     onBack?: () => void;
 }
 
 /**
- * ShoppingListDetail - Página de detalhes de uma lista específica
+ * ShoppingListDetail - View (Componente de apresentação)
+ * Responsável apenas pela renderização, delegando toda lógica para o ViewModel
  */
 export default function ShoppingListDetail({ 
     listId,
-    listName = "Lista de Compras",
     onBack 
 }: ShoppingListDetailProps) {
-    let idList : string = '0'
-    const itemSelecionado = localStorage.getItem("itemSelecionado");
-    if(itemSelecionado){
-        idList = itemSelecionado;
-    }
-    const list = localStorage.getItem(idList);
-    let listshopping: ShoppingList = {
-        id: '0', name: 'blabla', items: []
-    };
-    if(list){
-        listshopping = JSON.parse(list);
-    }
-    const [items, setItems] = useState<ShoppingItem[]>(listshopping.items || []);
+    const {
+        items,
+        isLoading,
+        error,
+        listName,
+        stats,
+        addItem,
+        toggleItem,
+        deleteItem,
+        clearCheckedItems
+    } = useShoppingListDetailViewModel({ listId });
 
-    const handleToggleItem = (id: string, checked: boolean) => {
-        setItems(prev =>
-            prev.map(item =>
-                item.id === id ? { ...item, checked } : item
-            )
+    // Estado de carregamento
+    if (isLoading) {
+        return (
+            <div className="fundo">
+                <div className="header-top">
+                    <h1 className="titulo">Carregando...</h1>
+                </div>
+            </div>
         );
-    };
+    }
 
-    const handleDeleteItem = (id: string) => {
-        setItems(prev => prev.filter(item => item.id !== id));
-        localStorage.setItem(listshopping.id, JSON.stringify(listshopping));
-    };
-
-    const handleAddItem = (itemText: string) => {
-        const newItem: ShoppingItem = {
-            id: Date.now().toString(),
-            text: itemText,
-            checked: false
-        };
-        setItems(prev => [...prev, newItem]);
-        listshopping.items.push(newItem);
-        localStorage.setItem(listshopping.id, JSON.stringify(listshopping));
-    };
+    // Estado de erro
+    if (error) {
+        return (
+            <div className="fundo">
+                <div className="header-top">
+                    {onBack && (
+                        <button className="back-button" onClick={onBack}>
+                            ← Voltar
+                        </button>
+                    )}
+                    <h1 className="titulo">Erro</h1>
+                </div>
+                <p className="empty-message">{error}</p>
+            </div>
+        );
+    }
 
     return (
         <div className="fundo">
@@ -63,15 +64,33 @@ export default function ShoppingListDetail({
                         ← Voltar
                     </button>
                 )}
-                <h1 className="titulo">{listshopping.name}</h1>
+                <h1 className="titulo">{listName}</h1>
             </div>
+
+            {/* Estatísticas da lista (opcional) */}
+            {stats.total > 0 && (
+                <div className="stats-section">
+                    <p className="stats-text">
+                        {stats.checked} de {stats.total} itens completos
+                        {stats.checked > 0 && (
+                            <button 
+                                className="clear-button"
+                                onClick={clearCheckedItems}
+                                style={{ marginLeft: '10px' }}
+                            >
+                                Limpar marcados
+                            </button>
+                        )}
+                    </p>
+                </div>
+            )}
 
             {/* Lista de itens */}
             <ListComponent 
                 items={items}
-                onToggleItem={handleToggleItem}
-                onDeleteItem={handleDeleteItem}
-                onAddItem={handleAddItem}
+                onToggleItem={toggleItem}
+                onDeleteItem={deleteItem}
+                onAddItem={addItem}
                 placeholder="Adicione um item à lista"
             />
         </div>

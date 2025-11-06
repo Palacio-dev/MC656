@@ -3,7 +3,7 @@ import './Styles/App.css';
 
 //pages Import
 import LoginSignUp from './Pages/LoginSignUp';
-import ShoppingListsPage from './Pages/ShopiingListPage';
+import ShoppingListsPage from './Pages/ShoppingListPage';
 import ShoppingListDetail from './Pages/ShoppingListDetail';
 import Search from "./Pages/Search";
 import Welcome from "./Pages/Welcome";
