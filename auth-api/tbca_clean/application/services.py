@@ -26,5 +26,3 @@ class NutritionScraperService:
 
     def save(self, alimentos: List[Dict], filename: str):
         self.repo.save(alimentos, filename)
-
-#
