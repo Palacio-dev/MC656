@@ -35,8 +35,35 @@ error: (err) => reject(err),
 
 
 export async function fetchProducts(query: string): Promise<Product[]> {
-const products = await loadCSV();
-if (!query) return [];
-const q = query.toLowerCase();
-return products.filter((p) => p.name.toLowerCase().includes(q));
+  const products = await loadCSV();
+  if (!query) return [];
+  
+  const q = query.toLowerCase();
+  const matchingProducts = products.filter((p) => p.name.toLowerCase().includes(q));
+  
+  // Ordenar os produtos baseado em diferentes critérios
+  const sortedProducts = matchingProducts.sort((a, b) => {
+    const aName = a.name.toLowerCase();
+    const bName = b.name.toLowerCase();
+    
+    // 1. Priorizar produtos que começam exatamente com a query
+    const aStartsWithQuery = aName.startsWith(q);
+    const bStartsWithQuery = bName.startsWith(q);
+    
+    if (aStartsWithQuery && !bStartsWithQuery) return -1;
+    if (!aStartsWithQuery && bStartsWithQuery) return 1;
+    
+    // 2. Priorizar produtos que têm a query como uma palavra completa
+    const aHasWordMatch = new RegExp(`\\b${q}\\b`).test(aName);
+    const bHasWordMatch = new RegExp(`\\b${q}\\b`).test(bName);
+    
+    if (aHasWordMatch && !bHasWordMatch) return -1;
+    if (!aHasWordMatch && bHasWordMatch) return 1;
+    
+    // 3. Por fim, ordenar alfabeticamente
+    return aName.localeCompare(bName);
+  });
+  
+  // Limitar a 10 resultados
+  return sortedProducts.slice(0, 10);
 }
