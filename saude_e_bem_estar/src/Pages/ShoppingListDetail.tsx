@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import ListComponent from "../Components/ListComponent";
 import { useShoppingListDetailViewModel } from "../Hooks/useShoppingListDetailHook";
 import '../Styles/shoppinglistspage.css';
@@ -15,6 +16,14 @@ export default function ShoppingListDetail({
     listId,
     onBack 
 }: ShoppingListDetailProps) {
+    
+    const navigate = useNavigate();
+
+    const handleBack = () => {
+        if (onBack) onBack();
+        else navigate(-1);
+    };
+
     const {
         items,
         isLoading,
@@ -43,11 +52,9 @@ export default function ShoppingListDetail({
         return (
             <div className="fundo">
                 <div className="header-top">
-                    {onBack && (
-                        <button className="back-button" onClick={onBack}>
-                            ← Voltar
-                        </button>
-                    )}
+                    <button className="back-button" onClick={handleBack}>
+                        ← Voltar
+                    </button>
                     <h1 className="titulo">Erro</h1>
                 </div>
                 <p className="empty-message">{error}</p>
@@ -59,11 +66,9 @@ export default function ShoppingListDetail({
         <div className="fundo">
             {/* Header com botão voltar */}
             <div className="header-top">
-                {onBack && (
-                    <button className="back-button" onClick={onBack}>
-                        ← Voltar
-                    </button>
-                )}
+                <button className="back-button" onClick={handleBack}>
+                    ← Voltar
+                </button>
                 <h1 className="titulo">{listName}</h1>
             </div>
 
