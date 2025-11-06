@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import ShoppingListCard from "../Components/ShoppingListCard";
 import ButtonAddItem from "../Components/ButtonAddItem";
 import { useShoppingListsViewModel } from "../Hooks/useShoppingListHook";
@@ -8,6 +9,8 @@ import '../Styles/shoppinglistspage.css';
  * Responsável apenas pela renderização, delegando toda lógica para o ViewModel
  */
 export default function ShoppingListsPage() {
+    const navigate = useNavigate();
+
     const {
         lists,
         isLoading,
@@ -32,6 +35,10 @@ export default function ShoppingListsPage() {
         <div className="fundo">
             {/* Header */}
             <div className="header-top">
+                <button className="back-button" onClick={() => navigate(-1)}>
+                    ← Voltar
+                </button>
+
                 <h1 className="titulo">Listas de Compras</h1>
             </div>
 

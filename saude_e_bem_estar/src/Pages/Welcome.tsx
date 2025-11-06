@@ -13,7 +13,7 @@ export default function Welcome() {
 
             <div className="button-container">
                 <button onClick={() => navigate("Search")} className="button-navegate"> Pesquise um produto </button>
-                <button onClick={() => navigate("ShoppingList")} className="button-navegate"> Monte sua lista de compras </button>
+                <button onClick={() => navigate("ShoppingList")} className="button-navegate"> Acesse suas listas de compras </button>
             </div>
         </div>
     );
