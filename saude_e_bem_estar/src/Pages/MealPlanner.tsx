@@ -34,6 +34,9 @@ export const MealPlannerView = observer(({ vm }: { vm: MealPlannerViewModel }) =
         }}>
         {grid.map((row, rowIndex) => (
           <div key={rowIndex} className="meal-planner-day">
+            <div className="meal-date">
+              <strong>{row[0].date?.toLocaleDateString()}</strong>
+            </div>
             {row.map((cell, cellIndex) => (
               <div key={cellIndex} className="meal-planner-cell">
                 <strong>{cell.label}</strong>
