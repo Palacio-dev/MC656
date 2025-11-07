@@ -8,13 +8,19 @@ export class DailyStrategy implements MealPlannerStrategy {
   }
 
   getGrid() {
+    const meals = [
+      "Café da manhã",
+      "Almoço",
+      "Jantar",
+      "Lanche Extra",
+    ];
     return [
-      [
-        { label: "Café da manhã", meals: [] },
-        { label: "Almoço", meals: [] },
-        { label: "Jantar", meals: [] },
-        { label: "Lanche Extra", meals: [] },
-      ],
+      meals.map(label => ({
+        label,
+        meals: [],
+        date: this.date,
+      })),
     ];
   }
+
 }

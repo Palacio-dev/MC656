@@ -10,11 +10,12 @@ export class WeeklyStrategy implements MealPlannerStrategy {
 
   getGrid() {
     const days = 7;
-    return Array.from({ length: days }).map(() => [
-      { label: "Café da manhã", meals: [] },
-      { label: "Almoço", meals: [] },
-      { label: "Jantar", meals: [] },
-      { label: "Lanche Extra", meals: [] },
-    ]);
+    const meals = ["Café da manhã", "Almoço", "Jantar", "Lanche Extra"];
+
+    return Array.from({ length: days }).map((_, i) => {
+      const date = new Date(this.startOfWeek);
+      date.setDate(this.startOfWeek.getDate() + i);
+      return meals.map(label => ({ label, meals: [], date }));
+    });
   }
 }
