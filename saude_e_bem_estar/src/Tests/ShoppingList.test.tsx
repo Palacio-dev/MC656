@@ -1,122 +1,137 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import ShoppingList from "../Pages/ShoppingListDetail";
+import { BrowserRouter } from "react-router-dom";
+import ShoppingListDetail from "../Pages/ShoppingListDetail";
+
+const mockNavigate = jest.fn();
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockNavigate,
+}));
 
 describe("ShoppingList", () => {
-  test("mostra o título corretamente", () => {
-    render(<ShoppingList />);
-    expect(screen.getByText("Lista de Compras")).toBeInTheDocument();
+  // Setup antes de cada teste
+  beforeEach(() => {
+    // Limpa o localStorage antes de cada teste
+    localStorage.clear();
+    jest.clearAllMocks();
+
+    // Cria uma lista mock no localStorage
+    const mockList = {
+      id: "lista-teste-123",
+      name: "Supermercado",
+      items: [],
+      createdAt: new Date().toISOString(),
+    };
+
+    localStorage.setItem("lista-teste-123", JSON.stringify(mockList));
+    localStorage.setItem("itemSelecionado", "lista-teste-123");
+    localStorage.setItem("listas", JSON.stringify([mockList]));
   });
 
-  test("adiciona um item na lista", () => {
-    render(<ShoppingList />);
-
-    // digita no input
-    fireEvent.change(screen.getByPlaceholderText("Adicione genérico"), {
-      target: { value: "Arroz" },
-    });
-
-    // pega o botão pelo papel sem depender do texto
-    fireEvent.click(screen.getByRole("button", { name: "+" }));
-
-    // verifica se o item apareceu
-    expect(screen.getByText("Arroz")).toBeInTheDocument();
+  afterEach(() => {
+    localStorage.clear();
   });
 
-  test("renderiza a lista depois de adicionar itens", () => {
-    render(<ShoppingList />);
+  // Helper para renderizar o componente
+  const renderComponent = (props = {}) => {
+    return render(
+      <BrowserRouter>
+        <ShoppingListDetail {...props} />
+      </BrowserRouter>
+    );
+  };
 
-    // adicionar feijão
-    fireEvent.change(screen.getByPlaceholderText("Adicione genérico"), {
-      target: { value: "Arroz" },
+  test("mostra o título da lista corretamente", async () => {
+    renderComponent();
+
+    await waitFor(() => {
+      expect(screen.getByText("Supermercado")).toBeInTheDocument();
     });
-    fireEvent.click(screen.getByRole("button", { name: "+" }));
-
-    // adiciona Feijão
-    fireEvent.change(screen.getByPlaceholderText("Adicione genérico"), {
-      target: { value: "Feijão" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: "+" }));
-
-    // agora a lista já tem os dois itens
-    expect(screen.getByText("Arroz")).toBeInTheDocument();
-    expect(screen.getByText("Feijão")).toBeInTheDocument();
   });
 
-  test("remove um item da lista quando clicado no botão de deletar", () => {
-    render(<ShoppingList />);
+  test("adiciona um item na lista", async () => {
+    renderComponent();
 
-    // adiciona "Pirulito"
-    fireEvent.change(screen.getByPlaceholderText(/adicione genérico/i), {
-      target: { value: "Pirulito" },
+    await waitFor(() => {
+      expect(screen.getByText("Supermercado")).toBeInTheDocument();
     });
-    fireEvent.click(screen.getByRole("button", { name: "+" }));
 
-    // garante que está na tela
-    expect(screen.getByText("Pirulito")).toBeInTheDocument();
+    const input = screen.getByPlaceholderText("Adicione um item à lista");
+    const addButton = screen.getByRole("button", { name: "+" });
 
-    // clica no botão de deletar
-    fireEvent.click(screen.getByRole("button", { name: "🗑️" }));
-    // ou (se você usar aria-label no botão):
-    // fireEvent.click(screen.getByRole("button", { name: /remover Arroz/i }));
+    fireEvent.change(input, { target: { value: "Arroz" } });
+    fireEvent.click(addButton);
 
-    // agora o item não deve mais aparecer
-    expect(screen.queryByText("Pirulito")).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Arroz")).toBeInTheDocument();
+    });
+
+    // Verifica se foi salvo no localStorage
+    const savedList = JSON.parse(localStorage.getItem("lista-teste-123") || "{}");
+    expect(savedList.items).toHaveLength(1);
+    expect(savedList.items[0].text).toBe("Arroz");
   });
 
-  test("remove item, e adiciona outro", () => {
-    render(<ShoppingList />);
+  test("remove um item da lista", async () => {
+    renderComponent();
 
-    // adiciona "Pirulito"
-    fireEvent.change(screen.getByPlaceholderText(/adicione genérico/i), {
-      target: { value: "Pirulito" },
+    await waitFor(() => {
+      expect(screen.getByText("Supermercado")).toBeInTheDocument();
     });
-    fireEvent.click(screen.getByRole("button", { name: "+" }));
 
-    // garante que está na tela
-    expect(screen.getByText("Pirulito")).toBeInTheDocument();
+    // Adiciona item
+    const input = screen.getByPlaceholderText("Adicione um item à lista");
+    const addButton = screen.getByRole("button", { name: "+" });
 
-    // clica no botão de deletar
-    fireEvent.click(screen.getByRole("button", { name: "🗑️" }));
+    fireEvent.change(input, { target: { value: "Pirulito" } });
+    fireEvent.click(addButton);
 
-    // agora o item não deve mais aparecer
-    expect(screen.queryByText("Pirulito")).not.toBeInTheDocument();
-
-    // adiciona "Chocolate"
-    fireEvent.change(screen.getByPlaceholderText(/adicione genérico/i), {
-      target: { value: "Chocolate" },
+    await waitFor(() => {
+      expect(screen.getByText("Pirulito")).toBeInTheDocument();
     });
-    fireEvent.click(screen.getByRole("button", { name: "+" }));
-    // garante que está na tela
-    expect(screen.getByText("Chocolate")).toBeInTheDocument();
+
+    // Remove o item
+    const deleteButton = screen.getByRole("button", { name: "🗑️" });
+    fireEvent.click(deleteButton);
+
+    await waitFor(() => {
+      expect(screen.queryByText("Pirulito")).not.toBeInTheDocument();
+    });
   });
 
-  test("fazer o check do item e depois deletar ele", () => {
-    render(<ShoppingList />);
+  test("persiste dados após adicionar e remover item", async () => {
+    renderComponent();
 
-    // adiciona "manteiga"
-    fireEvent.change(screen.getByPlaceholderText(/adicione genérico/i), {
-      target: { value: "manteiga" },
+    await waitFor(() => {
+      expect(screen.getByText("Supermercado")).toBeInTheDocument();
     });
-    fireEvent.click(screen.getByRole("button", { name: "+" }));
 
-    // garante que está na tela
-    expect(screen.getByText("manteiga")).toBeInTheDocument();
+    const input = screen.getByPlaceholderText("Adicione um item à lista");
+    const addButton = screen.getByRole("button", { name: "+" });
 
-    // clicar no checkbox (marca)
-    fireEvent.click(screen.getByRole("checkbox"));
+    // Adiciona item
+    fireEvent.change(input, { target: { value: "Chocolate" } });
+    fireEvent.click(addButton);
 
-    // garante que está marcado
-    expect(screen.getByRole("checkbox")).toBeChecked();
+    await waitFor(() => {
+      expect(screen.getByText("Chocolate")).toBeInTheDocument();
+    });
 
-    // garante que o texto está riscado
-    const itemText = screen.getByText("manteiga");
-    expect(itemText).toHaveStyle("text-decoration: line-through");
+    // Verifica persistência
+    let savedList = JSON.parse(localStorage.getItem("lista-teste-123") || "{}");
+    expect(savedList.items).toHaveLength(1);
 
-    // clica no botão de deletar
-    fireEvent.click(screen.getByRole("button", { name: "🗑️" }));
+    // Remove item
+    const deleteButton = screen.getByRole("button", { name: "🗑️" });
+    fireEvent.click(deleteButton);
 
-    // agora o item não deve mais aparecer
-    expect(screen.queryByText("manteiga")).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByText("Chocolate")).not.toBeInTheDocument();
+    });
+
+    // Verifica persistência após remoção
+    savedList = JSON.parse(localStorage.getItem("lista-teste-123") || "{}");
+    expect(savedList.items).toHaveLength(0);
   });
 });
