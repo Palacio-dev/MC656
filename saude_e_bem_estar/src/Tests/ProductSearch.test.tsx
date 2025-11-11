@@ -1,15 +1,9 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-// Mock do Papa.parse para simular carregamento do CSV
-import Search from "../Pages/ProductSearchView";
-
-// Import Papa to get its type and then mock it
+import ProductSearchView from "../Pages/ProductSearchView";
 import Papa from "papaparse";
 
-// Mock papaparse module
 jest.mock("papaparse");
-
-// Mock do localStorage
 
 const localStorageMock = {
   getItem: jest.fn(),
@@ -19,7 +13,7 @@ const localStorageMock = {
 };
 Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
-describe("ProductSearch", () => {
+describe("ProductSearchView", () => {
   beforeEach(() => {
     // Limpa os mocks antes de cada teste
     // jest.clearAllMocks();
@@ -62,12 +56,12 @@ describe("ProductSearch", () => {
   });
 
   test("mostra o título corretamente", () => {
-    render(<Search />);
+  render(<ProductSearchView />);
     expect(screen.getByText("Busca de Produtos")).toBeInTheDocument();
   });
 
   test("pesquisa por um item específico", async () => {
-    render(<Search />);
+  render(<ProductSearchView />);
     
     const searchInput = screen.getByPlaceholderText("Search for a product...");
     
@@ -94,7 +88,7 @@ describe("ProductSearch", () => {
     ]);
     localStorageMock.getItem.mockReturnValue(mockHistory);
     
-    render(<Search />);
+  render(<ProductSearchView />);
     
     // Verifica que o histórico está sendo exibido
     await waitFor(() => {
@@ -111,7 +105,7 @@ describe("ProductSearch", () => {
   });
 
   test("apresenta macronutrientes corretamente", async () => {
-    render(<Search />);
+  render(<ProductSearchView />);
     
     const searchInput = screen.getByPlaceholderText("Search for a product...");
     
@@ -136,7 +130,7 @@ describe("ProductSearch", () => {
   });
 
   test("aparece opções quando digita uma letra", async () => {
-    render(<Search />);
+  render(<ProductSearchView />);
     
     const searchInput = screen.getByPlaceholderText("Search for a product...");
     
@@ -151,7 +145,7 @@ describe("ProductSearch", () => {
   });
 
   test("muda entre informações de alimentos corretamente", async () => {
-    render(<Search />);
+  render(<ProductSearchView />);
     
     const searchInput = screen.getByPlaceholderText("Search for a product...");
     
@@ -204,7 +198,7 @@ describe("ProductSearch", () => {
     ]);
     localStorageMock.getItem.mockReturnValue(mockHistory);
     
-    render(<Search />);
+  render(<ProductSearchView />);
     
     // Verifica que o título do histórico está presente
     expect(screen.getByText("Buscados Anteriormente")).toBeInTheDocument();
