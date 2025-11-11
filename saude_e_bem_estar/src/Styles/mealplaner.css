@@ -1,0 +1,64 @@
+.meal-planner-container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-family: Arial, sans-serif;
+}
+
+.meal-planner-title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.meal-planner-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.meal-planner-day {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 8px;
+  background-color: #f9f9f9;
+  min-height: 180px;
+}
+
+.meal-planner-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.meal-planner-textarea {
+  resize: vertical;
+  min-height: 40px;
+  padding: 4px;
+  border-radius: 4px;
+  border: 1px solid #aaa;
+  font-size: 14px;
+}
+
+.meal-planner-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.meal-planner-buttons button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #fff;
+  background-color: #4a90e2;
+  transition: background-color 0.2s;
+}
+
+.meal-planner-buttons button:hover {
+  background-color: #357ab8;
+}
