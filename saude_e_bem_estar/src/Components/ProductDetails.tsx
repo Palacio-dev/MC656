@@ -15,8 +15,8 @@ export const ProductDetails: React.FC<Props> = ({ product }) => {
                 <ul className="space-y-1">
                     <li>Energia em kcal: {product.calories}</li>
                     <li>Carboidratos: {product.carbs}g</li>
-                    <li>Proteína: {product.protein}g</li>
-                    <li>Lipídios: {product.fat}g</li>
+                    <li>Proteina: {product.protein}g</li>
+                    <li>Lipidios: {product.fat}g</li>
                     <li>Fibras: {product.fiber}g</li>
                 </ul>
         </div>
