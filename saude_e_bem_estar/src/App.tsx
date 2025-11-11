@@ -12,15 +12,14 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<ProductSearchView />}/>
-        {/*
         <Route path="/" element={<LoginSignUp />}/>
         <Route path="Welcome">
           <Route index element={<Welcome />} />
           <Route path="ShoppingList" element={<ShoppingList />} />
-          <Route path="Search" element={<ProductSearchView />} />
+          <Route path="/" element={<ProductSearchView />}/>
+          {/* <Route path="Search" element={<ProductSearchView />} /> */}
         </Route>
-        */}
+       
       </Routes>
     </BrowserRouter>
   );
