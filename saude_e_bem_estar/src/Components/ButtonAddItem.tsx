@@ -1,4 +1,5 @@
 import { useState } from "react";
+import '../Styles/buttonadditem.css';
 
 interface AddItemProps {
     onAddItem: (itemText: string) => void;
@@ -42,7 +43,6 @@ export default function ButtonAddItem({ onAddItem, placeholder = "Adicione um it
                 value={newItem}
                 onChange={(e) => setNewItem(e.target.value)}
                 onKeyPress={handleKeyPress}
-                className="input-item"
             />
         </div>
     );
