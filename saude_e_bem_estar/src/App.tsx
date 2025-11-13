@@ -5,7 +5,7 @@ import './Styles/App.css';
 import LoginSignUp from './Pages/LoginSignUp';
 import ShoppingListsPage from './Pages/ShoppingListPage';
 import ShoppingListDetail from './Pages/ShoppingListDetail';
-import Search from "./Pages/Search";
+import Search from "./Pages/ProductSearchView";
 import Welcome from "./Pages/Welcome";
 import { MealPlannerViewModel } from "./Hooks/MealPlannerHook";
 import { MealPlannerView } from "./Pages/MealPlanner";
@@ -17,8 +17,6 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LoginSignUp />}/>
-
-        {/* Rota pai apenas para organização (não renderiza conteúdo) */}
         <Route path="Welcome">
           <Route index element={<Welcome />} />
           <Route path="ShoppingList" >
@@ -32,6 +30,7 @@ export default function App() {
           />
           <Route path="Search" element={<Search />} />
         </Route>
+       
       </Routes>
     </BrowserRouter>
   );
