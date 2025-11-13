@@ -1,8 +1,8 @@
 import { makeAutoObservable } from "mobx";
-import { MealPlannerStrategy } from "../Components/Strategies/MealPlannerStrategy";
-import { DailyStrategy } from "../Components/Strategies/DailyStrategy";
-import { WeeklyStrategy } from "../Components/Strategies/WeeklyStrategy";
-import { MonthlyStrategy } from "../Components/Strategies/MonthlyStrategy";
+import { MealPlannerStrategy } from "../components/strategies/MealPlannerStrategy";
+import { DailyStrategy } from "../components/strategies/DailyStrategy";
+import { WeeklyStrategy } from "../components/strategies/WeeklyStrategy";
+import { MonthlyStrategy } from "../components/strategies/MonthlyStrategy";
 
 export interface MealEntry {
   breakfast?: string;

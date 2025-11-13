@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ShoppingList } from "../Types/ShoppingTypes";
+import { ShoppingList } from "../types/ShoppingTypes";
 
 /**
  * ViewModel para ShoppingListsPage

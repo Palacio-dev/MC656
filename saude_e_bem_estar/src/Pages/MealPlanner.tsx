@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { useNavigate } from "react-router-dom";
-import { MealPlannerViewModel } from "../Hooks/MealPlannerHook";
-import '../Styles/mealplaner.css'; 
+import { MealPlannerViewModel } from "../hooks/MealPlannerHook";
+import '../styles/mealplaner.css'; 
 
 export const MealPlannerView = observer(({ vm }: { vm: MealPlannerViewModel }) => {
   const grid = vm.strategy.getGrid();

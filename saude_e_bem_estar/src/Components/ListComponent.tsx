@@ -1,5 +1,5 @@
-import CheckItem from "../Components/CheckItem";
-import ButtonAddItem from "../Components/ButtonAddItem";
+import CheckItem from "./CheckItem";
+import ButtonAddItem from "./ButtonAddItem";
 
 interface ListComponentProps {
     items: Array<{ id: string; text: string; checked: boolean }>;

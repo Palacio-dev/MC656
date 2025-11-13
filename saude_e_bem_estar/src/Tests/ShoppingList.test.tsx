@@ -1,8 +1,8 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { BrowserRouter } from "react-router-dom";
-import ShoppingListDetail from "../Pages/ShoppingListDetail";
-import { useShoppingListDetailViewModel } from "../Hooks/useShoppingListDetailHook";
+import ShoppingListDetail from "../pages/ShoppingListDetail";
+import { useShoppingListDetailViewModel } from "../hooks/useShoppingListDetailHook";
 
 // Mock do hook customizado
 jest.mock("../Hooks/useShoppingListDetailHook");

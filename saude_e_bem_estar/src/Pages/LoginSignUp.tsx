@@ -1,6 +1,6 @@
 import React from 'react';
-import '../Styles/LoginSignUp.css';
-import { useLoginSignUp } from '../Hooks/useLoginSignUp';
+import '../styles/LoginSignUp.css';
+import { useLoginSignUp } from '../hooks/useLoginSignUp';
 
 
 const LoginSignUp: React.FC = () => {

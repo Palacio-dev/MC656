@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import ShoppingListCard from "../Components/ShoppingListCard";
-import ButtonAddItem from "../Components/ButtonAddItem";
-import { useShoppingListsViewModel } from "../Hooks/useShoppingListHook";
-import '../Styles/shoppinglistspage.css';
+import ShoppingListCard from "../components/ShoppingListCard";
+import ButtonAddItem from "../components/ButtonAddItem";
+import { useShoppingListsViewModel } from "../hooks/useShoppingListHook";
+import '../styles/shoppinglistspage.css';
 
 /**
  * ShoppingListsPage - View (Componente de apresentação)

@@ -1,14 +1,14 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import './Styles/App.css';
+import './styles/App.css';
 
 //pages Import
-import LoginSignUp from './Pages/LoginSignUp';
-import ShoppingListsPage from './Pages/ShoppingListPage';
-import ShoppingListDetail from './Pages/ShoppingListDetail';
-import Search from "./Pages/ProductSearchView";
-import Welcome from "./Pages/Welcome";
-import { MealPlannerViewModel } from "./Hooks/MealPlannerHook";
-import { MealPlannerView } from "./Pages/MealPlanner";
+import LoginSignUp from './pages/LoginSignUp';
+import ShoppingListsPage from './pages/ShoppingListPage';
+import ShoppingListDetail from './pages/ShoppingListDetail';
+import Search from "./pages/ProductSearchView";
+import Welcome from "./pages/Welcome";
+import { MealPlannerViewModel } from "./hooks/MealPlannerHook";
+import { MealPlannerView } from "./pages/MealPlanner";
 
 export default function App() {
   const mealPlannerVM = new MealPlannerViewModel();

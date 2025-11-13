@@ -1,9 +1,9 @@
 import React from "react";
-import { useProductSearch } from "../Hooks/useProductSearch";
-import { SearchInput } from "../Components/SearchInput";
-import { SuggestionsList } from "../Components/SuggestionsList";
-import { ProductDetails } from "../Components/ProductDetails";
-import { SearchHistory } from "../Components/SearchHistory";
+import { useProductSearch } from "../hooks/useProductSearch";
+import { SearchInput } from "../components/SearchInput";
+import { SuggestionsList } from "../components/SuggestionsList";
+import { ProductDetails } from "../components/ProductDetails";
+import { SearchHistory } from "../components/SearchHistory";
 
 
 const ProductSearchView: React.FC = () => {

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { ShoppingItem, ShoppingList } from "../Types/ShoppingTypes";
+import { ShoppingItem, ShoppingList } from "../types/ShoppingTypes";
 
 interface UseShoppingListDetailViewModelProps {
     listId?: string;

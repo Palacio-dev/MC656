@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../Styles/checkitem.css';
+import '../styles/checkitem.css';
 
 interface CheckItemProps {
   id?: string;

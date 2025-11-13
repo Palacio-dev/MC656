@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import ProductSearchView from "../Pages/ProductSearchView";
+import ProductSearchView from "../pages/ProductSearchView";
 import Papa from "papaparse";
 
 jest.mock("papaparse");

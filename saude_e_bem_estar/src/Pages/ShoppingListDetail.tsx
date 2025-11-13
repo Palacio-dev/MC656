@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import ListComponent from "../Components/ListComponent";
-import { useShoppingListDetailViewModel } from "../Hooks/useShoppingListDetailHook";
-import '../Styles/shoppinglistspage.css';
+import ListComponent from "../components/ListComponent";
+import { useShoppingListDetailViewModel } from "../hooks/useShoppingListDetailHook";
+import '../styles/shoppinglistspage.css';
 
 interface ShoppingListDetailProps {
     listId?: string;

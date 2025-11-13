@@ -1,5 +1,5 @@
 import { useState } from "react";
-import '../Styles/buttonadditem.css';
+import '../styles/buttonadditem.css';
 
 interface AddItemProps {
     onAddItem: (itemText: string) => void;
