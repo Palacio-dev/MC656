@@ -9,6 +9,8 @@ on:
 jobs:
   backend:
     runs-on: ubuntu-latest
+    env:
+      CI: true
     defaults:
       run:
         working-directory: auth-api
@@ -58,12 +60,12 @@ jobs:
         run: node --input-type=module -e "import('./src/db.js').then(m=>m.initDb())"
 
       - name: Test (backend) -- if present
-        run: npm run test --if-present -- --watchAll=false
-        env:
-          CI: true
+        run: npm run test --if-present -- --watchAll=false --runInBand --verbose
 
   frontend:
     runs-on: ubuntu-latest
+    env:
+      CI: true
     defaults:
       run:
         working-directory: saude_e_bem_estar
@@ -84,9 +86,7 @@ jobs:
 
       - name: Test (front)
         run: |
-          npm test -- --watchAll=false
-        env:
-          CI: true
+          npm test -- --watchAll=false --runInBand --verbose
 
       - name: Build (front)
         run: npm run build
