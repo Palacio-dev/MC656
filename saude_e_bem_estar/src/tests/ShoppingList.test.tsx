@@ -5,7 +5,7 @@ import ShoppingListDetail from "../pages/ShoppingListDetail";
 import { useShoppingListDetailViewModel } from "../hooks/useShoppingListDetailHook";
 
 // Mock do hook customizado
-jest.mock("../Hooks/useShoppingListDetailHook");
+jest.mock("../hooks/useShoppingListDetailHook");
 
 // Mock do useNavigate
 const mockNavigate = jest.fn();
