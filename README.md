@@ -156,8 +156,8 @@ Para implementar a arquitetura proposta para o backend é necessário haver os c
   - Endpoint recebe uma receita marcada como favorita e aciona o caso de uso de salvamento.
 
 * **Use cases**: Implementam ações específicas que o sistema executa como salvar receitas, buscar alimentos, gerar cardápios etc. Também contêm a lógica de aplicação e coordenam as interações entre Domain e Infrastructure. Ex.:
-  - Caso de uso “SalvarCardapio” recebe um objeto de cardápio, valida regras e chama o domínio e repositórios.
-  - Caso de uso “BuscarValorNutricional” recebe o nome do alimento e coordena a consulta ao repositório de nutrição.
+  - Caso de uso para buscar cardápio recebe um objeto de cardápio, valida regras e chama o domínio e repositórios.
+  - Caso de uso para buscar valor nutricional recebe o nome do alimento e coordena a consulta ao repositório de nutrição.
 
 * **Domain**: responsável por conter as regras de negócio puras além de definir entidades, regras de validação, cálculos e invariantes do domínio. Ex.:
   - Entidade Cardapio validando se uma semana possui todas as refeições cadastradas.
