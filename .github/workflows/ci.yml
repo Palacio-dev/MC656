@@ -58,7 +58,7 @@ jobs:
         run: node --input-type=module -e "import('./src/db.js').then(m=>m.initDb())"
 
       - name: Test (backend) -- if present
-        run: npm run test --if-present -- --watchAll=false
+        run: npm run test --if-present -- --watchAll=true
 
   frontend:
     runs-on: ubuntu-latest
@@ -82,7 +82,7 @@ jobs:
 
       - name: Test (front)
         run: |
-          npm test -- --watchAll=false
+          npm test -- --watchAll=true
 
       - name: Build (front)
         run: npm run build
