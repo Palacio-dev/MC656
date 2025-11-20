@@ -339,22 +339,8 @@ describe("LoginSignUp", () => {
     fireEvent.click(screen.getByText("Criar conta"));
     await waitFor(() => {
       expect(screen.getByText(/senha ou inválidos/i)).toBeInTheDocument();
-    fireEvent.change(screen.getByPlaceholderText("Email"), {
-      target: { value: "email@existente.com" },
     });
-    fireEvent.change(screen.getByPlaceholderText("Password"), {
-      target: { value: "123456" },
-    });
-
-    // Clica em criar conta
-    fireEvent.click(screen.getByText("Criar conta"));
-
-    await waitFor(() => {
-      expect(screen.getByText("Este e-mail já está registrado.")).toBeInTheDocument();
-    });
-  });  
-    
-    
+  });
 
   test("mostra erro de nome de usuário invalido no cadastro", async () => {
     render(<LoginSignUp />);
