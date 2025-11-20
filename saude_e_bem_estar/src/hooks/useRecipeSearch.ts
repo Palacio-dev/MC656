@@ -16,13 +16,15 @@ export function useRecipeSearch() {
   /**
    * Perform recipe search
    */
-  const performSearch = useCallback(async (query: string) => {
+  const performSearch = useCallback(async (query: string | null | undefined) => {
     // Validate query
-    if (!query || query.trim().length === 0) {
+    if (!query || typeof query !== 'string' || query.trim().length === 0) {
       setError('Por favor, digite o nome de uma receita');
+      setSearchResults([]);
+      setHasSearched(false);
+      setIsLoading(false);
       return;
     }
-
     setIsLoading(true);
     setError(null);
     setHasSearched(true);
