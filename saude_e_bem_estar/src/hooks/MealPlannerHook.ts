@@ -13,7 +13,10 @@ export interface MealEntry {
 }
 
 function toDateKey(date: Date): string {
-  return date.toISOString().split("T")[0]; // 'YYYY-MM-DD'
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`; // 'YYYY-MM-DD'
 }
 
 export class MealPlannerViewModel {
@@ -21,32 +24,50 @@ export class MealPlannerViewModel {
   private model: MealPlannerModel;
   private userId: string | null;
 
-  // Estado das refeições organizado por índice da linha (dia)
   mealsByDate: Record<string, MealEntry> = {};
-
   loading: boolean = false;
   error: string | null = null;
 
   constructor(model: MealPlannerModel, userId: string | null) {
     this.model = model;
-    this.userId = userId;
-
     this.strategy = new DailyStrategy(new Date());
+    this.userId = null; // será definido via setUser
+
     makeAutoObservable(this);
 
-    this.loadMealsForCurrentView();
+    // Toda a lógica de troca de usuário fica centralizada aqui
+    this.setUser(userId);
+  }
+
+  // Troca de usuário (login / logout / troca de conta)
+  setUser(userId: string | null) {
+    this.userId = userId;
+
+    // Sempre limpa cache ao trocar de usuário pra não misturar dados
+    this.mealsByDate = {};
+    this.error = null;
+
+    if (this.userId) {
+      // Se há usuário logado, carrega refeições para a visão atual
+      this.loadMealsForCurrentView();
+    } else {
+      // Se não há usuário, garante que não estamos em "loading"
+      this.loading = false;
+    }
   }
 
   private getDateRangeForCurrentView() {
     return this.strategy.getDateRange();
   }
 
-
   async loadMealsForCurrentView() {
     if (!this.userId) {
-      this.mealsByDate = {}
-      this.loading = false;
-      this.error = null;
+      // Sem usuário -> limpa estado e não tenta bater no Firebase
+      runInAction(() => {
+        this.mealsByDate = {};
+        this.loading = false;
+        this.error = null;
+      });
       return;
     }
 
@@ -63,7 +84,11 @@ export class MealPlannerViewModel {
       );
 
       runInAction(() => {
-        this.mealsByDate = meals;
+        // Mescla com o que já estava em memória (caso já tenhamos carregado outros períodos)
+        this.mealsByDate = {
+          ...this.mealsByDate,
+          ...meals,
+        };
       });
     } catch (err: any) {
       console.error(err);
@@ -76,7 +101,6 @@ export class MealPlannerViewModel {
       });
     }
   }
-
 
   setDailyView(date: Date) {
     this.strategy = new DailyStrategy(date);
@@ -110,14 +134,16 @@ export class MealPlannerViewModel {
       [mealType]: value,
     };
 
+    // Atualiza estado local sempre (para UI responder na hora)
     this.mealsByDate[key] = updated;
+
+    // Sem usuário logado -> não persiste no Firebase
     if (!this.userId) return;
 
     try {
       await this.model.saveMealForDate(this.userId, date, updated);
     } catch (err) {
       console.error(err);
-      // se quiser, pode setar alguma mensagem de erro
     }
   }
 }
