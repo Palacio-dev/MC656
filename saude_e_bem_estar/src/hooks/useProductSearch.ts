@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Product } from "../types/product";
 import * as productService from "../services/ProductService";
+import { productHistoryService } from "../services/ProductHistoryService";
 import { auth } from "../config/firebase";
 
 
@@ -8,39 +9,35 @@ const STORAGE_KEY = "product-search-history";
 
 
 export function useProductSearch() {
-  const [query, setQuery] = useState("");
-  const [suggestions, setSuggestions] = useState<Product[]>([]);
-  const [selected, setSelected] = useState<Product | null>(null);
-  const [history, setHistory] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(false);
+    const [query, setQuery] = useState("");
+    const [suggestions, setSuggestions] = useState<Product[]>([]);
+    const [selected, setSelected] = useState<Product | null>(null);
+    const [history, setHistory] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-  // load history once
-  useEffect(() => {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      try {
-        setHistory(JSON.parse(raw));
-      } catch (e) {
-        console.warn("Failed to parse history", e);
-        localStorage.removeItem(STORAGE_KEY);
-      }
-    }
-  }, []);
+    /**
+    * Carrega a lista do Firebase
+    */
+    const loadHistory = useCallback(async () => {
+         try {
+            setError(null);
+            const userId = auth.currentUser?.uid || 'anonymous';
+            
+            // Busca histórico único (sem duplicatas) do Firebase
+            const userHistory = await productHistoryService.getUserHistory(userId);
+            setHistory(userHistory);
+        } catch (err) {
+            console.error("Erro ao carregar histórico:", err);
+            setError("Não foi possível carregar o histórico");
+            setHistory([]);
+        }
+    }, []);
 
-  // persist history
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      const hist = await productService.getHistory();
-      if (!cancelled) setHistory(hist);
-    }
-
-    // só busca se o usuário existir
-    if (auth.currentUser) load();
-
-    return () => { cancelled = true };
-  }, []);
+   // Carrega histórico na inicialização
+    useEffect(() => {
+        loadHistory();
+    }, [loadHistory]);
 
   // fetch suggestions when query changes
   useEffect(() => {
@@ -67,24 +64,39 @@ export function useProductSearch() {
   }, [query]);
 
   const select = async (product: Product) => {
+    const userId = auth.currentUser?.uid || 'anonymous';
     setSelected(product);
     setQuery("");
     setSuggestions([]);
-
-    await productService.saveHistory(product);
-
-    // atualiza local sem refetch
-    setHistory((prev) => [product, ...prev]);
+    if (!history.find((h) => h.name === product.name)) {
+      await productHistoryService.saveToHistory(userId, product);
+    }
+    loadHistory();
   };
 
-  const selectFromHistory = (product: Product) => {
-    setSelected(product);
-  };
+    const selectFromHistory = useCallback((product: Product) => {
+        setSelected(product);
+        setSuggestions([]);
+        setQuery("");
+        // Não salva novamente no histórico quando vem do histórico
+    }, []);
 
-  const clearHistory = () => {
-    setHistory([]);
-    localStorage.removeItem(STORAGE_KEY);
-  };
+    // ===== LIMPAR HISTÓRICO =====
+    const clearHistory = useCallback(async () => {
+        try {
+            setError(null);
+            const userId = auth.currentUser?.uid || 'anonymous';
+            
+            // Limpa histórico no Firebase
+            await productHistoryService.clearUserHistory(userId);
+            
+            // Atualiza estado local
+            setHistory([]);
+        } catch (err) {
+            console.error("Erro ao limpar histórico:", err);
+            setError("Não foi possível limpar o histórico");
+        }
+    }, []);
 
   return {
     query,
