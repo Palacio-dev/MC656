@@ -20,11 +20,14 @@ export interface MealPlannerModel {
     userId: string,
     start: Date,
     end: Date
-  ): Promise<Record<string, MealEntry>>; // chave = 'YYYY-MM-DD'
+  ): Promise<Record<string, MealEntry>>;
 }
 
 function toDateKey(date: Date): string {
-  return date.toISOString().split("T")[0]; // 'YYYY-MM-DD'
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }
 
 export class FirebaseMealPlannerModel implements MealPlannerModel {
@@ -62,6 +65,14 @@ export class FirebaseMealPlannerModel implements MealPlannerModel {
     const startKey = toDateKey(start);
     const endKey = toDateKey(end);
 
+    console.log("[MealPlannerModel] range:", {
+      userId,
+      start,
+      end,
+      startKey,
+      endKey,
+    });
+
     const q = query(
       this.collectionRef,
       where("userId", "==", userId),
@@ -71,11 +82,14 @@ export class FirebaseMealPlannerModel implements MealPlannerModel {
 
     const snapshot = await getDocs(q);
 
+    console.log("[MealPlannerModel] docs encontrados:", snapshot.size);
+
     const result: Record<string, MealEntry> = {};
 
     snapshot.forEach((docSnap) => {
       const data = docSnap.data() as any;
       const dateKey = data.date as string;
+
       result[dateKey] = {
         breakfast: data.breakfast ?? "",
         lunch: data.lunch ?? "",
