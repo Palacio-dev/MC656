@@ -13,7 +13,7 @@ import { MealPlannerViewModel } from "./hooks/MealPlannerHook";
 import { MealPlannerView } from "./pages/MealPlanner";
 import { FirebaseMealPlannerModel } from "./models/firebaseMealPlannerModel";
 import { auth } from "./config/firebase";
-
+import RecoverPassword from "./pages/RecoverPassword";
 
 export default function App() {
   const user = auth.currentUser;
@@ -39,6 +39,7 @@ export default function App() {
           <Route path="RecipeSearch" element={<RecipeSearch />} />
           <Route path="RecipeDetails" element={<RecipeDetails />} />
         </Route>
+        <Route path="Recover" element={<RecoverPassword />} />
        
       </Routes>
     </BrowserRouter>

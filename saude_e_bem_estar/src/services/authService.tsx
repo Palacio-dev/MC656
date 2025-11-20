@@ -1,5 +1,8 @@
 import validator from 'validator';
 import { API_ENDPOINTS, ERROR_MESSAGES } from '../constants/api';
+import { sendPasswordResetEmail, ActionCodeSettings } from "firebase/auth";
+import { auth } from "../config/firebase";
+
 
 interface FormData {
   name: string;
@@ -60,6 +63,21 @@ export async function signupUser(formData: FormData): Promise<void> {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(formData),
   });
+}
+
+/**
+  * Sends a password recovery email to the user
+  * @param email User's email address
+  * @return Promise that resolves when the email is sent
+**/
+
+export async function recoverPassword(email: string) {
+  const actionCodeSettings: ActionCodeSettings = {
+    // redirect back to your app after reset; override with REACT_APP_APP_URL if set
+    url: (process.env.REACT_APP_APP_URL || window.location.origin) + "/login",
+    handleCodeInApp: false,
+  };
+  return sendPasswordResetEmail(auth, email, actionCodeSettings);
 }
 
 /**
