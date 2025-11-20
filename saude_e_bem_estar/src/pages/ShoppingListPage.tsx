@@ -38,7 +38,7 @@ export default function ShoppingListsPage() {
         <div className="fundo">
             {/* Header */}
             <div className="header-top">
-                <button className="back-button" onClick={() => navigate(-1)}>
+                <button className="back-button" onClick={() => navigate("Welcome")}>
                     ← Voltar
                 </button>
 

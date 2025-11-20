@@ -101,7 +101,7 @@ const RecipeSearch: React.FC = () => {
   return (
     <div className="recipe-search-container">
       <div className="recipe-search-header">
-        <button onClick={() => navigate(-1)} className="back-btn" aria-label="Voltar">
+        <button onClick={() => navigate("Welcome")} className="back-btn" aria-label="Voltar">
           ← Voltar
         </button>
         <h1>Buscar Receitas</h1>

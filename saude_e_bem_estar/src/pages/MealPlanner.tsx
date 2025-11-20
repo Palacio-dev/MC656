@@ -217,7 +217,7 @@ export const MealPlannerView = observer(({ vm }: { vm: MealPlannerViewModel }) =
   return (
     <div className="p-4 space-y-4">
       <div className="header-top">
-        <button className="back-button" onClick={() => navigate(-1)}>
+        <button className="back-button" onClick={() => navigate("Welcome")}>
           ← Voltar
         </button>
 
