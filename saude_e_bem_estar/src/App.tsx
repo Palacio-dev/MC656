@@ -11,9 +11,14 @@ import RecipeSearch from "./pages/RecipeSearch";
 import RecipeDetails from "./pages/RecipeDetails";
 import { MealPlannerViewModel } from "./hooks/MealPlannerHook";
 import { MealPlannerView } from "./pages/MealPlanner";
+import { FirebaseMealPlannerModel } from "./models/firebaseMealPlannerModel";
+import { auth } from "./config/firebase";
+
 
 export default function App() {
-  const mealPlannerVM = new MealPlannerViewModel();
+  const user = auth.currentUser;
+  const mealPlannerModel = new FirebaseMealPlannerModel();
+  const mealPlannerVM = new MealPlannerViewModel(mealPlannerModel, user?.uid ?? null);
 
   return (
     <BrowserRouter>

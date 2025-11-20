@@ -1,10 +1,11 @@
-export interface GridCell {
+export interface MealPlannerCell {
   label: string;
-  meals: string[];
   date?: Date;
 }
 
 export interface MealPlannerStrategy {
+  getGrid(): MealPlannerCell[][];
   getTitle(): string;
-  getGrid(): GridCell[][];
+
+  getDateRange(): { start: Date; end: Date };
 }
