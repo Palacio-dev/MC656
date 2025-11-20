@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Product } from "../types/product";
 import * as productService from "../services/ProductService";
+import { auth } from "../config/firebase";
 
 
 const STORAGE_KEY = "product-search-history";
@@ -28,8 +29,18 @@ export function useProductSearch() {
 
   // persist history
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-  }, [history]);
+    let cancelled = false;
+
+    async function load() {
+      const hist = await productService.getHistory();
+      if (!cancelled) setHistory(hist);
+    }
+
+    // só busca se o usuário existir
+    if (auth.currentUser) load();
+
+    return () => { cancelled = true };
+  }, []);
 
   // fetch suggestions when query changes
   useEffect(() => {
@@ -55,13 +66,15 @@ export function useProductSearch() {
     };
   }, [query]);
 
-  const select = (product: Product) => {
+  const select = async (product: Product) => {
     setSelected(product);
     setQuery("");
     setSuggestions([]);
-    if (!history.find((h) => h.name === product.name)) {
-      setHistory((prev) => [product, ...prev]);
-    }
+
+    await productService.saveHistory(product);
+
+    // atualiza local sem refetch
+    setHistory((prev) => [product, ...prev]);
   };
 
   const selectFromHistory = (product: Product) => {
