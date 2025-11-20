@@ -2,7 +2,7 @@ import {
   RecipeSearchResponse,
   RecipeDetailsResponse,
   RecipeErrorResponse,
-} from '../models/RecipesModel';
+} from '../models/RecipeModel';
 
 // API base URL - Recipe API runs on port 4000 (React app uses 3000)
 const API_BASE_URL = 'http://localhost:4000';
