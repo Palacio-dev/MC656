@@ -18,7 +18,6 @@ export class FirebaseAuthModel {
 
   async loginWithGoogle(): Promise<UserCredential> {
     const provider = new GoogleAuthProvider();
-    // se quiser pedir só email, pode ajustar os scopes aqui
     return await signInWithPopup(auth, provider);
   }
 
