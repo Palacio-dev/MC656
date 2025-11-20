@@ -1,69 +1,135 @@
-import Papa from "papaparse";
 import { Product } from "../types/product";
+import { 
+  collection, 
+  addDoc, 
+  getDocs, 
+  deleteDoc, 
+  doc, 
+  orderBy, 
+  query,
+  where,
+  limit,
+} from "firebase/firestore";
 
+import { auth, db } from "../config/firebase";
 
-let allProducts: Product[] = [];
-
-
-export async function loadCSV(): Promise<Product[]> {
-if (allProducts.length > 0) return allProducts;
-
-
-return new Promise((resolve, reject) => {
-Papa.parse("/Assets/alimentos.csv", {
-download: true,
-header: true,
-delimiter: ";",
-dynamicTyping: true,
-complete: (results) => {
-allProducts = (results.data as any[])
-.filter((row) => row && row.nome)
-.map((row) => ({
-name: String(row.nome),
-calories: Number(row.energia_kcal) || 0,
-carbs: Number(row.carboidrato_total_g) || 0,
-protein: Number(row.proteina_g) || 0,
-fat: Number(row.lipidios_g) || 0,
-fiber: Number(row.fibra_alimentar_g) || 0,
-}));
-resolve(allProducts);
-},
-error: (err) => reject(err),
-});
-});
+function normalizeQuery(text: string) {
+  if (!text) return "";
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
+// Função que busca produtos no Firestore
+export async function fetchProducts(text: string): Promise<Product[]> {
+  if (!text || text.length < 2) return [];
+  const q = normalizeQuery(text);
 
-export async function fetchProducts(query: string): Promise<Product[]> {
-  const products = await loadCSV();
-  if (!query) return [];
-  
-  const q = query.toLowerCase();
-  const matchingProducts = products.filter((p) => p.name.toLowerCase().includes(q));
-  
-  // Ordenar os produtos baseado em diferentes critérios
-  const sortedProducts = matchingProducts.sort((a, b) => {
+  const col = collection(db, "alimentos");
+
+  // Firestore só permite consultas por prefixo usando >= e <
+  const firestoreQuery = query(
+    col,
+    where("nome_lowercase", ">=", q),
+    where("nome_lowercase", "<=", q + "\uf8ff"),
+    limit(20)
+  );
+
+  const snapshot = await getDocs(firestoreQuery);
+
+  const results: Product[] = [];
+
+  snapshot.forEach((doc) => {
+    const data = doc.data();
+
+    results.push({
+      name: data.nome,
+      calories: data.energia_kcal,
+      carbs: data.carboidrato_total_g,
+      protein: data.proteina_g,
+      fat: data.lipidios_g,
+      fiber: data.fibra_alimentar_g,
+    });
+  });
+
+  // aplicar ordenação igual ao CSV
+  const sorted = results.sort((a, b) => {
     const aName = a.name.toLowerCase();
     const bName = b.name.toLowerCase();
-    
-    // 1. Priorizar produtos que começam exatamente com a query
-    const aStartsWithQuery = aName.startsWith(q);
-    const bStartsWithQuery = bName.startsWith(q);
-    
-    if (aStartsWithQuery && !bStartsWithQuery) return -1;
-    if (!aStartsWithQuery && bStartsWithQuery) return 1;
-    
-    // 2. Priorizar produtos que têm a query como uma palavra completa
-    const aHasWordMatch = new RegExp(`\\b${q}\\b`).test(aName);
-    const bHasWordMatch = new RegExp(`\\b${q}\\b`).test(bName);
-    
-    if (aHasWordMatch && !bHasWordMatch) return -1;
-    if (!aHasWordMatch && bHasWordMatch) return 1;
-    
-    // 3. Por fim, ordenar alfabeticamente
+
+    const aStarts = aName.startsWith(q);
+    const bStarts = bName.startsWith(q);
+    if (aStarts && !bStarts) return -1;
+    if (!aStarts && bStarts) return 1;
+
+    const aWord = new RegExp(`\\b${q}\\b`).test(aName);
+    const bWord = new RegExp(`\\b${q}\\b`).test(bName);
+
+    if (aWord && !bWord) return -1;
+    if (!aWord && bWord) return 1;
+
     return aName.localeCompare(bName);
   });
-  
-  // Limitar a 10 resultados
-  return sortedProducts.slice(0, 10);
+
+  return sorted.slice(0, 10);
+}
+
+// retorna o caminho da subcoleção do usuário
+function userHistoryCollection() {
+  const uid = auth.currentUser?.uid;
+  if (!uid) throw new Error("Usuário não autenticado.");
+  return collection(db, `users/${uid}/historico`);
+}
+
+// -------------------------
+// Salvar item no histórico
+// -------------------------
+export async function saveHistory(item: Product): Promise<void> {
+  const col = userHistoryCollection();
+  await addDoc(col, {
+    ...item,
+    timestamp: new Date()
+  });
+}
+
+// -------------------------
+// Buscar histórico do usuário
+// -------------------------
+export async function getHistory(): Promise<Product[]> {
+  const col = userHistoryCollection();
+  const q = query(col, orderBy("timestamp", "desc"));
+
+  const snapshot = await getDocs(q);
+  const items: Product[] = [];
+
+  snapshot.forEach((doc) => {
+    const data = doc.data();
+    items.push({
+      name: data.name,
+      calories: data.calories,
+      carbs: data.carbs,
+      protein: data.protein,
+      fat: data.fat,
+      fiber: data.fiber
+    });
+  });
+
+  return items;
+}
+
+// -------------------------
+// Limpar histórico do usuário
+// -------------------------
+export async function clearHistory(): Promise<void> {
+  const col = userHistoryCollection();
+  const snapshot = await getDocs(col);
+
+  const deletions = snapshot.docs.map((d) =>
+    deleteDoc(doc(db, `users/${auth.currentUser?.uid}/historico/${d.id}`))
+  );
+
+  await Promise.all(deletions);
 }
