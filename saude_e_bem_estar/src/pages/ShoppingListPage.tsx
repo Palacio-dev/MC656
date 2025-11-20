@@ -1,3 +1,4 @@
+// pages/ShoppingListPage.tsx
 import { useNavigate } from "react-router-dom";
 import ShoppingListCard from "../components/ShoppingListCard";
 import ButtonAddItem from "../components/ButtonAddItem";
@@ -7,6 +8,7 @@ import '../styles/shoppinglistspage.css';
 /**
  * ShoppingListsPage - View (Componente de apresentação)
  * Responsável apenas pela renderização, delegando toda lógica para o ViewModel
+ * Agora com suporte a Firebase através da arquitetura MVVM
  */
 export default function ShoppingListsPage() {
     const navigate = useNavigate();
@@ -15,6 +17,7 @@ export default function ShoppingListsPage() {
         lists,
         isLoading,
         isEmpty,
+        error,
         createList,
         deleteList,
         selectList
@@ -26,7 +29,7 @@ export default function ShoppingListsPage() {
                 <div className="header-top">
                     <h1 className="titulo">Listas de Compras</h1>
                 </div>
-                <p className="empty-message">Carregando...</p>
+                <p className="empty-message">Carregando listas do Firebase...</p>
             </div>
         );
     }
@@ -41,6 +44,20 @@ export default function ShoppingListsPage() {
 
                 <h1 className="titulo">Listas de Compras</h1>
             </div>
+
+            {/* Mensagem de erro */}
+            {error && (
+                <div className="error-message" style={{
+                    backgroundColor: '#fee',
+                    border: '1px solid #fcc',
+                    padding: '10px',
+                    borderRadius: '4px',
+                    margin: '10px 0',
+                    color: '#c00'
+                }}>
+                    {error}
+                </div>
+            )}
 
             {/* Criar nova lista */}
             <div className="new-list-section">
