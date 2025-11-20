@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { ShoppingItem, ShoppingList } from "../types/ShoppingTypes";
 import { shoppingListDetailService } from "../models/ShoppingListDetailService";
+import { useAuth } from "./useAuth";
 
 interface UseShoppingListDetailViewModelProps {
     listId?: string;
@@ -14,6 +15,7 @@ interface UseShoppingListDetailViewModelProps {
 export const useShoppingListDetailViewModel = ({ 
     listId 
 }: UseShoppingListDetailViewModelProps = {}) => {
+    const { currentUser, loading: authLoading } = useAuth();
     const [list, setList] = useState<ShoppingList | null>(null);
     const [items, setItems] = useState<ShoppingItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -46,8 +48,14 @@ export const useShoppingListDetailViewModel = ({
                 return;
             }
 
+            if (!currentUser) {
+                setError("Você precisa estar logado para visualizar esta lista.");
+                setIsLoading(false);
+                return;
+            }
+
             // Busca a lista no Firebase através do Model
-            const fetchedList = await shoppingListDetailService.getListById(currentListId);
+            const fetchedList = await shoppingListDetailService.getListById(currentListId, currentUser.uid);
             
             if (!fetchedList) {
                 setError("Lista não encontrada");
@@ -63,14 +71,17 @@ export const useShoppingListDetailViewModel = ({
         } finally {
             setIsLoading(false);
         }
-    }, [getListId]);
+    }, [getListId, currentUser]);
 
     /**
      * Carrega a lista na inicialização
+     * Aguarda a autenticação do Firebase ser inicializada
      */
     useEffect(() => {
-        loadList();
-    }, [loadList]);
+        if (!authLoading) {
+            loadList();
+        }
+    }, [authLoading, loadList]);
 
     /**
      * Adiciona um novo item à lista
@@ -89,8 +100,13 @@ export const useShoppingListDetailViewModel = ({
         try {
             setError(null);
             
+            if (!currentUser) {
+                setError("Você precisa estar logado para adicionar itens.");
+                return;
+            }
+            
             // Adiciona o item através do Model
-            const newItem = await shoppingListDetailService.addItem(list.id, itemText);
+            const newItem = await shoppingListDetailService.addItem(list.id, currentUser.uid, itemText);
 
             // Atualiza o estado local
             const updatedItems = [...items, newItem];
@@ -100,7 +116,7 @@ export const useShoppingListDetailViewModel = ({
             console.error("Erro ao adicionar item:", err);
             setError("Não foi possível adicionar o item");
         }
-    }, [list, items]);
+    }, [list, items, currentUser]);
 
     /**
      * Alterna o estado de marcado/desmarcado de um item
@@ -111,6 +127,11 @@ export const useShoppingListDetailViewModel = ({
         try {
             setError(null);
 
+            if (!currentUser) {
+                setError("Você precisa estar logado para atualizar itens.");
+                return;
+            }
+
             // Atualiza otimisticamente o estado local (UX mais responsiva)
             const updatedItems = items.map(item =>
                 item.id === id ? { ...item, checked } : item
@@ -119,7 +140,7 @@ export const useShoppingListDetailViewModel = ({
             setList({ ...list, items: updatedItems });
 
             // Atualiza no Firebase através do Model
-            await shoppingListDetailService.toggleItem(list.id, id, checked);
+            await shoppingListDetailService.toggleItem(list.id, currentUser.uid, id, checked);
         } catch (err) {
             console.error("Erro ao atualizar item:", err);
             setError("Não foi possível atualizar o item");
@@ -127,7 +148,7 @@ export const useShoppingListDetailViewModel = ({
             // Reverte o estado em caso de erro
             loadList();
         }
-    }, [list, items, loadList]);
+    }, [list, items, currentUser, loadList]);
 
     /**
      * Deleta um item da lista
@@ -138,13 +159,18 @@ export const useShoppingListDetailViewModel = ({
         try {
             setError(null);
 
+            if (!currentUser) {
+                setError("Você precisa estar logado para deletar itens.");
+                return;
+            }
+
             // Atualiza otimisticamente o estado local
             const updatedItems = items.filter(item => item.id !== id);
             setItems(updatedItems);
             setList({ ...list, items: updatedItems });
 
             // Deleta no Firebase através do Model
-            await shoppingListDetailService.deleteItem(list.id, id);
+            await shoppingListDetailService.deleteItem(list.id, currentUser.uid, id);
         } catch (err) {
             console.error("Erro ao deletar item:", err);
             setError("Não foi possível deletar o item");
@@ -152,7 +178,7 @@ export const useShoppingListDetailViewModel = ({
             // Reverte o estado em caso de erro
             loadList();
         }
-    }, [list, items, loadList]);
+    }, [list, items, currentUser, loadList]);
 
     /**
      * Limpa todos os itens marcados
@@ -163,13 +189,18 @@ export const useShoppingListDetailViewModel = ({
         try {
             setError(null);
 
+            if (!currentUser) {
+                setError("Você precisa estar logado para limpar itens.");
+                return;
+            }
+
             // Atualiza otimisticamente o estado local
             const updatedItems = items.filter(item => !item.checked);
             setItems(updatedItems);
             setList({ ...list, items: updatedItems });
 
             // Limpa no Firebase através do Model
-            await shoppingListDetailService.clearCheckedItems(list.id);
+            await shoppingListDetailService.clearCheckedItems(list.id, currentUser.uid);
         } catch (err) {
             console.error("Erro ao limpar itens marcados:", err);
             setError("Não foi possível limpar os itens marcados");
@@ -177,7 +208,7 @@ export const useShoppingListDetailViewModel = ({
             // Reverte o estado em caso de erro
             loadList();
         }
-    }, [list, items, loadList]);
+    }, [list, items, currentUser, loadList]);
 
     /**
      * Obtém estatísticas da lista

@@ -191,6 +191,31 @@
   flex: 1;
 }
 
+.recipe-card-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.add-to-plan-btn-small {
+  padding: 8px 12px;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-to-plan-btn-small:hover {
+  background-color: #3a7bc8;
+  box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+}
+
 .view-recipe-btn {
   padding: 8px 20px;
   background-color: #4CAF50;
@@ -255,7 +280,11 @@
     align-items: stretch;
   }
 
-  .view-recipe-btn {
+  .recipe-card-actions {
     width: 100%;
+  }
+
+  .view-recipe-btn {
+    flex: 1;
   }
 }

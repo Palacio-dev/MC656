@@ -43,18 +43,24 @@ export class FirebaseMealPlannerModel implements MealPlannerModel {
 
     const docRef = doc(this.collectionRef, docId);
 
-    await setDoc(
-      docRef,
-      {
-        userId,
-        date: dateKey,
-        breakfast: meal.breakfast ?? "",
-        lunch: meal.lunch ?? "",
-        dinner: meal.dinner ?? "",
-        snack: meal.snack ?? "",
-      },
-      { merge: true }
-    );
+    // Build document data with all meal entries (including custom ones)
+    const docData: any = {
+      userId,
+      date: dateKey,
+      breakfast: meal.breakfast ?? "",
+      lunch: meal.lunch ?? "",
+      dinner: meal.dinner ?? "",
+      snack: meal.snack ?? "",
+    };
+
+    // Add any custom meal slots
+    Object.keys(meal).forEach(key => {
+      if (!['breakfast', 'lunch', 'dinner', 'snack'].includes(key)) {
+        docData[key] = meal[key] ?? "";
+      }
+    });
+
+    await setDoc(docRef, docData, { merge: true });
   }
 
   async loadMealsForRange(
@@ -90,12 +96,21 @@ export class FirebaseMealPlannerModel implements MealPlannerModel {
       const data = docSnap.data() as any;
       const dateKey = data.date as string;
 
-      result[dateKey] = {
+      const mealEntry: MealEntry = {
         breakfast: data.breakfast ?? "",
         lunch: data.lunch ?? "",
         dinner: data.dinner ?? "",
         snack: data.snack ?? "",
       };
+
+      // Load any custom meal slots
+      Object.keys(data).forEach(key => {
+        if (!['userId', 'date', 'breakfast', 'lunch', 'dinner', 'snack'].includes(key)) {
+          mealEntry[key] = data[key] ?? "";
+        }
+      });
+
+      result[dateKey] = mealEntry;
     });
 
     return result;
