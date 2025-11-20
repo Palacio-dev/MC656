@@ -11,12 +11,31 @@ export const MealPlannerView = observer(({ vm }: { vm: MealPlannerViewModel }) =
   const [showCustomInput, setShowCustomInput] = React.useState<{date: Date, mealKey: string} | null>(null);
   const [customMealText, setCustomMealText] = React.useState("");
   const [showShareMenu, setShowShareMenu] = React.useState(false);
+  const [showAddSlotModal, setShowAddSlotModal] = React.useState<Date | null>(null);
+  const [newSlotName, setNewSlotName] = React.useState("");
 
   const getMealKey = (label: string) => {
-    if (label === "Café da manhã") return "breakfast" as const;
-    if (label === "Almoço") return "lunch" as const;
-    if (label === "Jantar") return "dinner" as const;
-    return "snack" as const;
+    if (label === "Café da manhã") return "breakfast";
+    if (label === "Almoço") return "lunch";
+    if (label === "Jantar") return "dinner";
+    if (label === "Lanche") return "snack";
+    // Custom slots use their own label as key
+    return label.toLowerCase().replace(/\s+/g, '_');
+  };
+
+  const getMealLabel = (key: string) => {
+    if (key === "breakfast") return "Café da manhã";
+    if (key === "lunch") return "Almoço";
+    if (key === "dinner") return "Jantar";
+    if (key === "snack") return "Lanche";
+    // Custom slots: capitalize first letter
+    return key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  };
+
+  const getCustomMealSlots = (date: Date) => {
+    const mealForDate = vm.getMealForDate(date) || {};
+    const standardKeys = ['breakfast', 'lunch', 'dinner', 'snack'];
+    return Object.keys(mealForDate).filter(key => !standardKeys.includes(key) && mealForDate[key]);
   };
 
   const handleAddFromRecipeSearch = () => {
@@ -82,11 +101,22 @@ export const MealPlannerView = observer(({ vm }: { vm: MealPlannerViewModel }) =
       
       text += `📅 ${dateStr}\n`;
       
+      // Standard meal slots
       row.forEach((cell) => {
         const mealKey = getMealKey(cell.label);
         const value = (mealForDate as any)[mealKey] || "";
         if (value) {
           text += `  ${cell.label}: ${value}\n`;
+        }
+      });
+      
+      // Custom meal slots
+      const customSlots = getCustomMealSlots(date);
+      customSlots.forEach((slotKey) => {
+        const value = (mealForDate as any)[slotKey] || "";
+        const label = getMealLabel(slotKey);
+        if (value) {
+          text += `  ${label}: ${value}\n`;
         }
       });
       
@@ -144,6 +174,27 @@ export const MealPlannerView = observer(({ vm }: { vm: MealPlannerViewModel }) =
         alert('Não foi possível copiar o planejamento');
       }
     );
+  };
+
+  /**
+   * Open add custom slot modal
+   */
+  const handleOpenAddSlotModal = (date: Date) => {
+    setShowAddSlotModal(date);
+    setNewSlotName("");
+  };
+
+  /**
+   * Add custom meal slot
+   */
+  const handleAddCustomSlot = () => {
+    if (showAddSlotModal && newSlotName.trim()) {
+      const slotKey = newSlotName.trim().toLowerCase().replace(/\s+/g, '_');
+      // Open custom input modal for the new slot
+      setShowCustomInput({ date: showAddSlotModal, mealKey: slotKey });
+      setShowAddSlotModal(null);
+      setNewSlotName("");
+    }
   };
 
   /**
@@ -230,6 +281,8 @@ export const MealPlannerView = observer(({ vm }: { vm: MealPlannerViewModel }) =
 
           const mealForDate = vm.getMealForDate(date) || {};
 
+          const customSlots = getCustomMealSlots(date);
+
           return (
             <div key={rowIndex} className="meal-planner-day">
               <div className="meal-date">
@@ -278,6 +331,39 @@ export const MealPlannerView = observer(({ vm }: { vm: MealPlannerViewModel }) =
                   </div>
                 );
               })}
+
+              {/* Custom meal slots */}
+              {customSlots.map((slotKey) => {
+                const value = (mealForDate as any)[slotKey] || "";
+                const label = getMealLabel(slotKey);
+
+                return (
+                  <div key={slotKey} className="meal-planner-cell custom-slot">
+                    <strong>{label}</strong>
+                    <div className="meal-display">
+                      <div className="meal-text">{value}</div>
+                      <button
+                        className="delete-meal-btn"
+                        onClick={() => handleDeleteMeal(date, slotKey)}
+                        title="Remover refeição"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Add custom slot button */}
+              <div className="add-custom-slot-container">
+                <button
+                  className="add-custom-slot-btn"
+                  onClick={() => handleOpenAddSlotModal(date)}
+                  title="Adicionar horário customizado"
+                >
+                  ➕ Adicionar horário
+                </button>
+              </div>
             </div>
           );
         })}
@@ -289,11 +375,7 @@ export const MealPlannerView = observer(({ vm }: { vm: MealPlannerViewModel }) =
           <div className="custom-input-modal" onClick={(e) => e.stopPropagation()}>
             <h3>Adicionar Refeição Personalizada</h3>
             <p className="modal-date-info">
-              {showCustomInput.date.toLocaleDateString()} - {
-                showCustomInput.mealKey === 'breakfast' ? 'Café da manhã' :
-                showCustomInput.mealKey === 'lunch' ? 'Almoço' :
-                showCustomInput.mealKey === 'dinner' ? 'Jantar' : 'Lanche'
-              }
+              {showCustomInput.date.toLocaleDateString()} - {getMealLabel(showCustomInput.mealKey)}
             </p>
             <textarea
               className="custom-meal-textarea"
@@ -312,6 +394,38 @@ export const MealPlannerView = observer(({ vm }: { vm: MealPlannerViewModel }) =
                 disabled={!customMealText.trim()}
               >
                 Salvar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Custom Slot Modal */}
+      {showAddSlotModal && (
+        <div className="custom-input-modal-overlay" onClick={() => setShowAddSlotModal(null)}>
+          <div className="custom-input-modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Adicionar Novo Horário</h3>
+            <p className="modal-date-info">
+              {showAddSlotModal.toLocaleDateString()}
+            </p>
+            <input
+              type="text"
+              className="custom-slot-input"
+              placeholder="Nome do horário (ex: Lanche da tarde)"
+              value={newSlotName}
+              onChange={(e) => setNewSlotName(e.target.value)}
+              autoFocus
+            />
+            <div className="modal-actions">
+              <button className="cancel-btn" onClick={() => setShowAddSlotModal(null)}>
+                Cancelar
+              </button>
+              <button 
+                className="save-btn" 
+                onClick={handleAddCustomSlot}
+                disabled={!newSlotName.trim()}
+              >
+                Adicionar
               </button>
             </div>
           </div>

@@ -10,7 +10,7 @@ interface AddRecipeToMealPlanModalProps {
 
 export interface MealPlanConfig {
   mode: 'single' | 'recurring';
-  mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack';
+  mealType: string; // Can be standard or custom meal type
   // Para modo 'single'
   date?: Date;
   // Para modo 'recurring'
@@ -33,7 +33,8 @@ const MEAL_TYPES = [
   { value: 'breakfast', label: 'Café da manhã' },
   { value: 'lunch', label: 'Almoço' },
   { value: 'dinner', label: 'Jantar' },
-  { value: 'snack', label: 'Lanche' }
+  { value: 'snack', label: 'Lanche' },
+  { value: 'custom', label: '➕ Horário customizado' }
 ];
 
 /**
@@ -49,7 +50,8 @@ export const AddRecipeToMealPlanModal: React.FC<AddRecipeToMealPlanModalProps> =
   onAddToMealPlan
 }) => {
   const [mode, setMode] = useState<'single' | 'recurring'>('single');
-  const [mealType, setMealType] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('lunch');
+  const [mealType, setMealType] = useState<string>('lunch');
+  const [customMealName, setCustomMealName] = useState<string>('');
   const [selectedDate, setSelectedDate] = useState<string>(
     new Date().toISOString().split('T')[0]
   );
@@ -66,10 +68,21 @@ export const AddRecipeToMealPlanModal: React.FC<AddRecipeToMealPlanModalProps> =
   };
 
   const handleSubmit = () => {
+    let finalMealType = mealType;
+    
+    // If custom meal type selected, use the custom name
+    if (mealType === 'custom') {
+      if (!customMealName.trim()) {
+        alert('Digite o nome do horário customizado');
+        return;
+      }
+      finalMealType = customMealName.trim().toLowerCase().replace(/\s+/g, '_');
+    }
+    
     if (mode === 'single') {
       onAddToMealPlan({
         mode: 'single',
-        mealType,
+        mealType: finalMealType,
         date: new Date(selectedDate)
       });
     } else {
@@ -79,7 +92,7 @@ export const AddRecipeToMealPlanModal: React.FC<AddRecipeToMealPlanModalProps> =
       }
       onAddToMealPlan({
         mode: 'recurring',
-        mealType,
+        mealType: finalMealType,
         weekdays: selectedWeekdays,
         month: selectedMonth,
         year: selectedYear
@@ -132,7 +145,7 @@ export const AddRecipeToMealPlanModal: React.FC<AddRecipeToMealPlanModalProps> =
           <select
             id="meal-type"
             value={mealType}
-            onChange={(e) => setMealType(e.target.value as any)}
+            onChange={(e) => setMealType(e.target.value)}
           >
             {MEAL_TYPES.map(meal => (
               <option key={meal.value} value={meal.value}>
@@ -141,6 +154,20 @@ export const AddRecipeToMealPlanModal: React.FC<AddRecipeToMealPlanModalProps> =
             ))}
           </select>
         </div>
+
+        {/* Custom meal name input */}
+        {mealType === 'custom' && (
+          <div className="custom-meal-name-input">
+            <label htmlFor="custom-meal-name">Nome do horário:</label>
+            <input
+              id="custom-meal-name"
+              type="text"
+              placeholder="Ex: Lanche da tarde"
+              value={customMealName}
+              onChange={(e) => setCustomMealName(e.target.value)}
+            />
+          </div>
+        )}
 
         {/* Single day mode */}
         {mode === 'single' && (

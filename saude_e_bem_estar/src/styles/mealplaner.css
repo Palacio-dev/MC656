@@ -217,6 +217,57 @@
   opacity: 0.6;
 }
 
+.custom-slot-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  margin-bottom: 16px;
+  transition: border-color 0.2s;
+}
+
+.custom-slot-input:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+/* Custom Meal Slots */
+.meal-planner-cell.custom-slot {
+  background-color: #fff9e6;
+  border-left: 3px solid #ff9800;
+  padding-left: 8px;
+}
+
+.add-custom-slot-container {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed #ccc;
+}
+
+.add-custom-slot-btn {
+  width: 100%;
+  padding: 8px 12px;
+  background-color: #9c27b0;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.add-custom-slot-btn:hover {
+  background-color: #7b1fa2;
+  box-shadow: 0 2px 8px rgba(156, 39, 176, 0.3);
+}
+
 .meal-planner-title-row {
   display: flex;
   justify-content: space-between;

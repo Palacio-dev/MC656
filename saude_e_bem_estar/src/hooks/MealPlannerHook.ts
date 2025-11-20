@@ -10,6 +10,7 @@ export interface MealEntry {
   lunch?: string;
   dinner?: string;
   snack?: string;
+  [key: string]: string | undefined; // Allow custom meal slots
 }
 
 function toDateKey(date: Date): string {

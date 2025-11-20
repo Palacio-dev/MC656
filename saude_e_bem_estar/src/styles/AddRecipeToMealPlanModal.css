@@ -115,6 +115,31 @@
   border-color: #4a90e2;
 }
 
+.custom-meal-name-input {
+  margin-bottom: 20px;
+}
+
+.custom-meal-name-input label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.custom-meal-name-input input {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.custom-meal-name-input input:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
 .single-day-selection {
   margin-bottom: 20px;
 }

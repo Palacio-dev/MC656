@@ -47,7 +47,7 @@ export class RecipeToMealPlanService {
   private static async addRecurringMeals(
     viewModel: MealPlannerViewModel,
     recipeTitle: string,
-    mealType: keyof MealEntry,
+    mealType: string,
     weekdays: number[],
     month: number,
     year: number
