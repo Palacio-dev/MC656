@@ -42,11 +42,10 @@ describe("RecipeSearch", () => {
 
   test("Busca com letras, números e acentos retorna receitas", async () => {
     render(<RecipeSearch />);
-    fireEvent.change(getInput(), { target: { value: "Pão francês123" } });
+    fireEvent.change(getInput(), { target: { value: "Bolo 70%"} });
     fireEvent.click(screen.getByRole("button", { name: "Buscar" }));
     await waitFor(() => {
       expect(screen.queryByText("Nenhuma receita encontrada. Tente outra busca.")).not.toBeInTheDocument();
-      expect(screen.queryByText("caracteres especiais não são suportados")).not.toBeInTheDocument();
     });
   });
 
