@@ -55,7 +55,7 @@ describe("LoginSignUp", () => {
     const emailInput = screen.getByPlaceholderText("Email");
     const passwordInput = screen.getByPlaceholderText("Password");
     fireEvent.change(emailInput, { target: { value: "teste@email.com" } });
-    fireEvent.change(passwordInput, { target: { value: "BrenoMelhorProf656" } });
+    fireEvent.change(passwordInput, { target: { value: "asBnm1" } });
     // Clica em criar conta
     fireEvent.click(screen.getByText("Criar conta"));
     await waitFor(() => {
@@ -64,7 +64,7 @@ describe("LoginSignUp", () => {
     });
   });
 
-  test("Senha válida: 9 caracteres(testando limite superior), 1 maiúscula, 1 dígito, só letras e números", async () => {
+  test("Senha válida: 20 caracteres(testando limite superior), 1 maiúscula, 1 dígito, só letras e números", async () => {
     render(<LoginSignUp />);
     // Alterna para Sign Up
     fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
@@ -73,7 +73,7 @@ describe("LoginSignUp", () => {
     const emailInput = screen.getByPlaceholderText("Email");
     const passwordInput = screen.getByPlaceholderText("Password");
     fireEvent.change(emailInput, { target: { value: "teste@email.com" } });
-    fireEvent.change(passwordInput, { target: { value: "123456" } });
+    fireEvent.change(passwordInput, { target: { value: "ExemploDeSenhaValid1" } });
     // Clica em criar conta
     fireEvent.click(screen.getByText("Criar conta"));
     await waitFor(() => {
@@ -91,7 +91,7 @@ describe("LoginSignUp", () => {
     const emailInput = screen.getByPlaceholderText("Email");
     const passwordInput = screen.getByPlaceholderText("Password");
     fireEvent.change(emailInput, { target: { value: "teste@email.com" } });
-    fireEvent.change(passwordInput, { target: { value: "123456" } });
+    fireEvent.change(passwordInput, { target: { value: "invalid1" } });
     // Clica em criar conta
     fireEvent.click(screen.getByText("Criar conta"));
     await waitFor(() => {
@@ -110,7 +110,7 @@ describe("LoginSignUp", () => {
     const emailInput = screen.getByPlaceholderText("Email");
     const passwordInput = screen.getByPlaceholderText("Password");
     fireEvent.change(emailInput, { target: { value: "teste@email.com" } });
-    fireEvent.change(passwordInput, { target: { value: "123456" } });
+    fireEvent.change(passwordInput, { target: { value: "Invalid" } });
     // Clica em criar conta
     fireEvent.click(screen.getByText("Criar conta"));
     await waitFor(() => {
@@ -127,7 +127,7 @@ describe("LoginSignUp", () => {
     const emailInput = screen.getByPlaceholderText("Email");
     const passwordInput = screen.getByPlaceholderText("Password");
     fireEvent.change(emailInput, { target: { value: "teste@email.com" } });
-    fireEvent.change(passwordInput, { target: { value: "123456" } });
+    fireEvent.change(passwordInput, { target: { value: "Invalid1*" } });
     // Clica em criar conta
     fireEvent.click(screen.getByText("Criar conta"));
     await waitFor(() => {
@@ -135,7 +135,7 @@ describe("LoginSignUp", () => {
     });
   });
 
-  test("Senha inválida: 4 caracteres (abaixo do limite inferior)", async () => {
+  test("Senha inválida: 5 caracteres (abaixo do limite inferior)", async () => {
     render(<LoginSignUp />);
     // Alterna para Sign Up
     fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
@@ -144,7 +144,7 @@ describe("LoginSignUp", () => {
     const emailInput = screen.getByPlaceholderText("Email");
     const passwordInput = screen.getByPlaceholderText("Password");
     fireEvent.change(emailInput, { target: { value: "teste@email.com" } });
-    fireEvent.change(passwordInput, { target: { value: "123456" } });
+    fireEvent.change(passwordInput, { target: { value: "A1bcd" } });
     // Clica em criar conta
     fireEvent.click(screen.getByText("Criar conta"));
     await waitFor(() => {
@@ -152,7 +152,7 @@ describe("LoginSignUp", () => {
     });
   });
 
-  test("Senha inválida: 10 caracteres (acima do limite superior)", async () => {
+  test("Senha inválida: 21 caracteres (acima do limite superior)", async () => {
     render(<LoginSignUp />);
     // Alterna para Sign Up
     fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
@@ -161,7 +161,7 @@ describe("LoginSignUp", () => {
     const emailInput = screen.getByPlaceholderText("Email");
     const passwordInput = screen.getByPlaceholderText("Password");
     fireEvent.change(emailInput, { target: { value: "teste@email.com" } });
-    fireEvent.change(passwordInput, { target: { value: "123456" } });
+    fireEvent.change(passwordInput, { target: { value: "InvalidPassword123abcdefghijkl" } });
     // Clica em criar conta
     fireEvent.click(screen.getByText("Criar conta"));
     await waitFor(() => {
