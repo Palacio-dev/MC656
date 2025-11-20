@@ -1,12 +1,14 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useRecipeSearch } from '../hooks/useRecipeSearch';
-import '../Styles/RecipeSearch.css';
+import '../styles/RecipeSearch.css';
 
 /**
  * Recipe Search Page
  * Allows users to search for recipes by name
  */
 const RecipeSearch: React.FC = () => {
+  const navigate = useNavigate();
   const {
     searchQuery,
     searchResults,
@@ -17,6 +19,13 @@ const RecipeSearch: React.FC = () => {
     handleSearchSubmit,
     clearSearch,
   } = useRecipeSearch();
+
+  /**
+   * Navigate to recipe details page
+   */
+  const handleViewRecipe = (recipeId: string) => {
+    navigate(`/Welcome/RecipeDetails?id=${recipeId}`);
+  };
 
   /**
    * Handle form submission
@@ -108,10 +117,7 @@ const RecipeSearch: React.FC = () => {
                   <h3 className="recipe-title">{recipe.title}</h3>
                   <button
                     className="view-recipe-btn"
-                    onClick={() => {
-                      // TODO: Navigate to recipe details page
-                      console.log('View recipe:', recipe.id);
-                    }}
+                    onClick={() => handleViewRecipe(recipe.id)}
                   >
                     Ver Receita
                   </button>

@@ -172,11 +172,31 @@ function extractStats(doc) {
       const candidates = Array.isArray(parsed) ? parsed : [parsed];
       for (const cand of candidates) {
         if (cand['@type'] === 'Recipe' || (cand['@type'] && cand['@type'].toLowerCase && cand['@type'].toLowerCase() === 'recipe')) {
-          // prepTime like PT40M
-          if (cand.prepTime) {
-            const match = cand.prepTime.match(/PT(\d+)M/);
-            if (match) ret.prepare_time_minutes = Number(match[1]);
+          // Extract time - prefer totalTime, otherwise sum prepTime + cookTime
+          let totalMinutes = 0;
+          
+          // Try totalTime first (most accurate)
+          if (cand.totalTime) {
+            const match = cand.totalTime.match(/PT(\d+)M/);
+            if (match) totalMinutes = Number(match[1]);
           }
+          
+          // If no totalTime, add prepTime + cookTime
+          if (totalMinutes === 0) {
+            if (cand.prepTime) {
+              const match = cand.prepTime.match(/PT(\d+)M/);
+              if (match) totalMinutes += Number(match[1]);
+            }
+            if (cand.cookTime) {
+              const match = cand.cookTime.match(/PT(\d+)M/);
+              if (match) totalMinutes += Number(match[1]);
+            }
+          }
+          
+          if (totalMinutes > 0) {
+            ret.prepare_time_minutes = totalMinutes;
+          }
+          
           if (cand.recipeYield) {
             // try to extract a number from recipeYield
             const yMatch = String(cand.recipeYield).match(/(\d+)/);

@@ -8,6 +8,7 @@ import ShoppingListDetail from './pages/ShoppingListDetail';
 import Search from "./pages/ProductSearchView";
 import Welcome from "./pages/Welcome";
 import RecipeSearch from "./pages/RecipeSearch";
+import RecipeDetails from "./pages/RecipeDetails";
 import { MealPlannerViewModel } from "./hooks/MealPlannerHook";
 import { MealPlannerView } from "./pages/MealPlanner";
 
@@ -31,6 +32,7 @@ export default function App() {
           />
           <Route path="Search" element={<Search />} />
           <Route path="RecipeSearch" element={<RecipeSearch />} />
+          <Route path="RecipeDetails" element={<RecipeDetails />} />
         </Route>
        
       </Routes>

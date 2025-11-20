@@ -4,23 +4,34 @@ import {
   RecipeErrorResponse,
 } from '../models/RecipeModel';
 
-// API base URL - Recipe API runs on port 4000 (React app uses 3000)
-const API_BASE_URL = 'http://localhost:4000';
+// API base URL
+// In development: connect directly to backend on port 4000
+// In production/mobile: can be configured via REACT_APP_API_URL environment variable
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
 
 /**
  * Generic API call wrapper for the Recipe API
  */
 async function recipeApiCall<T>(endpoint: string): Promise<T> {
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`);
-    const data = await response.json();
-
+    const url = `${API_BASE_URL}${endpoint}`;
+    console.log('[RecipeService] Fetching:', url);
+    const response = await fetch(url);
+    
+    // Check if response is ok before parsing
     if (!response.ok) {
-      // API returns error in 'erro' field
-      const errorData = data as RecipeErrorResponse;
-      throw new Error(errorData.erro || 'Erro ao buscar receitas');
+      throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
     }
 
+    // Check if response is JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await response.text();
+      console.error('Resposta não é JSON:', text.substring(0, 200));
+      throw new Error('Resposta inválida do servidor');
+    }
+
+    const data = await response.json();
     return data;
   } catch (error) {
     if (error instanceof Error) {
