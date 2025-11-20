@@ -96,6 +96,20 @@ const LoginSignUp: React.FC = () => {
                     {viewModel.submitButtonText}
                 </button>
             </div>
+
+
+            {!viewModel.isSignUpMode && (
+                <div className="submit-wrap">
+                    <button 
+                        type="button" 
+                        className="submit google-bnt" 
+                        onClick={viewModel.handleGoogleLogin} 
+                        disabled={viewModel.loading}
+                    >
+                        Entrar com Google
+                    </button>
+                </div>
+            )}
         </div>
     );
 };
