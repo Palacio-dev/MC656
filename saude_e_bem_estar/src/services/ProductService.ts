@@ -1,17 +1,6 @@
+import { db } from "../config/firebase";
+import { collection, query, where, getDocs, limit } from "firebase/firestore";
 import { Product } from "../types/product";
-import { 
-  collection, 
-  addDoc, 
-  getDocs, 
-  deleteDoc, 
-  doc, 
-  orderBy, 
-  query,
-  where,
-  limit,
-} from "firebase/firestore";
-
-import { auth, db } from "../config/firebase";
 
 function normalizeQuery(text: string) {
   if (!text) return "";
@@ -30,7 +19,8 @@ export async function fetchProducts(text: string): Promise<Product[]> {
 
   const col = collection(db, "alimentos");
 
-  // Firestore só permite consultas por prefixo usando >= e <
+  // Firestore só permite consultas por prefixo usando >= e <  
+  // Ex: "aba" => busca entre "aba" e "aba\uf8ff"
   const firestoreQuery = query(
     col,
     where("nome_lowercase", ">=", q),
@@ -75,61 +65,4 @@ export async function fetchProducts(text: string): Promise<Product[]> {
   });
 
   return sorted.slice(0, 10);
-}
-
-// retorna o caminho da subcoleção do usuário
-function userHistoryCollection() {
-  const uid = auth.currentUser?.uid;
-  if (!uid) throw new Error("Usuário não autenticado.");
-  return collection(db, `users/${uid}/historico`);
-}
-
-// -------------------------
-// Salvar item no histórico
-// -------------------------
-export async function saveHistory(item: Product): Promise<void> {
-  const col = userHistoryCollection();
-  await addDoc(col, {
-    ...item,
-    timestamp: new Date()
-  });
-}
-
-// -------------------------
-// Buscar histórico do usuário
-// -------------------------
-export async function getHistory(): Promise<Product[]> {
-  const col = userHistoryCollection();
-  const q = query(col, orderBy("timestamp", "desc"));
-
-  const snapshot = await getDocs(q);
-  const items: Product[] = [];
-
-  snapshot.forEach((doc) => {
-    const data = doc.data();
-    items.push({
-      name: data.name,
-      calories: data.calories,
-      carbs: data.carbs,
-      protein: data.protein,
-      fat: data.fat,
-      fiber: data.fiber
-    });
-  });
-
-  return items;
-}
-
-// -------------------------
-// Limpar histórico do usuário
-// -------------------------
-export async function clearHistory(): Promise<void> {
-  const col = userHistoryCollection();
-  const snapshot = await getDocs(col);
-
-  const deletions = snapshot.docs.map((d) =>
-    deleteDoc(doc(db, `users/${auth.currentUser?.uid}/historico/${d.id}`))
-  );
-
-  await Promise.all(deletions);
 }
