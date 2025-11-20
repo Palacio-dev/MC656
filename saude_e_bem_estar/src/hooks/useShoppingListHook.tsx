@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ShoppingList } from "../types/ShoppingTypes";
 import { shoppingListService } from "../models/ShoppingListService";
+import { useAuth } from "./useAuth";
 
 /**
  * ViewModel para ShoppingListsPage
@@ -11,18 +12,24 @@ import { shoppingListService } from "../models/ShoppingListService";
  */
 export const useShoppingListsViewModel = () => {
     const navigate = useNavigate();
+    const { currentUser, loading: authLoading } = useAuth();
     const [lists, setLists] = useState<ShoppingList[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     /**
      * Carrega as listas do Firebase na inicialização
+     * Aguarda a autenticação do Firebase ser inicializada
      */
     useEffect(() => {
-        loadLists();
         // Limpa o item selecionado do localStorage (ainda usado para navegação)
         localStorage.removeItem("itemSelecionado");
-    }, []);
+        
+        // Só carrega listas depois que a autenticação foi inicializada
+        if (!authLoading) {
+            loadLists();
+        }
+    }, [authLoading]);
 
     /**
      * Carrega as listas do Firebase Firestore
@@ -31,7 +38,16 @@ export const useShoppingListsViewModel = () => {
         try {
             setIsLoading(true);
             setError(null);
-            const fetchedLists = await shoppingListService.getAllLists();
+            
+            if (!currentUser) {
+                console.warn("Usuário não autenticado ao carregar listas");
+                setError("Você precisa estar logado para ver suas listas.");
+                setLists([]);
+                setIsLoading(false);
+                return;
+            }
+            
+            const fetchedLists = await shoppingListService.getAllLists(currentUser.uid);
             setLists(fetchedLists);
         } catch (error) {
             console.error("Erro ao carregar listas:", error);
@@ -53,15 +69,31 @@ export const useShoppingListsViewModel = () => {
 
         try {
             setError(null);
-            const newList = await shoppingListService.createList(listName);
+            
+            if (!currentUser) {
+                console.error("Tentativa de criar lista sem autenticação");
+                setError("Você precisa estar logado para criar listas.");
+                return;
+            }
+            
+            console.log("Criando lista para usuário:", currentUser.uid);
+            const newList = await shoppingListService.createList(listName, currentUser.uid);
             
             // Atualiza o estado local adicionando a nova lista
             setLists(prevLists => [newList, ...prevLists]);
             
             return newList;
-        } catch (error) {
+        } catch (error: any) {
             console.error("Erro ao criar lista:", error);
-            setError("Não foi possível criar a lista. Tente novamente.");
+            const errorMessage = error?.message || "Não foi possível criar a lista. Tente novamente.";
+            setError(errorMessage);
+            
+            // Mostra o erro no console para debug
+            console.error("Detalhes do erro:", {
+                message: error?.message,
+                code: error?.code,
+                stack: error?.stack
+            });
         }
     };
 
@@ -71,7 +103,14 @@ export const useShoppingListsViewModel = () => {
     const deleteList = async (id: string) => {
         try {
             setError(null);
-            await shoppingListService.deleteList(id);
+            
+            if (!currentUser) {
+                console.error("Tentativa de deletar lista sem autenticação");
+                setError("Você precisa estar logado para deletar listas.");
+                return;
+            }
+            
+            await shoppingListService.deleteList(id, currentUser.uid);
             
             // Atualiza o estado local removendo a lista deletada
             setLists(prevLists => prevLists.filter(list => list.id !== id));

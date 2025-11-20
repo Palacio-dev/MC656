@@ -1,0 +1,287 @@
+.meal-plan-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.meal-plan-modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.meal-plan-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.meal-plan-modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+  padding: 4px 8px;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.modal-close-btn:hover {
+  color: #333;
+}
+
+.recipe-name-display {
+  background: #f5f5f5;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+}
+
+.recipe-name-display strong {
+  color: #4a90e2;
+}
+
+.mode-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.mode-selection label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.mode-selection input[type="radio"] {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
+.meal-type-selection {
+  margin-bottom: 20px;
+}
+
+.meal-type-selection label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.meal-type-selection select {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.meal-type-selection select:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+.single-day-selection {
+  margin-bottom: 20px;
+}
+
+.single-day-selection label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.single-day-selection input[type="date"] {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.single-day-selection input[type="date"]:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+.recurring-selection {
+  margin-bottom: 20px;
+}
+
+.weekday-selection {
+  margin-bottom: 16px;
+}
+
+.weekday-selection > label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.weekday-buttons {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.weekday-btn {
+  padding: 10px 4px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.weekday-btn:hover {
+  border-color: #4a90e2;
+  background: #f0f7ff;
+}
+
+.weekday-btn.selected {
+  background: #4a90e2;
+  color: white;
+  border-color: #4a90e2;
+}
+
+.month-year-selection {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 12px;
+}
+
+.month-year-selection > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.month-year-selection label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.month-year-selection select {
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.month-year-selection select:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 2px solid #e0e0e0;
+}
+
+.cancel-btn,
+.confirm-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-btn {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.cancel-btn:hover {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.confirm-btn {
+  background: #4a90e2;
+  color: white;
+}
+
+.confirm-btn:hover {
+  background: #3a7bc8;
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .meal-plan-modal-content {
+    padding: 20px;
+    max-height: 95vh;
+  }
+
+  .weekday-buttons {
+    gap: 4px;
+  }
+
+  .weekday-btn {
+    padding: 8px 2px;
+    font-size: 0.75rem;
+  }
+
+  .month-year-selection {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .cancel-btn,
+  .confirm-btn {
+    width: 100%;
+  }
+}

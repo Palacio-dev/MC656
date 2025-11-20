@@ -1,7 +1,6 @@
 import {
   RecipeSearchResponse,
   RecipeDetailsResponse,
-  RecipeErrorResponse,
 } from '../models/RecipeModel';
 
 // API base URL
