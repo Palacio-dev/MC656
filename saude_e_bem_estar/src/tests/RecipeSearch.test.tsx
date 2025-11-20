@@ -53,9 +53,9 @@ describe("RecipeSearch", () => {
   test("Busca com caracteres especiais mostra erro", async () => {
     render(<RecipeSearch />);
     fireEvent.change(getInput(), { target: { value: "@#!@#$@" } });
-    fireEvent.keyPress(getInput(), {Key: 'Enter', keyCode: 13, charCode:13})
+    fireEvent.click(screen.getByRole("button", { name: "Buscar" }));
     await waitFor(() => {
-      expect(screen.queryByText("Nenhuma receita encontrada. Tente outra busca.")).toBeInTheDocument();
+      expect(screen.queryByText("Por favor, digite apenas letras e números")).toBeInTheDocument();
     });
   });
 });
