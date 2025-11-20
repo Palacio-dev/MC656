@@ -25,8 +25,8 @@ export function useRecipeSearch() {
       setIsLoading(false);
       return;
     }
-    
-    if (!/^[a-zA-Z0-9À-ÿ ]+$/.test(query)) {
+
+    if (!/^[a-zA-Z0-9À-ÿ% ]+$/.test(query)) {
       setError("Por favor, digite apenas letras e números");
       return;
     }
