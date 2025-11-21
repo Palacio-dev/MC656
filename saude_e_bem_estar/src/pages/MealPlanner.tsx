@@ -54,7 +54,8 @@ export const MealPlannerView = observer(({ vm }: { vm: MealPlannerViewModel }) =
   const getCustomMealSlots = (date: Date) => {
     const mealForDate = vm.getMealForDate(date) || {};
     const standardKeys = ['breakfast', 'lunch', 'dinner', 'snack'];
-    return Object.keys(mealForDate).filter(key => !standardKeys.includes(key) && mealForDate[key]);
+    // Include all custom slots, even if empty (they should still show with add buttons)
+    return Object.keys(mealForDate).filter(key => !standardKeys.includes(key));
   };
 
   const handleAddFromRecipeSearch = () => {
@@ -108,6 +109,22 @@ export const MealPlannerView = observer(({ vm }: { vm: MealPlannerViewModel }) =
         };
         
         await FirebaseRecipeService.saveRecipeNutrition(customMealId, nutrition);
+        
+        // Save the custom recipe to recipes collection so it can be displayed later
+        const customRecipe = {
+          id: customMealId,
+          title: customMealText.trim(),
+          ingredients: [],
+          instructions: [],
+          stats: {
+            prepare_time_minutes: 0,
+            portion_output: 1,
+            favorites: 0
+          },
+          isCustom: true
+        };
+        
+        await FirebaseRecipeService.saveRecipe(customRecipe);
       }
 
       await vm.updateMeal(showCustomInput.date, showCustomInput.mealKey as any, mealData);
@@ -326,11 +343,11 @@ export const MealPlannerView = observer(({ vm }: { vm: MealPlannerViewModel }) =
   /**
    * Add custom meal slot
    */
-  const handleAddCustomSlot = () => {
+  const handleAddCustomSlot = async () => {
     if (showAddSlotModal && newSlotName.trim()) {
       const slotKey = newSlotName.trim().toLowerCase().replace(/\s+/g, '_');
-      // Open custom input modal for the new slot
-      setShowCustomInput({ date: showAddSlotModal, mealKey: slotKey });
+      // Create empty slot so it appears in the grid with add buttons
+      await vm.updateMeal(showAddSlotModal, slotKey as any, "");
       setShowAddSlotModal(null);
       setNewSlotName("");
     }
@@ -586,26 +603,48 @@ export const MealPlannerView = observer(({ vm }: { vm: MealPlannerViewModel }) =
                 return (
                   <div key={slotKey} className="meal-planner-cell custom-slot">
                     <strong>{label}</strong>
-                    <div className="meal-display">
-                      <div 
-                        className={`meal-text ${hasRecipeId ? 'meal-clickable' : ''}`}
-                        onClick={() => hasRecipeId && handleMealClick(meal)}
-                        title={hasRecipeId ? 'Clique para ver detalhes da receita' : ''}
-                      >
-                        {mealTitle}
-                        {hasRecipeId && <span className="meal-recipe-indicator"> 📖</span>}
+                    
+                    {mealTitle ? (
+                      // Meal exists - show it with delete button
+                      <div className="meal-display">
+                        <div 
+                          className={`meal-text ${hasRecipeId ? 'meal-clickable' : ''}`}
+                          onClick={() => hasRecipeId && handleMealClick(meal)}
+                          title={hasRecipeId ? 'Clique para ver detalhes da receita' : ''}
+                        >
+                          {mealTitle}
+                          {hasRecipeId && <span className="meal-recipe-indicator"> 📖</span>}
+                        </div>
+                        <button
+                          className="delete-meal-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteMeal(date, slotKey);
+                          }}
+                          title="Remover refeição"
+                        >
+                          🗑️
+                        </button>
                       </div>
-                      <button
-                        className="delete-meal-btn"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteMeal(date, slotKey);
-                        }}
-                        title="Remover refeição"
-                      >
-                        🗑️
-                      </button>
-                    </div>
+                    ) : (
+                      // No meal - show add buttons
+                      <div className="meal-add-buttons">
+                        <button
+                          className="add-meal-btn recipe-btn"
+                          onClick={handleAddFromRecipeSearch}
+                          title="Buscar receita"
+                        >
+                          🔍 Receita
+                        </button>
+                        <button
+                          className="add-meal-btn custom-btn"
+                          onClick={() => handleOpenCustomInput(date, slotKey)}
+                          title="Adicionar texto personalizado"
+                        >
+                          ✏️ Customizar
+                        </button>
+                      </div>
+                    )}
                   </div>
                 );
               })}

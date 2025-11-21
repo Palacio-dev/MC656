@@ -35,7 +35,19 @@ export const MealRecipeDetailsModal: React.FC<MealRecipeDetailsModalProps> = ({
 
   React.useEffect(() => {
     if (isOpen && recipeId) {
+      // Reset state when opening with a new recipe
+      setRecipe(null);
+      setNutrition(null);
+      setSubstitutions({});
+      setError(null);
+      
       loadRecipe();
+    } else if (!isOpen) {
+      // Reset state when closing modal to avoid showing stale data
+      setRecipe(null);
+      setNutrition(null);
+      setSubstitutions({});
+      setError(null);
     }
   }, [isOpen, recipeId]);
 
@@ -43,6 +55,7 @@ export const MealRecipeDetailsModal: React.FC<MealRecipeDetailsModalProps> = ({
     if (!recipeId) return;
 
     setLoadingRecipe(true);
+    setLoadingNutrition(true);
     setError(null);
 
     try {
@@ -50,19 +63,41 @@ export const MealRecipeDetailsModal: React.FC<MealRecipeDetailsModalProps> = ({
       if (recipeData) {
         setRecipe(recipeData);
         
+        // Check if this is a custom recipe (has isCustom flag or ID starts with custom_)
+        const isCustomRecipe = recipeData.isCustom || recipeId.startsWith('custom_');
+        
         // Load user substitutions first to check if we should use custom nutrition
         const userSubs = await loadUserSubstitutions();
         
-        // Only calculate fresh nutrition if user doesn't have custom nutrition
-        if (!userSubs || !userSubs.customNutrition) {
+        // Priority order for nutrition data:
+        // 1. User substitutions (custom nutrition from ingredient changes)
+        // 2. Stored nutrition in recipe (for custom recipes)
+        // 3. Calculate from ingredients (for API recipes)
+        
+        if (userSubs && userSubs.customNutrition) {
+          // Use custom nutrition from substitutions (highest priority)
+          setLoadingNutrition(false);
+        } else if (isCustomRecipe) {
+          // For custom recipes, try to load stored nutrition
+          const storedNutrition = await FirebaseRecipeService.getRecipeNutrition(recipeId);
+          if (storedNutrition) {
+            setNutrition(storedNutrition);
+          }
+          setLoadingNutrition(false);
+        } else if (recipeData.ingredients && recipeData.ingredients.length > 0) {
+          // For API recipes, calculate nutrition from ingredients
           loadNutrition(recipeData);
+        } else {
+          setLoadingNutrition(false);
         }
       } else {
         setError('Receita não encontrada');
+        setLoadingNutrition(false);
       }
     } catch (err) {
       console.error('Erro ao carregar receita:', err);
       setError('Erro ao carregar detalhes da receita');
+      setLoadingNutrition(false);
     } finally {
       setLoadingRecipe(false);
     }
@@ -229,7 +264,12 @@ export const MealRecipeDetailsModal: React.FC<MealRecipeDetailsModalProps> = ({
 
         {recipe && !loadingRecipe && (
           <div className="meal-recipe-content">
-            <h2 className="meal-recipe-title">{recipe.title}</h2>
+            <h2 className="meal-recipe-title">
+              {recipe.title}
+              {(recipe.isCustom || recipe.id?.startsWith('custom_')) && (
+                <span className="custom-recipe-badge"> ✨ Personalizada</span>
+              )}
+            </h2>
 
             {recipe.stats && (
               <div className="meal-recipe-meta">

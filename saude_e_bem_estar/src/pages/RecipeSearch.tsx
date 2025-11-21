@@ -20,9 +20,6 @@ const RecipeSearch: React.FC = () => {
   const { currentUser } = useAuth();
   const [isMealPlanModalOpen, setIsMealPlanModalOpen] = React.useState(false);
   const [selectedRecipe, setSelectedRecipe] = React.useState<{ id: string; title: string } | null>(null);
-  const [showOnlyCustom, setShowOnlyCustom] = React.useState(false);
-  const [customRecipes, setCustomRecipes] = React.useState<{ id: string; title: string }[]>([]);
-  const [loadingCustom, setLoadingCustom] = React.useState(false);
   
   const {
     searchQuery,
@@ -40,38 +37,6 @@ const RecipeSearch: React.FC = () => {
     const model = new FirebaseMealPlannerModel();
     return new MealPlannerViewModel(model, currentUser?.uid || null);
   }, [currentUser]);
-
-  /**
-   * Load custom recipes from Firebase
-   */
-  React.useEffect(() => {
-    const loadCustomRecipes = async () => {
-      if (showOnlyCustom) {
-        setLoadingCustom(true);
-        try {
-          const recipes = await FirebaseRecipeService.getAllCustomRecipes();
-          setCustomRecipes(recipes);
-        } catch (err) {
-          console.error("Error loading custom recipes:", err);
-          setCustomRecipes([]);
-        } finally {
-          setLoadingCustom(false);
-        }
-      }
-    };
-
-    loadCustomRecipes();
-  }, [showOnlyCustom]);
-
-  /**
-   * Toggle custom recipes filter
-   */
-  const handleToggleCustomFilter = () => {
-    setShowOnlyCustom(!showOnlyCustom);
-    if (!showOnlyCustom) {
-      clearSearch(); // Clear regular search when switching to custom
-    }
-  };
 
   /**
    * Navigate to recipe details page
@@ -156,21 +121,8 @@ const RecipeSearch: React.FC = () => {
         subtitle="Encontre receitas deliciosas para adicionar ao seu planejamento"
       />
 
-      {/* Filter Toggle */}
-      <div className="recipe-filter-toggle">
-        <label className="filter-toggle-label">
-          <input
-            type="checkbox"
-            checked={showOnlyCustom}
-            onChange={handleToggleCustomFilter}
-            className="filter-toggle-checkbox"
-          />
-          <span>Mostrar apenas receitas personalizadas</span>
-        </label>
-      </div>
-
-      {/* Search Bar - Only show when NOT filtering custom recipes */}
-      {!showOnlyCustom && (
+      {/* Search Bar */}
+      {(
         <form onSubmit={handleSubmit} className="recipe-search-form">
           <div className="search-input-wrapper">
             <input
@@ -205,56 +157,8 @@ const RecipeSearch: React.FC = () => {
         </form>
       )}
 
-      {/* Loading State - Custom Recipes */}
-      {loadingCustom && showOnlyCustom && (
-        <div className="recipe-loading">
-          <div className="loading-spinner"></div>
-          <p>Carregando receitas personalizadas...</p>
-        </div>
-      )}
-
-      {/* Custom Recipes Results */}
-      {showOnlyCustom && !loadingCustom && (
-        <div className="recipe-results">
-          <h2 className="results-title">
-            {customRecipes.length > 0
-              ? `${customRecipes.length} receita${customRecipes.length !== 1 ? 's' : ''} personalizada${customRecipes.length !== 1 ? 's' : ''}`
-              : 'Nenhuma receita personalizada encontrada'}
-          </h2>
-          
-          {customRecipes.length > 0 && (
-            <div className="recipe-list">
-              {customRecipes.map((recipe) => (
-                <div key={recipe.id} className="recipe-card">
-                  <div className="recipe-card-content">
-                    <h3 className="recipe-title">
-                      🍽️ {recipe.title}
-                    </h3>
-                    <div className="recipe-card-actions">
-                      <button
-                        className="add-to-plan-btn-small"
-                        onClick={() => handleAddRecipeToMealPlan(recipe.id, recipe.title)}
-                        title="Adicionar ao planejamento"
-                      >
-                        📅
-                      </button>
-                      <button
-                        className="view-recipe-btn"
-                        onClick={() => handleViewRecipe(recipe.id)}
-                      >
-                        Ver Detalhes
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Loading State - Regular Search */}
-      {isLoading && !showOnlyCustom && (
+      {/* Loading State */}
+      {isLoading && (
         <div className="recipe-loading">
           <div className="loading-spinner"></div>
           <p>Procurando receitas...</p>
@@ -262,15 +166,15 @@ const RecipeSearch: React.FC = () => {
       )}
 
       {/* Error State */}
-      {error && !isLoading && !showOnlyCustom && (
+      {error && !isLoading && (
         <div className="recipe-error">
           <span className="error-icon">⚠️</span>
           <p>{error}</p>
         </div>
       )}
 
-      {/* Search Results - Regular Search */}
-      {!showOnlyCustom && !isLoading && !error && hasSearched && searchResults.length > 0 && (
+      {/* Search Results */}
+      {!isLoading && !error && hasSearched && searchResults.length > 0 && (
         <div className="recipe-results">
           <h2 className="results-title">
             Encontramos {searchResults.length} receita{searchResults.length !== 1 ? 's' : ''}
