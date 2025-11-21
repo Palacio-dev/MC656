@@ -7,6 +7,7 @@ interface PageHeaderProps {
   subtitle?: string;
   showBackButton?: boolean;
   showHomeButton?: boolean;
+  showSettingsButton?: boolean;
 }
 
 /**
@@ -17,6 +18,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   subtitle,
   showBackButton = true,
   showHomeButton = true,
+  showSettingsButton = false,
 }) => {
   const navigate = useNavigate();
 
@@ -27,6 +29,10 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   const handleHome = () => {
     navigate('/Welcome');
   };
+
+  const handleSettings = () => {
+    navigate('/Settings');
+  }
 
   return (
     <div className="page-header">
@@ -49,6 +55,16 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             title="Ir para início"
           >
             🏠 Início
+          </button>
+        )}
+        {showSettingsButton && (
+          <button 
+            onClick={handleSettings}
+            className="nav-btn settings-btn"
+            aria-label="Configurações"
+            title="Configurações"
+          >
+            ⚙️ Configurações
           </button>
         )}
       </div>

@@ -11,6 +11,8 @@ export default function Welcome() {
                 title="Bem-vinde!" 
                 showBackButton={false}
                 showHomeButton={false}
+                showSettingsButton={true}
+                subtitle="Sua jornada para uma vida mais saudável começa aqui"
             />
 
             <div className="welcome-content">
