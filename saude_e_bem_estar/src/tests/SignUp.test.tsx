@@ -173,13 +173,13 @@ describe("SignUp", () => {
 
     // Preenche com e-mail inválido
     fireEvent.change(screen.getByPlaceholderText("Name"), {
-      target: { value: "Joao" },
+      target: { value: "Joaoo" },
     });
     fireEvent.change(screen.getByPlaceholderText("Email"), {
-      target: { value: "email-invalido" },
+      target: { value: "emailinvalido" },
     });
     fireEvent.change(screen.getByPlaceholderText("Password"), {
-      target: { value: "123456L!" },
+      target: { value: "1234Lucas&*" },
     });
 
     // Clica em Cadastrar
@@ -203,7 +203,6 @@ describe("SignUp", () => {
     });
   });
 
-
 // Senhas válidas
   test("Senha válida: 6 caracteres, 1 maiúscula, 1 dígito, 1 caractere especial", async () => {
     render(<LoginSignUp />);
@@ -211,7 +210,7 @@ describe("SignUp", () => {
     fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
     // Preenche com e-mail válido
     fireEvent.change(screen.getByPlaceholderText("Name"), { target: { value: "Joao" } });
-    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "teste@email.com" } });
+    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "lucaspalacioa@gmail.com" } });
     fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "a*Bnm1" } });
     // Clica em Cadastrar
     fireEvent.click(screen.getByText("Cadastrar"));
@@ -226,7 +225,7 @@ describe("SignUp", () => {
     fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
     // Preenche com e-mail válido
     fireEvent.change(screen.getByPlaceholderText("Name"), { target: { value: "Joao" } });
-    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "teste@email.com" } });
+    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "lucaspalacioa@gmail.com" } });
     fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "ExampleofValiddd1%Pa" } });
     // Clica em Cadastrar
     fireEvent.click(screen.getByText("Cadastrar"));
