@@ -91,9 +91,10 @@ class ShoppingListDetailService {
      * @param listId - ID da lista
      * @param userId - ID do usuário autenticado
      * @param itemText - Texto do item
+     * @param quantity - Quantidade opcional (ex: "2kg", "500g")
      * @returns Promise com o item criado
      */
-    async addItem(listId: string, userId: string, itemText: string): Promise<ShoppingItem> {
+    async addItem(listId: string, userId: string, itemText: string, quantity?: string): Promise<ShoppingItem> {
         try {
             // Busca a lista atual
             const list = await this.getListById(listId, userId);
@@ -105,7 +106,8 @@ class ShoppingListDetailService {
             const newItem: ShoppingItem = {
                 id: Date.now().toString(),
                 text: itemText.trim(),
-                checked: false
+                checked: false,
+                ...(quantity && quantity.trim() ? { quantity: quantity.trim() } : {})
             };
 
             // Adiciona o item ao array

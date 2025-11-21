@@ -152,37 +152,53 @@ class ProductHistoryService {
     }
 
     /**
-     * Limpa todo o histórico de um usuário
-     * @param userId - ID do usuário
-     */
-    async clearUserHistory(userId: string): Promise<void> {
-        if (!userId) {
-            throw new Error('userId é obrigatório');
-        }
+ * Deleta TODO o histórico de um usuário, independente da quantidade (>500 docs).
+ */
+async clearUserHistory(userId: string): Promise<void> {
+    if (!userId) {
+        throw new Error("userId é obrigatório");
+    }
 
-        try {
-            const historyCollection = collection(db, this.collectionName);
-            const q = query(historyCollection, where('userId', '==', userId));
-            const querySnapshot = await getDocs(q);
+    try {
+        const historyCollection = collection(db, this.collectionName);
 
-            if (querySnapshot.empty) {
-                console.log('ℹ️ Histórico já está vazio');
-                return;
+        // Cria a query base
+        const q = query(
+            historyCollection, 
+            where("userId", "==", userId)
+        );
+
+        let totalDeleted = 0;
+
+        while (true) {
+            // SEMPRE busca direto do servidor para evitar cache offline
+            const snapshot = await getDocs(q /*, { source: "server" } */);
+
+            if (snapshot.empty) {
+                console.log(`ℹ️ Histórico já está vazio`);
+                break;
             }
 
-            // Usa batch para deletar em lote (mais eficiente)
+            // Firestore batch = máx 500 operações
             const batch = writeBatch(db);
-            querySnapshot.docs.forEach((document) => {
-                batch.delete(document.ref);
+
+            snapshot.docs.slice(0, 500).forEach(doc => {
+                batch.delete(doc.ref);
             });
 
             await batch.commit();
-            console.log(`✅ ${querySnapshot.size} itens deletados do histórico`);
-        } catch (error) {
-            console.error('❌ Erro ao limpar histórico:', error);
-            throw new Error('Não foi possível limpar o histórico');
+
+            totalDeleted += snapshot.docs.length;
+            console.log(`🗑️ Deletados ${snapshot.docs.length} docs...`);
         }
+
+        console.log(`✅ Histórico de ${userId} limpo. Total: ${totalDeleted} itens deletados.`);
+    } catch (error) {
+        console.error("❌ Erro ao limpar histórico:", error);
+        throw new Error("Não foi possível limpar o histórico");
     }
+}
+
 
     /**
      * Deleta uma entrada específica do histórico

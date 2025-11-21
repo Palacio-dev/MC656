@@ -37,6 +37,7 @@ export interface RecipeDetails {
   stats: RecipeStats;
   ingredients: RecipeSection[];
   instructions: RecipeSection[];
+  isCustom?: boolean; // Flag to indicate if this is a custom user-created recipe
 }
 
 /**

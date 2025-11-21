@@ -14,7 +14,7 @@
 }
 
 .meal-recipe-modal {
-  background: white;
+  background: var(--card-bg);
   border-radius: 16px;
   max-width: 800px;
   width: 100%;
@@ -24,12 +24,44 @@
   box-shadow: 0 10px 40px rgba(130, 9, 177, 0.3);
 }
 
-.meal-recipe-modal-close {
+.meal-recipe-modal-header {
   position: sticky;
-  top: 10px;
-  right: 10px;
-  float: right;
-  background: #f5f5f5;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: var(--card-bg);
+  z-index: 10;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.meal-recipe-favorite-btn {
+  background: none;
+  border: 2px solid var(--border-color);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.meal-recipe-favorite-btn:hover {
+  border-color: #ff4444;
+  transform: scale(1.1);
+}
+
+.meal-recipe-favorite-btn.favorited {
+  border-color: #ff4444;
+  background-color: #fff0f0;
+}
+
+.meal-recipe-modal-close {
+  background: var(--bg-secondary);
   border: none;
   border-radius: 50%;
   width: 36px;
@@ -40,8 +72,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10;
-  margin: 10px;
+  color: var(--text-primary);
 }
 
 .meal-recipe-modal-close:hover {
@@ -72,7 +103,7 @@
 
 .meal-recipe-rating {
   font-size: 1.1rem;
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 15px;
   font-weight: 600;
 }
@@ -83,18 +114,18 @@
   flex-wrap: wrap;
   margin-bottom: 25px;
   padding-bottom: 20px;
-  border-bottom: 2px solid #E7D0FF;
+  border-bottom: 2px solid var(--border-color);
 }
 
 .meal-recipe-meta-item {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #f8f4fc;
+  background: var(--bg-secondary);
   padding: 10px 15px;
   border-radius: 8px;
   font-size: 0.95rem;
-  color: #555;
+  color: var(--text-secondary);
 }
 
 .meal-recipe-meta-icon {
@@ -122,10 +153,11 @@
 
 .meal-recipe-ingredients li {
   padding: 10px 15px;
-  background: linear-gradient(135deg, #f8f4fc 0%, #fdfbff 100%);
+  background: var(--bg-secondary);
   border-left: 3px solid #8209B1;
   margin-bottom: 8px;
   border-radius: 4px;
+  color: var(--text-primary);
 }
 
 .meal-recipe-ingredients li::before {
@@ -144,11 +176,12 @@
 .meal-recipe-instructions li {
   counter-increment: step-counter;
   padding: 15px 20px 15px 50px;
-  background: #f9f9f9;
+  background: var(--bg-secondary);
   margin-bottom: 12px;
   border-radius: 8px;
   position: relative;
   line-height: 1.6;
+  color: var(--text-primary);
 }
 
 .meal-recipe-instructions li::before {
@@ -171,7 +204,7 @@
 .meal-recipe-footer {
   margin-top: 30px;
   padding-top: 20px;
-  border-top: 2px solid #E7D0FF;
+  border-top: 2px solid var(--border-color);
   text-align: center;
 }
 
@@ -204,7 +237,7 @@
 .meal-recipe-spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid #E7D0FF;
+  border: 4px solid var(--border-color);
   border-top: 4px solid #8209B1;
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -226,8 +259,8 @@
 
 /* Nutrition Section */
 .meal-recipe-nutrition {
-  background: linear-gradient(135deg, #f8f4fc 0%, #fdfbff 100%);
-  border: 2px solid #E7D0FF;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 25px;
@@ -260,11 +293,11 @@
 }
 
 .meal-recipe-nutrition-item {
-  background: white;
+  background: var(--card-bg);
   border-radius: 10px;
   padding: 15px;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(130, 9, 177, 0.1);
+  box-shadow: 0 2px 8px var(--shadow-color);
   transition: all 0.3s;
 }
 
@@ -276,7 +309,7 @@
 .meal-recipe-nutrition-label {
   display: block;
   font-size: 0.85rem;
-  color: #666;
+  color: var(--text-secondary);
   font-weight: 600;
   margin-bottom: 8px;
   text-transform: uppercase;
@@ -294,12 +327,12 @@
 .meal-recipe-nutrition-sublabel {
   display: block;
   font-size: 0.75rem;
-  color: #999;
+  color: var(--text-tertiary);
   font-style: italic;
 }
 
 .meal-recipe-nutrition-total {
-  background: white;
+  background: var(--card-bg);
   padding: 15px;
   border-radius: 8px;
   border-left: 4px solid #8209B1;
@@ -307,7 +340,7 @@
 
 .meal-recipe-nutrition-total p {
   margin: 5px 0;
-  color: #555;
+  color: var(--text-secondary);
 }
 
 .meal-recipe-nutrition-total strong {
@@ -334,10 +367,10 @@
 /* Nutrition breakdown (collapsible) */
 .meal-recipe-nutrition-breakdown {
   margin-top: 20px;
-  background: white;
+  background: var(--card-bg);
   border-radius: 8px;
   padding: 15px;
-  border: 1px solid #E7D0FF;
+  border: 1px solid var(--border-color);
 }
 
 .meal-recipe-nutrition-breakdown-title {
@@ -377,7 +410,7 @@
 .meal-recipe-nutrition-breakdown-item {
   margin-bottom: 15px;
   padding-bottom: 15px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .meal-recipe-nutrition-breakdown-item:last-child {
@@ -388,7 +421,7 @@
 
 .meal-recipe-nutrition-breakdown-original {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--text-secondary);
   font-style: italic;
   margin-bottom: 5px;
 }
@@ -439,8 +472,8 @@
 
 /* Substituted item styling */
 .meal-recipe-nutrition-breakdown-item.substituted {
-  background: linear-gradient(135deg, rgba(130, 9, 177, 0.05) 0%, rgba(156, 39, 176, 0.05) 100%);
-  border: 1px solid #E7D0FF;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 10px;
 }

@@ -1,10 +1,13 @@
 import React from 'react';
+import { observer } from 'mobx-react-lite';
 import { RecipeDetailsResponse } from '../models/RecipeModel';
 import { FirebaseRecipeService } from '../services/FirebaseRecipeService';
 import { getRecipeNutrition, RecipeNutrition, calculateRecipeNutrition } from '../services/RecipeNutritionService';
 import { Product } from '../types/product';
 import { IngredientSubstitutionModal } from './IngredientSubstitutionModal';
 import { getUserSubstitutions, saveUserSubstitutions, IngredientSubstitution } from '../services/IngredientSubstitutionService';
+import { FavoritesViewModel } from '../hooks/useFavorites';
+import { FirebaseFavoritesModel } from '../models/firebaseFavoritesModel';
 import { getAuth } from 'firebase/auth';
 import '../styles/MealRecipeDetailsModal.css';
 
@@ -14,11 +17,14 @@ interface MealRecipeDetailsModalProps {
   onClose: () => void;
 }
 
-export const MealRecipeDetailsModal: React.FC<MealRecipeDetailsModalProps> = ({
+export const MealRecipeDetailsModal: React.FC<MealRecipeDetailsModalProps> = observer(({
   isOpen,
   recipeId,
   onClose
 }) => {
+  const auth = getAuth();
+  const userId = auth.currentUser?.uid || null;
+
   const [recipe, setRecipe] = React.useState<RecipeDetailsResponse | null>(null);
   const [nutrition, setNutrition] = React.useState<RecipeNutrition | null>(null);
   const [loadingRecipe, setLoadingRecipe] = React.useState(false);
@@ -33,10 +39,27 @@ export const MealRecipeDetailsModal: React.FC<MealRecipeDetailsModalProps> = ({
   } | null>(null);
   const [recalculating, setRecalculating] = React.useState(false);
 
+  // Initialize Favorites ViewModel
+  const favoritesViewModel = React.useMemo(() => {
+    const model = new FirebaseFavoritesModel();
+    return new FavoritesViewModel(model, userId);
+  }, [userId]);
+
   React.useEffect(() => {
     if (isOpen && recipeId) {
+      // Reset state when opening with a new recipe
+      setRecipe(null);
+      setNutrition(null);
+      setSubstitutions({});
+      setError(null);
+      
       loadRecipe();
-      loadUserSubstitutions();
+    } else if (!isOpen) {
+      // Reset state when closing modal to avoid showing stale data
+      setRecipe(null);
+      setNutrition(null);
+      setSubstitutions({});
+      setError(null);
     }
   }, [isOpen, recipeId]);
 
@@ -44,6 +67,7 @@ export const MealRecipeDetailsModal: React.FC<MealRecipeDetailsModalProps> = ({
     if (!recipeId) return;
 
     setLoadingRecipe(true);
+    setLoadingNutrition(true);
     setError(null);
 
     try {
@@ -51,25 +75,52 @@ export const MealRecipeDetailsModal: React.FC<MealRecipeDetailsModalProps> = ({
       if (recipeData) {
         setRecipe(recipeData);
         
-        // Load nutrition data in parallel
-        loadNutrition(recipeData);
+        // Check if this is a custom recipe (has isCustom flag or ID starts with custom_)
+        const isCustomRecipe = recipeData.isCustom || recipeId.startsWith('custom_');
+        
+        // Load user substitutions first to check if we should use custom nutrition
+        const userSubs = await loadUserSubstitutions();
+        
+        // Priority order for nutrition data:
+        // 1. User substitutions (custom nutrition from ingredient changes)
+        // 2. Stored nutrition in recipe (for custom recipes)
+        // 3. Calculate from ingredients (for API recipes)
+        
+        if (userSubs && userSubs.customNutrition) {
+          // Use custom nutrition from substitutions (highest priority)
+          setLoadingNutrition(false);
+        } else if (isCustomRecipe) {
+          // For custom recipes, try to load stored nutrition
+          const storedNutrition = await FirebaseRecipeService.getRecipeNutrition(recipeId);
+          if (storedNutrition) {
+            setNutrition(storedNutrition);
+          }
+          setLoadingNutrition(false);
+        } else if (recipeData.ingredients && recipeData.ingredients.length > 0) {
+          // For API recipes, calculate nutrition from ingredients
+          loadNutrition(recipeData);
+        } else {
+          setLoadingNutrition(false);
+        }
       } else {
         setError('Receita não encontrada');
+        setLoadingNutrition(false);
       }
     } catch (err) {
       console.error('Erro ao carregar receita:', err);
       setError('Erro ao carregar detalhes da receita');
+      setLoadingNutrition(false);
     } finally {
       setLoadingRecipe(false);
     }
   };
 
   const loadUserSubstitutions = async () => {
-    if (!recipeId) return;
+    if (!recipeId) return null;
     
     const auth = getAuth();
     const userId = auth.currentUser?.uid;
-    if (!userId) return;
+    if (!userId) return null;
 
     try {
       const userSubs = await getUserSubstitutions(userId, recipeId);
@@ -81,8 +132,10 @@ export const MealRecipeDetailsModal: React.FC<MealRecipeDetailsModalProps> = ({
           setNutrition(userSubs.customNutrition);
         }
       }
+      return userSubs;
     } catch (err) {
       console.error('Erro ao carregar substituições:', err);
+      return null;
     }
   };
 
@@ -204,9 +257,27 @@ export const MealRecipeDetailsModal: React.FC<MealRecipeDetailsModalProps> = ({
   return (
     <div className="meal-recipe-modal-overlay" onClick={onClose}>
       <div className="meal-recipe-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="meal-recipe-modal-close" onClick={onClose}>
-          ✕
-        </button>
+        <div className="meal-recipe-modal-header">
+          <button
+            className={`meal-recipe-favorite-btn ${recipeId && favoritesViewModel.isFavorite(recipeId) ? 'favorited' : ''}`}
+            onClick={async (e) => {
+              e.stopPropagation();
+              if (recipeId && recipe) {
+                try {
+                  await favoritesViewModel.toggleFavorite(recipeId, recipe.title);
+                } catch (err: any) {
+                  alert(err.message || 'Erro ao atualizar favoritos');
+                }
+              }
+            }}
+            title={recipeId && favoritesViewModel.isFavorite(recipeId) ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+          >
+            {recipeId && favoritesViewModel.isFavorite(recipeId) ? '❤️' : '🤍'}
+          </button>
+          <button className="meal-recipe-modal-close" onClick={onClose}>
+            ✕
+          </button>
+        </div>
 
         {loadingRecipe && (
           <div className="meal-recipe-loading">
@@ -223,40 +294,47 @@ export const MealRecipeDetailsModal: React.FC<MealRecipeDetailsModalProps> = ({
 
         {recipe && !loadingRecipe && (
           <div className="meal-recipe-content">
-            <h2 className="meal-recipe-title">{recipe.title}</h2>
+            <h2 className="meal-recipe-title">
+              {recipe.title}
+              {(recipe.isCustom || recipe.id?.startsWith('custom_')) && (
+                <span className="custom-recipe-badge"> ✨ Personalizada</span>
+              )}
+            </h2>
 
-            <div className="meal-recipe-meta">
-              {recipe.stats.prepare_time_minutes > 0 && (
-                <div className="meal-recipe-meta-item">
-                  <span className="meal-recipe-meta-icon">⏱️</span>
-                  <span>{recipe.stats.prepare_time_minutes} minutos</span>
-                </div>
-              )}
-              {recipe.stats.portion_output > 0 && (
-                <div className="meal-recipe-meta-item">
-                  <span className="meal-recipe-meta-icon">👥</span>
-                  <span>{recipe.stats.portion_output} porções</span>
-                </div>
-              )}
-              {recipe.stats.favorites > 0 && (
-                <div className="meal-recipe-meta-item">
-                  <span className="meal-recipe-meta-icon">⭐</span>
-                  <span>{recipe.stats.favorites} favoritos</span>
-                </div>
-              )}
-            </div>
+            {recipe.stats && (
+              <div className="meal-recipe-meta">
+                {recipe.stats.prepare_time_minutes > 0 && (
+                  <div className="meal-recipe-meta-item">
+                    <span className="meal-recipe-meta-icon">⏱️</span>
+                    <span>{recipe.stats.prepare_time_minutes} minutos</span>
+                  </div>
+                )}
+                {recipe.stats.portion_output > 0 && (
+                  <div className="meal-recipe-meta-item">
+                    <span className="meal-recipe-meta-icon">👥</span>
+                    <span>{recipe.stats.portion_output} porções</span>
+                  </div>
+                )}
+                {recipe.stats.favorites > 0 && (
+                  <div className="meal-recipe-meta-item">
+                    <span className="meal-recipe-meta-icon">⭐</span>
+                    <span>{recipe.stats.favorites} favoritos</span>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Nutrition Information */}
             {loadingNutrition && (
               <div className="meal-recipe-nutrition">
-                <h3 className="meal-recipe-section-title">📊 Informação Nutricional (Aproximada)</h3>
+                <h3 className="meal-recipe-section-title">📊 Informação Nutricional</h3>
                 <p className="meal-recipe-nutrition-loading">Calculando nutrição...</p>
               </div>
             )}
             
             {nutrition && !loadingNutrition && (
               <div className="meal-recipe-nutrition">
-                <h3 className="meal-recipe-section-title">📊 Informação Nutricional (Aproximada)</h3>
+                <h3 className="meal-recipe-section-title">📊 Informação Nutricional</h3>
                 <p className="meal-recipe-nutrition-disclaimer">
                   ⚠️ Valores aproximados baseados nos ingredientes da receita
                 </p>
@@ -302,12 +380,6 @@ export const MealRecipeDetailsModal: React.FC<MealRecipeDetailsModalProps> = ({
                     <strong>Total da receita:</strong> {nutrition.calories.toFixed(0)} kcal 
                     ({nutrition.portionOutput} {nutrition.portionOutput === 1 ? 'porção' : 'porções'})
                   </p>
-                  {nutrition.calculationMethod === 'stored' && (
-                    <p className="meal-recipe-nutrition-cached">✅ Dados em cache</p>
-                  )}
-                  {nutrition.calculationMethod === 'calculated' && (
-                    <p className="meal-recipe-nutrition-calculated">🔄 Calculado agora</p>
-                  )}
                 </div>
 
                 {/* Ingredients breakdown */}
@@ -424,4 +496,4 @@ export const MealRecipeDetailsModal: React.FC<MealRecipeDetailsModalProps> = ({
       </div>
     </div>
   );
-};
+});

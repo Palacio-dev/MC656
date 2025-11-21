@@ -1,10 +1,13 @@
 import React from 'react';
+import { observer } from 'mobx-react-lite';
 import { useNavigate } from 'react-router-dom';
 import { useRecipeSearch } from '../hooks/useRecipeSearch';
 import { AddRecipeToMealPlanModal, MealPlanConfig } from '../components/AddRecipeToMealPlanModal';
 import { RecipeToMealPlanService } from '../services/RecipeToMealPlanService';
 import { MealPlannerViewModel } from '../hooks/MealPlannerHook';
 import { FirebaseMealPlannerModel } from '../models/firebaseMealPlannerModel';
+import { FavoritesViewModel } from '../hooks/useFavorites';
+import { FirebaseFavoritesModel } from '../models/firebaseFavoritesModel';
 import { useAuth } from '../hooks/useAuth';
 import { getRecipeById } from "../services/RecipeService";
 import { FirebaseRecipeService } from "../services/FirebaseRecipeService";
@@ -15,7 +18,7 @@ import '../styles/RecipeSearch.css';
  * Recipe Search Page
  * Allows users to search for recipes by name
  */
-const RecipeSearch: React.FC = () => {
+const RecipeSearch: React.FC = observer(() => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const [isMealPlanModalOpen, setIsMealPlanModalOpen] = React.useState(false);
@@ -36,6 +39,12 @@ const RecipeSearch: React.FC = () => {
   const mealPlannerViewModel = React.useMemo(() => {
     const model = new FirebaseMealPlannerModel();
     return new MealPlannerViewModel(model, currentUser?.uid || null);
+  }, [currentUser]);
+
+  // Initialize Favorites ViewModel
+  const favoritesViewModel = React.useMemo(() => {
+    const model = new FirebaseFavoritesModel();
+    return new FavoritesViewModel(model, currentUser?.uid || null);
   }, [currentUser]);
 
   /**
@@ -122,38 +131,40 @@ const RecipeSearch: React.FC = () => {
       />
 
       {/* Search Bar */}
-      <form onSubmit={handleSubmit} className="recipe-search-form">
-        <div className="search-input-wrapper">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => handleSearchChange(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Digite o nome da receita (ex: bolo de cenoura)"
-            className="recipe-search-input"
-            disabled={isLoading}
-          />
-          
-          {searchQuery && !isLoading && (
-            <button
-              type="button"
-              onClick={clearSearch}
-              className="clear-search-btn"
-              aria-label="Limpar busca"
-            >
-              ✕
-            </button>
-          )}
-        </div>
+      {(
+        <form onSubmit={handleSubmit} className="recipe-search-form">
+          <div className="search-input-wrapper">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Digite o nome da receita (ex: bolo de cenoura)"
+              className="recipe-search-input"
+              disabled={isLoading}
+            />
+            
+            {searchQuery && !isLoading && (
+              <button
+                type="button"
+                onClick={clearSearch}
+                className="clear-search-btn"
+                aria-label="Limpar busca"
+              >
+                ✕
+              </button>
+            )}
+          </div>
 
-        <button
-          type="submit"
-          className="recipe-search-btn"
-          disabled={isLoading || !searchQuery.trim()}
-        >
-          {isLoading ? 'Buscando...' : 'Buscar'}
-        </button>
-      </form>
+          <button
+            type="submit"
+            className="recipe-search-btn"
+            disabled={isLoading || !searchQuery.trim()}
+          >
+            {isLoading ? 'Buscando...' : 'Buscar'}
+          </button>
+        </form>
+      )}
 
       {/* Loading State */}
       {isLoading && (
@@ -184,6 +195,19 @@ const RecipeSearch: React.FC = () => {
                 <div className="recipe-card-content">
                   <h3 className="recipe-title">{recipe.title}</h3>
                   <div className="recipe-card-actions">
+                    <button
+                      className={`favorite-btn-small ${favoritesViewModel.isFavorite(recipe.id) ? 'favorited' : ''}`}
+                      onClick={async () => {
+                        try {
+                          await favoritesViewModel.toggleFavorite(recipe.id, recipe.title);
+                        } catch (err: any) {
+                          alert(err.message || 'Erro ao atualizar favoritos');
+                        }
+                      }}
+                      title={favoritesViewModel.isFavorite(recipe.id) ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+                    >
+                      {favoritesViewModel.isFavorite(recipe.id) ? '❤️' : '🤍'}
+                    </button>
                     <button
                       className="add-to-plan-btn-small"
                       onClick={() => handleAddRecipeToMealPlan(recipe.id, recipe.title)}
@@ -228,6 +252,6 @@ const RecipeSearch: React.FC = () => {
       )}
     </div>
   );
-};
+});
 
 export default RecipeSearch;

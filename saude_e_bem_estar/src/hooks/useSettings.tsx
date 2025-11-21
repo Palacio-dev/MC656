@@ -65,6 +65,13 @@ export default function useSettings(): UseSettingsReturn {
     if (!current) throw new Error('Usuário não autenticado.');
     setLoading(true);
     try {
+
+      if (current.displayName === name) throw new Error('Este já é o seu nome de usuário.');
+      if (!name) throw new Error('O nome não pode ser vazio.');
+      // Regex to allow only letters
+      if (!/^[A-Za-z]+$/.test(name)) throw new Error('Nome inválido, por favor, não coloque caracteres especiais nem espaços!');
+
+
       await updateProfile(current, { displayName: name });
       // reload to ensure auth.currentUser has latest displayName
       try { await current.reload(); } catch {}
