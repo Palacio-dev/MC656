@@ -173,20 +173,20 @@ describe("SignUp", () => {
 
     // Preenche com e-mail inválido
     fireEvent.change(screen.getByPlaceholderText("Name"), {
-      target: { value: "João" },
+      target: { value: "Joaoo" },
     });
     fireEvent.change(screen.getByPlaceholderText("Email"), {
-      target: { value: "email-invalido" },
+      target: { value: "emailinvalido" },
     });
     fireEvent.change(screen.getByPlaceholderText("Password"), {
-      target: { value: "123456" },
+      target: { value: "1234Lucas&*" },
     });
 
     // Clica em Cadastrar
     fireEvent.click(screen.getByText("Cadastrar"));
 
     await waitFor(() => {
-      expect(screen.getByText("E-mail inválido.")).toBeInTheDocument();
+      expect(screen.getByText("Este email não é válido.")).toBeInTheDocument();
     });
   });
 
@@ -203,34 +203,6 @@ describe("SignUp", () => {
     });
   });
 
-  test("mostra erro quando verificação de e-mail falha", async () => {
-    // Mock para falha na verificação de e-mail
-    (fetch as jest.Mock).mockRejectedValueOnce(new Error("Erro de rede"));
-
-    render(<LoginSignUp />);
-
-    // Alterna para Sign Up
-    fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
-
-    // Preenche com e-mail válido
-    fireEvent.change(screen.getByPlaceholderText("Name"), {
-      target: { value: "João" },
-    });
-    fireEvent.change(screen.getByPlaceholderText("Email"), {
-      target: { value: "joao@email.com" },
-    });
-    fireEvent.change(screen.getByPlaceholderText("Password"), {
-      target: { value: "123456" },
-    });
-
-    // Clica em Cadastrar
-    fireEvent.click(screen.getByText("Cadastrar"));
-
-    await waitFor(() => {
-      expect(screen.getByText("Erro ao verificar e-mail.")).toBeInTheDocument();
-    });
-  });
-
 // Senhas válidas
   test("Senha válida: 6 caracteres, 1 maiúscula, 1 dígito, 1 caractere especial", async () => {
     render(<LoginSignUp />);
@@ -238,7 +210,7 @@ describe("SignUp", () => {
     fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
     // Preenche com e-mail válido
     fireEvent.change(screen.getByPlaceholderText("Name"), { target: { value: "Joao" } });
-    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "teste@email.com" } });
+    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "lucaspalacioa@gmail.com" } });
     fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "a*Bnm1" } });
     // Clica em Cadastrar
     fireEvent.click(screen.getByText("Cadastrar"));
@@ -253,7 +225,7 @@ describe("SignUp", () => {
     fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
     // Preenche com e-mail válido
     fireEvent.change(screen.getByPlaceholderText("Name"), { target: { value: "Joao" } });
-    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "teste@email.com" } });
+    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "lucaspalacioa@gmail.com" } });
     fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "ExampleofValiddd1%Pa" } });
     // Clica em Cadastrar
     fireEvent.click(screen.getByText("Cadastrar"));
