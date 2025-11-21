@@ -8,6 +8,7 @@ import { FirebaseMealPlannerModel } from '../models/firebaseMealPlannerModel';
 import { useAuth } from '../hooks/useAuth';
 import { getRecipeById } from "../services/RecipeService";
 import { FirebaseRecipeService } from "../services/FirebaseRecipeService";
+import { PageHeader } from '../components/PageHeader';
 import '../styles/RecipeSearch.css';
 
 /**
@@ -90,10 +91,11 @@ const RecipeSearch: React.FC = () => {
 
       console.log("Receita salva no Firebase!");
 
-      // 3️⃣ Adicionar ao planejamento usando o título
+      // 3️⃣ Adicionar ao planejamento usando o título e ID
       const count = await RecipeToMealPlanService.addRecipeToMealPlan(
         mealPlannerViewModel,
         selectedRecipe.title,
+        recipeDetails.id,
         config
       );
 
@@ -114,15 +116,10 @@ const RecipeSearch: React.FC = () => {
 
   return (
     <div className="recipe-search-container">
-      <div className="recipe-search-header">
-        <button onClick={() => navigate("Welcome")} className="back-btn" aria-label="Voltar">
-          ← Voltar
-        </button>
-        <h1>Buscar Receitas</h1>
-        <p className="recipe-search-subtitle">
-          Encontre receitas deliciosas para adicionar ao seu planejamento
-        </p>
-      </div>
+      <PageHeader
+        title="Buscar Receitas"
+        subtitle="Encontre receitas deliciosas para adicionar ao seu planejamento"
+      />
 
       {/* Search Bar */}
       <form onSubmit={handleSubmit} className="recipe-search-form">

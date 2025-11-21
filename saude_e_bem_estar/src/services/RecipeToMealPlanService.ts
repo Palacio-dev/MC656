@@ -11,15 +11,18 @@ export class RecipeToMealPlanService {
   static async addRecipeToMealPlan(
     viewModel: MealPlannerViewModel,
     recipeTitle: string,
+    recipeId: string,
     config: MealPlanConfig
   ): Promise<number> {
+    const mealData = { title: recipeTitle, recipeId };
+    
     if (config.mode === 'single') {
       // Modo simples: adicionar a um dia específico
       if (!config.date) {
         throw new Error('Data não especificada');
       }
       
-      await viewModel.updateMeal(config.date, config.mealType, recipeTitle);
+      await viewModel.updateMeal(config.date, config.mealType, mealData);
       return 1; // 1 refeição adicionada
     } else {
       // Modo recorrente: adicionar a todos os dias da semana especificados no mês
@@ -32,7 +35,7 @@ export class RecipeToMealPlanService {
 
       return await this.addRecurringMeals(
         viewModel,
-        recipeTitle,
+        mealData,
         config.mealType,
         config.weekdays,
         config.month,
@@ -46,7 +49,7 @@ export class RecipeToMealPlanService {
    */
   private static async addRecurringMeals(
     viewModel: MealPlannerViewModel,
-    recipeTitle: string,
+    mealData: { title: string; recipeId: string },
     mealType: string,
     weekdays: number[],
     month: number,
@@ -56,7 +59,7 @@ export class RecipeToMealPlanService {
     
     // Adiciona a receita para cada data encontrada
     const promises = dates.map(date => 
-      viewModel.updateMeal(date, mealType, recipeTitle)
+      viewModel.updateMeal(date, mealType, mealData)
     );
     
     await Promise.all(promises);

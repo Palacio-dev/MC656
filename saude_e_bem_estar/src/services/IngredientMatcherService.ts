@@ -128,38 +128,89 @@ export async function searchIngredientMatches(
     // Busca no Firebase usando o ProductService
     const allMatches = await fetchProducts(searchTerm);
     
-    // Filtra resultados para evitar pratos/receitas
-    // Procura por ingredientes simples, não pratos complexos
-    const filteredMatches = allMatches.filter(product => {
+    // Score cada match baseado em simplicidade e relevância
+    const scoredMatches = allMatches.map(product => {
       const nameLower = product.name.toLowerCase();
+      let score = 0;
       
-      // Remove se parecer ser um prato/receita (contém palavras como "à", "com", "ao", etc em contexto de prato)
-      const dishKeywords = [
-        'benedict', 'mexido', 'frito', 'cozido com', 'à moda',
-        'ao molho', 'com molho', 'à milanesa', 'empanado',
-        'gratinado', 'assado com', 'refogado com'
+      // PENALIDADES - pratos complexos/preparados
+      const complexKeywords = [
+        'refogado', 'frito', 'assado', 'cozido', 'grelhado',
+        'empanado', 'à milanesa', 'gratinado', 'ao molho', 'com molho',
+        'à moda', 'recheado', 'ensopado', 'guisado', 'benedict',
+        'e', ' c/ ', ' com ', ' ao ', ' à ', ' de ', 'mistura'
       ];
       
-      for (const keyword of dishKeywords) {
+      for (const keyword of complexKeywords) {
         if (nameLower.includes(keyword)) {
-          console.log(`❌ Removendo prato: "${product.name}"`);
-          return false;
+          score -= 100; // Penalidade pesada para pratos complexos
         }
       }
       
-      // Prioriza ingredientes simples que contêm o termo de busca
-      return nameLower.includes(searchTerm);
+      // Penalidade para marcas específicas (queremos ingredientes genéricos)
+      if (/toblerone|nestlé|cacau show|garoto|lacta/i.test(nameLower)) {
+        score -= 50;
+      }
+      
+      // BONIFICAÇÕES - ingredientes simples
+      const simpleKeywords = [
+        'cru', 'crua', 'in natura', 'fresco', 'fresca',
+        'natural', 'puro', 'integral', 'em pó'
+      ];
+      
+      for (const keyword of simpleKeywords) {
+        if (nameLower.includes(keyword)) {
+          score += 50; // Bonificação para ingredientes simples
+        }
+      }
+      
+      // Bonificação se o nome é curto (geralmente mais simples)
+      const wordCount = nameLower.split(/\s+/).length;
+      if (wordCount <= 2) {
+        score += 30;
+      } else if (wordCount <= 3) {
+        score += 10;
+      } else {
+        score -= wordCount * 5; // Penalidade por complexidade
+      }
+      
+      // Bonificação se começa exatamente com o termo buscado
+      if (nameLower.startsWith(searchTerm)) {
+        score += 100;
+      } else if (nameLower.includes(`, ${searchTerm}`)) {
+        // Ex: "Trigo, farinha" quando busca "farinha"
+        score += 80;
+      }
+      
+      // Bonificação extra para matches exatos simples
+      const firstWord = nameLower.split(/[,\s]+/)[0];
+      if (firstWord === searchTerm) {
+        score += 150;
+      }
+      
+      return { product, score };
     });
     
-    console.log(`✅ Encontrados ${filteredMatches.length} ingredientes válidos de ${allMatches.length} resultados`);
+    // Ordena por score (maior primeiro)
+    scoredMatches.sort((a, b) => b.score - a.score);
     
-    // Se não encontrou nada após filtrar, usa os resultados originais
-    const finalMatches = filteredMatches.length > 0 ? filteredMatches : allMatches;
+    // Filtra apenas scores positivos
+    const goodMatches = scoredMatches
+      .filter(m => m.score > -50) // Permite alguns com score baixo se não houver alternativas
+      .map(m => {
+        console.log(`  ${m.score > 0 ? '✅' : '⚠️'} ${m.product.name} (score: ${m.score})`);
+        return m.product;
+      });
+    
+    console.log(`✅ Encontrados ${goodMatches.length} ingredientes de ${allMatches.length} resultados`);
+    
+    // Se não encontrou nada bom, pega pelo menos o primeiro resultado original
+    const finalMatches = goodMatches.length > 0 ? goodMatches : allMatches.slice(0, 1);
     
     return {
       originalText: ingredientText,
       searchTerm,
-      matches: finalMatches.slice(0, 3) // Limita a 3 resultados
+      matches: finalMatches.slice(0, 3) // Limita a 3 melhores resultados
     };
   } catch (error) {
     console.error('Erro ao buscar correspondências de ingrediente:', error);

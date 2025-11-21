@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { PageHeader } from "../components/PageHeader";
 import ListComponent from "../components/ListComponent";
 import { useShoppingListDetailViewModel } from "../hooks/useShoppingListDetailHook";
 import '../styles/ShoppingList.css';
@@ -56,12 +57,11 @@ export default function ShoppingListDetail({
     if (error) {
         return (
             <div className="shopping-list-container">
-                <div className="header-top">
-                    <button className="back-button" onClick={handleBack}>
-                        ← Voltar
-                    </button>
-                    <h1 className="titulo">Erro</h1>
-                </div>
+                <PageHeader 
+                    title="Erro"
+                    showBackButton={true}
+                    showHomeButton={true}
+                />
                 <div className="shopping-list-content">
                     <div className="error-message">
                         <strong>⚠️ {error}</strong>
@@ -76,13 +76,11 @@ export default function ShoppingListDetail({
 
     return (
         <div className="shopping-list-container">
-            {/* Header com botão voltar */}
-            <div className="header-top">
-                <button className="back-button" onClick={handleBack}>
-                    ← Voltar
-                </button>
-                <h1 className="titulo">{listName}</h1>
-            </div>
+            <PageHeader 
+                title={listName}
+                showBackButton={true}
+                showHomeButton={true}
+            />
 
             <div className="shopping-list-content">
                 {/* Estatísticas da lista */}
