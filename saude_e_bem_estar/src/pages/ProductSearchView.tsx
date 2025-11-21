@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { PageHeader } from "../components/PageHeader";
 import { useProductSearch } from "../hooks/useProductSearch";
 import { SearchInput } from "../components/SearchInput";
@@ -11,7 +10,6 @@ import "../styles/ProductSearch.css";
 import AddProductToShoppingListModal from '../components/AddProductToShoppingListModal';
 
 const ProductSearchView: React.FC = () => {
-  const navigate = useNavigate();
   const vm = useProductSearch();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
@@ -30,10 +28,6 @@ const ProductSearchView: React.FC = () => {
     setModalOpen(true);
   }, [vm.selected]);
 
-  function openAddModal(product: any) {
-    setSelectedProduct(product);
-    setModalOpen(true);
-  }
   function closeAddModal() {
     setSelectedProduct(null);
     setModalOpen(false);
