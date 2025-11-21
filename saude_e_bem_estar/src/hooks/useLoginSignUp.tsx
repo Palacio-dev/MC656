@@ -1,149 +1,84 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  validateEmail,
-  checkEmailAvailability,
-  signupUser,
-  loginUser,
-} from '../services/authService';
-import {
-  ROUTES,
-  STORAGE_KEYS,
-  ERROR_MESSAGES,
-  SUCCESS_MESSAGES,
-} from '../constants/api';
+import { FirebaseAuthModel } from "../models/firebaseAuthModel";
 
 // Model types
-export interface LoginFormData {
+type FormState = {
   name: string;
   email: string;
   password: string;
-}
+};
 
-export type AuthAction = 'Login' | 'Sign Up';
+type AuthAction = "Login" | "Sign Up";
 
 
 export function useLoginSignUp() {
-  const navigate = useNavigate();
-  
-  // Local state
-  const [action, setAction] = useState<AuthAction>('Login');
-  const [form, setForm] = useState<LoginFormData>({ 
-    name: '', 
-    email: '', 
-    password: '' 
+  const [form, setForm] = useState<FormState>({ 
+    name: "", 
+    email: "", 
+    password: "",
   });
+  const [action, setAction] = useState<AuthAction>('Login');
   const [message, setMessage] = useState<string>('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>('');
 
-  // Sync error to message
-  useEffect(() => {
-    if (error) {
-      setMessage(error);
-    }
-  }, [error]);
+  const navigate = useNavigate();
 
-  // Generic async executor - handles loading and error states
-  // Wrapped in useCallback to prevent recreating on every render
-  const executeAsync = useCallback(async <R,>(asyncFunction: () => Promise<R>): Promise<R | null> => {
+  const isSignUpMode = action === "Sign Up";
+  const submitButtonText = isSignUpMode ? "Cadastrar" : "Entrar";
+  const AuthModel = new FirebaseAuthModel();
+
+  const updateForm = (field: keyof FormState, value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async () => {
     setLoading(true);
-    setError('');
-    
+    setMessage("");
+
     try {
-      const result = await asyncFunction();
-      return result;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      setError(errorMessage);
-      return null;
+      if (isSignUpMode) {
+        await AuthModel.signUp(form.email, form.password);
+        setMessage("Conta criada com sucesso! Você já pode fazer login.");
+        setAction("Login");
+
+      } else {
+        await AuthModel.login(form.email, form.password);
+        navigate("/Welcome");
+      }
+    } catch (error: any) {
+      console.error(error);
+      setMessage(error.message || "Erro ao autenticar. Tente novamente.");
     } finally {
       setLoading(false);
     }
-  }, []); // No dependencies - uses setState which is stable
+  };
 
-  // Update a specific form field
-  const updateForm = useCallback((field: keyof LoginFormData, value: string) => {
-    setForm(prev => ({ ...prev, [field]: value }));
-  }, []);
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    setMessage("");
 
-  // Handle signup flow
-  const performSignup = useCallback(async (): Promise<void> => {
-    if (loading) return;
-    setMessage('');
-
-    // Validation
-    if (!validateEmail(form.email)) {
-      setMessage(ERROR_MESSAGES.INVALID_EMAIL);
-      return;
+    try {
+      await AuthModel.loginWithGoogle();
+      navigate("/Welcome");
+    } catch (error: any) {
+      console.error(error);
+      setMessage(error.message || "Erro ao autenticar com Google.");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    // Execute signup
-    const result = await executeAsync(async () => {
-      const isAvailable = await checkEmailAvailability(form.email);
-      
-      if (!isAvailable) {
-        throw new Error(ERROR_MESSAGES.EMAIL_EXISTS);
-      }
-      
-      await signupUser(form);
-      return true;
-    });
-
-    // Handle success
-    if (result) {
-      setMessage(SUCCESS_MESSAGES.ACCOUNT_CREATED);
-      setAction('Login');
-      setForm(prev => ({ name: '', email: prev.email, password: '' }));
-    }
-  }, [loading, form, executeAsync]);
-
-  // Handle login flow
-  const performLogin = useCallback(async (): Promise<void> => {
-    if (loading) return;
-    setMessage('');
-
-    const token = await executeAsync(async () => {
-      return await loginUser(form.email, form.password);
-    });
-
-    if (token) {
-      localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token);
-      setMessage(SUCCESS_MESSAGES.LOGIN_SUCCESS);
-      navigate(ROUTES.WELCOME);
-    }
-  }, [loading, form.email, form.password, executeAsync, navigate]);
-
-  // Main submit handler - delegates to appropriate flow
-  const handleSubmit = useCallback(async (): Promise<void> => {
-    if (action === 'Sign Up') {
-      await performSignup();
-    } else {
-      await performLogin();
-    }
-  }, [action, performSignup, performLogin]);
-
-  // Computed properties
-  const isSignUpMode = action === 'Sign Up';
-  const submitButtonText = loading 
-    ? (isSignUpMode ? 'Criando...' : 'Entrando...') 
-    : (isSignUpMode ? 'Criar conta' : 'Entrar');
-
-  // Return interface
   return {
-    // State
-    action,
     form,
-    message,
-    loading,
-    
-    // Actions
+    action,
     setAction,
+    isSignUpMode,
     updateForm,
     handleSubmit,
-    
-    // Computed
-    isSignUpMode,
+    handleGoogleLogin,
+    loading,
+    message,
     submitButtonText,
   };
 }
