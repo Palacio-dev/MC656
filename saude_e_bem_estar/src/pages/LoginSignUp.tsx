@@ -1,7 +1,9 @@
 import React from 'react';
+import { Link } from 'react-router-dom'; // changed from `link` to `Link`
 import '../styles/LoginSignUp.css';
 import { useLoginSignUp } from '../hooks/useLoginSignUp';
 
+console.log('LoginSignUp render'); // debug helper
 
 const LoginSignUp: React.FC = () => {
     // Connect to business logic hook
@@ -81,7 +83,7 @@ const LoginSignUp: React.FC = () => {
             {/* lost password */}
             {!viewModel.isSignUpMode && (
                 <div className="forgot-password">
-                    Esqueceu a senha? <span>Clique Aqui</span>
+                    Esqueceu a senha? <Link to="Recover">Clique Aqui</Link>
                 </div>
             )}
 
