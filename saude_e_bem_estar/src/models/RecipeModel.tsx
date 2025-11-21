@@ -32,6 +32,7 @@ export interface RecipeSection {
  * Complete recipe details
  */
 export interface RecipeDetails {
+  id: string;
   title: string;
   stats: RecipeStats;
   ingredients: RecipeSection[];

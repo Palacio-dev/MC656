@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { useProductSearch } from "../hooks/useProductSearch";
 import { SearchInput } from "../components/SearchInput";
 import { SuggestionsList } from "../components/SuggestionsList";
@@ -7,10 +8,10 @@ import { SearchHistory } from "../components/SearchHistory";
 import { useNavigate } from "react-router-dom";
 import "../styles/ProductSearch.css";
 
-
 const ProductSearchView: React.FC = () => {
   const navigate = useNavigate();
   const vm = useProductSearch();
+  const navigate = useNavigate();
 
   return (
     <div className="product-search-container">

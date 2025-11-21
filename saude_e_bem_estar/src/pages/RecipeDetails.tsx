@@ -9,6 +9,7 @@ import { MealPlannerViewModel } from '../hooks/MealPlannerHook';
 import { FirebaseMealPlannerModel } from '../models/firebaseMealPlannerModel';
 import { useAuth } from '../hooks/useAuth';
 import '../styles/RecipeDetails.css';
+import { FirebaseRecipeService } from "../services/FirebaseRecipeService";
 
 /**
  * Recipe Details Page
