@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
 import { useProductSearch } from "../hooks/useProductSearch";
 import { SearchInput } from "../components/SearchInput";
 import { SuggestionsList } from "../components/SuggestionsList";
@@ -6,11 +6,47 @@ import { ProductDetails } from "../components/ProductDetails";
 import { SearchHistory } from "../components/SearchHistory";
 import { useNavigate } from "react-router-dom";
 import "../styles/ProductSearch.css";
+import AddProductToShoppingListModal from '../components/AddProductToShoppingListModal';
 
-
-const ProductSearchView: React.FC = () => {
+export default function ProductSearchView(/* props */) {
   const navigate = useNavigate();
   const vm = useProductSearch();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+
+  // Open modal automatically whenever vm.selected changes (user picks a product).
+  useEffect(() => {
+    if (!vm.selected) {
+      // close modal if selection cleared
+      setSelectedProduct(null);
+      setModalOpen(false);
+      return;
+    }
+    const newProduct = Array.isArray(vm.selected) ? (vm.selected[0] ?? null) : vm.selected;
+    setSelectedProduct(newProduct);
+    setModalOpen(true);
+  }, [vm.selected]);
+
+  function openAddModal(product: any) {
+    setSelectedProduct(product);
+    setModalOpen(true);
+  }
+  function closeAddModal() {
+    setSelectedProduct(null);
+    setModalOpen(false);
+  }
+
+  // Update modal's shown product whenever the global selection changes
+  // while the modal is open (so switching products in the search updates modal content).
+  useEffect(() => {
+    if (!modalOpen) return;
+    if (!vm.selected) {
+      setSelectedProduct(null);
+      return;
+    }
+    const newProduct = Array.isArray(vm.selected) ? (vm.selected[0] ?? null) : vm.selected;
+    setSelectedProduct(newProduct);
+  }, [vm.selected, modalOpen]);
 
   return (
     <div className="product-search-container">
@@ -47,10 +83,15 @@ const ProductSearchView: React.FC = () => {
           onSelect={vm.selectFromHistory} 
           onClear={vm.clearHistory} 
         />
+
+
       </div>
+
+      <AddProductToShoppingListModal
+        open={modalOpen}
+        onClose={closeAddModal}
+        product={selectedProduct}
+      />
     </div>
   );
-};
-
-
-export default ProductSearchView;
+}
