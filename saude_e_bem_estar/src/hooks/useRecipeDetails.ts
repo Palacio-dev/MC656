@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getRecipeById } from '../services/RecipeService';
 import { RecipeDetailsResponse } from '../models/RecipeModel';
+import { FirebaseRecipeService } from '../services/FirebaseRecipeService';
 
 /**
  * Custom hook for recipe details functionality
@@ -50,6 +51,14 @@ export function useRecipeDetails(recipeId: string | null) {
       fetchRecipeDetails(recipeId);
     }
   }, [recipeId, fetchRecipeDetails]);
+
+  useEffect(() => {
+    if (recipe) {
+      FirebaseRecipeService.saveRecipe(recipe)
+        .then(() => console.log("Receita salva no Firebase:", recipe.title))
+        .catch(err => console.error("Erro ao salvar receita:", err));
+    }
+  }, [recipe]);
 
   return {
     // State
