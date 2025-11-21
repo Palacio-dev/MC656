@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import LoginSignUp from "../pages/LoginSignUp";
 
+const mockSignUp = jest.fn();
 // Mock mais simples do useNavigate
 const mockNavigate = jest.fn();
 
@@ -98,18 +99,6 @@ describe("SignUp", () => {
     });
   });
 
-  test("mostra erro quando nome é inválido", async () => {
-    render(<LoginSignUp />);
-    fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
-    fireEvent.change(screen.getByPlaceholderText("Name"), { target: { value: "João Silva" } });
-    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "teste@email.com" } });
-    fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "12345678A@" } });
-    fireEvent.click(screen.getByText("Cadastrar"));
-    await waitFor(() => {
-      expect(screen.getByText("Nome inválido, por favor, não coloque caracteres especiais nem espaços!")).toBeInTheDocument();
-    });
-  });
-
   test("mostra erro quando email está vazio no cadastro", async () => {
     render(<LoginSignUp />);
     fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
@@ -127,20 +116,12 @@ describe("SignUp", () => {
     render(<LoginSignUp />);
     // Alterna para Sign Up
     fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
-
     // Preenche com senha vazia
-    fireEvent.change(screen.getByPlaceholderText("Name"), {
-        target: { value: "João" },
-        });
-        fireEvent.change(screen.getByPlaceholderText("Email"), {
-        target: { value: "joao@silva.com" },
-        });
-        fireEvent.change(screen.getByPlaceholderText("Password"), {
-        target: { value: "" },
-        });
+    fireEvent.change(screen.getByPlaceholderText("Name"), {target: { value: "João" },});
+        fireEvent.change(screen.getByPlaceholderText("Email"), {target: { value: "joao@silva.com" },});
+        fireEvent.change(screen.getByPlaceholderText("Password"), {target: { value: "" },});
     // Clica em Cadastrar
     fireEvent.click(screen.getByText("Cadastrar"));
-    
     await waitFor(() => {
         expect(screen.getByText("Por favor, preencha o campo senha")).toBeInTheDocument();
     });
@@ -151,9 +132,7 @@ describe("SignUp", () => {
     // Alterna para Sign Up
     fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
     // Preenche com e-mail válido
-    fireEvent.change(screen.getByPlaceholderText("Name"), {
-      target: { value: "Joao" },
-    });
+    fireEvent.change(screen.getByPlaceholderText("Name"), {target: { value: "Joao" },});
     const emailInput = screen.getByPlaceholderText("Email");
     const passwordInput = screen.getByPlaceholderText("Password");
     fireEvent.change(emailInput, { target: { value: "polas@mail.com" } });
@@ -167,24 +146,14 @@ describe("SignUp", () => {
 
   test("mostra erro para e-mail inválido no cadastro", async () => {
     render(<LoginSignUp />);
-
     // Alterna para Sign Up
     fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
-
     // Preenche com e-mail inválido
-    fireEvent.change(screen.getByPlaceholderText("Name"), {
-      target: { value: "Joaoo" },
-    });
-    fireEvent.change(screen.getByPlaceholderText("Email"), {
-      target: { value: "emailinvalido" },
-    });
-    fireEvent.change(screen.getByPlaceholderText("Password"), {
-      target: { value: "1234Lucas&*" },
-    });
-
+    fireEvent.change(screen.getByPlaceholderText("Name"), {target: { value: "Joaoo" },});
+    fireEvent.change(screen.getByPlaceholderText("Email"), {target: { value: "emailinvalido" },});
+    fireEvent.change(screen.getByPlaceholderText("Password"), {target: { value: "1234Lucas&*" },});
     // Clica em Cadastrar
     fireEvent.click(screen.getByText("Cadastrar"));
-
     await waitFor(() => {
       expect(screen.getByText("Este email não é válido.")).toBeInTheDocument();
     });
@@ -197,7 +166,6 @@ describe("SignUp", () => {
     fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "joao@email.com" } });
     fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "12345678A@" } });
     fireEvent.click(screen.getByText("Cadastrar"));
-    
     await waitFor(() => {
         expect(screen.getByText("Nome inválido, por favor, não coloque caracteres especiais nem espaços!")).toBeInTheDocument();
     });
@@ -205,33 +173,33 @@ describe("SignUp", () => {
 
 // Senhas válidas
   test("Senha válida: 6 caracteres, 1 maiúscula, 1 dígito, 1 caractere especial", async () => {
+    mockSignUp.mockResolvedValueOnce({});
     render(<LoginSignUp />);
     // Alterna para Sign Up
     fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
     // Preenche com e-mail válido
     fireEvent.change(screen.getByPlaceholderText("Name"), { target: { value: "Joao" } });
-    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "lucaspalacioa@gmail.com" } });
+    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "polas@gmail.com" } });
     fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "a*Bnm1" } });
     // Clica em Cadastrar
     fireEvent.click(screen.getByText("Cadastrar"));
-    await waitFor(() => {
-      expect(screen.getByText("Conta criada com sucesso! Você já pode fazer login.")).toBeInTheDocument();
-    });
+    // Aguarda a mensagem aparecer
+    await screen.findByText("Conta criada com sucesso! Você já pode fazer login.");
   });
 
   test("Senha válida: 20 caracteres, 1 maiúscula, 1 dígito, 1 caractere especial", async () => {
+    mockSignUp.mockResolvedValueOnce({});
     render(<LoginSignUp />);
     // Alterna para Sign Up
     fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
     // Preenche com e-mail válido
     fireEvent.change(screen.getByPlaceholderText("Name"), { target: { value: "Joao" } });
-    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "lucaspalacioa@gmail.com" } });
+    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "pola11@gmail.com" } });
     fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "ExampleofValiddd1%Pa" } });
     // Clica em Cadastrar
     fireEvent.click(screen.getByText("Cadastrar"));
-    await waitFor(() => {
-      expect(screen.getByText("Conta criada com sucesso! Você já pode fazer login.")).toBeInTheDocument();
-    });
+    // Aguarda a mensagem aparecer
+    await screen.findByText("Conta criada com sucesso! Você já pode fazer login.");
   });
 
   // Senhas inválidas

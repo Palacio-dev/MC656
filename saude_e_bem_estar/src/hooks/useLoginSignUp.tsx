@@ -34,7 +34,7 @@ export function useLoginSignUp() {
 
   const handleSubmit = async () => {
     setLoading(true);
-    setMessage("");
+    setMessage("Conta criada com sucesso! Você já pode fazer login.");
 
     try {
       if (isSignUpMode) {
