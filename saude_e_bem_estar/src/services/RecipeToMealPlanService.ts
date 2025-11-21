@@ -1,6 +1,5 @@
 import { MealPlannerViewModel, MealEntry } from '../hooks/MealPlannerHook';
 import type { MealPlanConfig } from '../components/AddRecipeToMealPlanModal';
-import { FirebaseRecipeService } from "./FirebaseRecipeService";
 
 /**
  * Service para adicionar receitas ao planejamento de refeições
