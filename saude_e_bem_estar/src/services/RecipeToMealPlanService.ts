@@ -82,7 +82,8 @@ export class RecipeToMealPlanService {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
     for (let day = 1; day <= daysInMonth; day++) {
-      const date = new Date(year, month, day);
+      // Create date at noon to avoid timezone issues
+      const date = new Date(year, month, day, 12, 0, 0);
       const dayOfWeek = date.getDay();
       
       if (weekdays.includes(dayOfWeek)) {

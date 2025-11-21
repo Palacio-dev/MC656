@@ -1,4 +1,4 @@
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
 import { RecipeDetailsResponse } from "../models/RecipeModel";
 import { RecipeNutrition } from "./RecipeNutritionService";
 import { db } from "../config/firebase";
@@ -60,5 +60,36 @@ export class FirebaseRecipeService {
     }
 
     return null;
+  }
+
+  /**
+   * Get all custom recipes (recipes with IDs starting with "custom_")
+   * Returns array of custom recipes with title and id
+   */
+  static async getAllCustomRecipes(): Promise<{ id: string; title: string }[]> {
+    try {
+      const recipesRef = collection(db, "recipes");
+      const snapshot = await getDocs(recipesRef);
+      
+      const customRecipes: { id: string; title: string }[] = [];
+      
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        const recipeId = doc.id;
+        
+        // Filter only custom recipes (IDs starting with "custom_")
+        if (recipeId.startsWith("custom_") && data.title) {
+          customRecipes.push({
+            id: recipeId,
+            title: data.title
+          });
+        }
+      });
+      
+      return customRecipes;
+    } catch (error) {
+      console.error("Error fetching custom recipes:", error);
+      return [];
+    }
   }
 }

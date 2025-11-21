@@ -31,6 +31,7 @@ export const MealPlannerView = observer(({ vm }: { vm: MealPlannerViewModel }) =
   const [nutritionSummary, setNutritionSummary] = React.useState<PeriodNutritionSummary | null>(null);
   const [loadingNutrition, setLoadingNutrition] = React.useState(false);
   const [currentView, setCurrentView] = React.useState<'daily' | 'weekly' | 'monthly'>('weekly');
+  const [nutritionUpdateTrigger, setNutritionUpdateTrigger] = React.useState(0);
 
   const getMealKey = (label: string) => {
     if (label === "Café da manhã") return "breakfast";
@@ -109,7 +110,7 @@ export const MealPlannerView = observer(({ vm }: { vm: MealPlannerViewModel }) =
         await FirebaseRecipeService.saveRecipeNutrition(customMealId, nutrition);
       }
 
-      vm.updateMeal(showCustomInput.date, showCustomInput.mealKey as any, mealData);
+      await vm.updateMeal(showCustomInput.date, showCustomInput.mealKey as any, mealData);
       setShowCustomInput(null);
       setCustomMealText("");
       setCustomNutrition({
@@ -120,6 +121,9 @@ export const MealPlannerView = observer(({ vm }: { vm: MealPlannerViewModel }) =
         fiber: ""
       });
       setShowNutritionFields(false);
+      
+      // Trigger nutrition recalculation
+      setNutritionUpdateTrigger(prev => prev + 1);
     }
   };
 
@@ -136,9 +140,11 @@ export const MealPlannerView = observer(({ vm }: { vm: MealPlannerViewModel }) =
     setShowNutritionFields(false);
   };
 
-  const handleDeleteMeal = (date: Date, mealKey: string) => {
+  const handleDeleteMeal = async (date: Date, mealKey: string) => {
     if (window.confirm("Tem certeza que deseja remover esta refeição?")) {
-      vm.updateMeal(date, mealKey as any, "");
+      await vm.updateMeal(date, mealKey as any, "");
+      // Trigger nutrition recalculation
+      setNutritionUpdateTrigger(prev => prev + 1);
     }
   };
 
@@ -197,7 +203,7 @@ export const MealPlannerView = observer(({ vm }: { vm: MealPlannerViewModel }) =
    */
   React.useEffect(() => {
     calculateNutritionForView();
-  }, [calculateNutritionForView, vm.mealsByDate, currentView]);
+  }, [calculateNutritionForView, vm.mealsByDate, currentView, nutritionUpdateTrigger]);
 
   /**
    * Toggle share menu
@@ -512,7 +518,7 @@ export const MealPlannerView = observer(({ vm }: { vm: MealPlannerViewModel }) =
           return (
             <div key={rowIndex} className="meal-planner-day">
               <div className="meal-date">
-                <strong>{date.toLocaleDateString()}</strong>
+                <strong>{date.toLocaleDateString('pt-BR')}</strong>
               </div>
 
               {row.map((cell, cellIndex) => {
@@ -625,7 +631,7 @@ export const MealPlannerView = observer(({ vm }: { vm: MealPlannerViewModel }) =
           <div className="custom-input-modal custom-meal-modal" onClick={(e) => e.stopPropagation()}>
             <h3>Adicionar Refeição Personalizada</h3>
             <p className="modal-date-info">
-              {showCustomInput.date.toLocaleDateString()} - {getMealLabel(showCustomInput.mealKey)}
+              {showCustomInput.date.toLocaleDateString('pt-BR')} - {getMealLabel(showCustomInput.mealKey)}
             </p>
             <textarea
               className="custom-meal-textarea"
@@ -727,7 +733,7 @@ export const MealPlannerView = observer(({ vm }: { vm: MealPlannerViewModel }) =
           <div className="custom-input-modal" onClick={(e) => e.stopPropagation()}>
             <h3>Adicionar Novo Horário</h3>
             <p className="modal-date-info">
-              {showAddSlotModal.toLocaleDateString()}
+              {showAddSlotModal.toLocaleDateString('pt-BR')}
             </p>
             <input
               type="text"

@@ -63,7 +63,7 @@ const Settings: React.FC = () => {
     if (!settings?.logout) return;
     try {
       await settings.logout();
-      navigate('/login');
+      navigate('/');
     } catch {
       setStatus({ type: 'error', msg: 'Falha ao sair.' });
     }

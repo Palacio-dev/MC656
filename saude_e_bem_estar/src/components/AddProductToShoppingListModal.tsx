@@ -69,6 +69,25 @@ export default function AddProductToShoppingListModal({ open, onClose, product }
     setLoading(true);
     setError(null);
     try {
+      // Check for duplicate items
+      const currentList = await shoppingListDetailService.getListById(selectedListId, user.uid);
+      if (currentList) {
+        const normalizedProductName = product.name.toLowerCase().trim();
+        const duplicate = currentList.items.find(
+          item => item.text.toLowerCase().trim() === normalizedProductName
+        );
+        
+        if (duplicate) {
+          const confirmAdd = window.confirm(
+            `O item "${product.name}" já existe na lista. Deseja adicionar mesmo assim?`
+          );
+          if (!confirmAdd) {
+            setLoading(false);
+            return;
+          }
+        }
+      }
+
       await shoppingListDetailService.addItem(selectedListId, user.uid, product.name);
       setSuccess('Produto adicionado.');
       await loadLists();
@@ -92,7 +111,29 @@ export default function AddProductToShoppingListModal({ open, onClose, product }
             <label className="field-label" htmlFor="list-select">Escolha a lista</label>
 
             {lists.length === 0 ? (
-              <div className="muted">Nenhuma lista encontrada.</div>
+              <div className="no-lists-container">
+                <div className="muted">Nenhuma lista encontrada.</div>
+                <button 
+                  className="btn btn-primary create-list-btn"
+                  onClick={async () => {
+                    const listName = prompt("Digite o nome da nova lista:");
+                    if (listName && listName.trim() && user) {
+                      try {
+                        setLoading(true);
+                        await shoppingListService.createList(listName.trim(), user.uid);
+                        await loadLists();
+                      } catch (e) {
+                        console.error('Failed to create list', e);
+                        setError('Falha ao criar lista.');
+                      } finally {
+                        setLoading(false);
+                      }
+                    }
+                  }}
+                >
+                  ➕ Criar Nova Lista
+                </button>
+              </div>
             ) : (
               <select
                 id="list-select"

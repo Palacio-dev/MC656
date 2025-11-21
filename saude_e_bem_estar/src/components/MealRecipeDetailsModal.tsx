@@ -36,7 +36,6 @@ export const MealRecipeDetailsModal: React.FC<MealRecipeDetailsModalProps> = ({
   React.useEffect(() => {
     if (isOpen && recipeId) {
       loadRecipe();
-      loadUserSubstitutions();
     }
   }, [isOpen, recipeId]);
 
@@ -51,8 +50,13 @@ export const MealRecipeDetailsModal: React.FC<MealRecipeDetailsModalProps> = ({
       if (recipeData) {
         setRecipe(recipeData);
         
-        // Load nutrition data in parallel
-        loadNutrition(recipeData);
+        // Load user substitutions first to check if we should use custom nutrition
+        const userSubs = await loadUserSubstitutions();
+        
+        // Only calculate fresh nutrition if user doesn't have custom nutrition
+        if (!userSubs || !userSubs.customNutrition) {
+          loadNutrition(recipeData);
+        }
       } else {
         setError('Receita não encontrada');
       }
@@ -65,11 +69,11 @@ export const MealRecipeDetailsModal: React.FC<MealRecipeDetailsModalProps> = ({
   };
 
   const loadUserSubstitutions = async () => {
-    if (!recipeId) return;
+    if (!recipeId) return null;
     
     const auth = getAuth();
     const userId = auth.currentUser?.uid;
-    if (!userId) return;
+    if (!userId) return null;
 
     try {
       const userSubs = await getUserSubstitutions(userId, recipeId);
@@ -81,8 +85,10 @@ export const MealRecipeDetailsModal: React.FC<MealRecipeDetailsModalProps> = ({
           setNutrition(userSubs.customNutrition);
         }
       }
+      return userSubs;
     } catch (err) {
       console.error('Erro ao carregar substituições:', err);
+      return null;
     }
   };
 
@@ -225,38 +231,40 @@ export const MealRecipeDetailsModal: React.FC<MealRecipeDetailsModalProps> = ({
           <div className="meal-recipe-content">
             <h2 className="meal-recipe-title">{recipe.title}</h2>
 
-            <div className="meal-recipe-meta">
-              {recipe.stats.prepare_time_minutes > 0 && (
-                <div className="meal-recipe-meta-item">
-                  <span className="meal-recipe-meta-icon">⏱️</span>
-                  <span>{recipe.stats.prepare_time_minutes} minutos</span>
-                </div>
-              )}
-              {recipe.stats.portion_output > 0 && (
-                <div className="meal-recipe-meta-item">
-                  <span className="meal-recipe-meta-icon">👥</span>
-                  <span>{recipe.stats.portion_output} porções</span>
-                </div>
-              )}
-              {recipe.stats.favorites > 0 && (
-                <div className="meal-recipe-meta-item">
-                  <span className="meal-recipe-meta-icon">⭐</span>
-                  <span>{recipe.stats.favorites} favoritos</span>
-                </div>
-              )}
-            </div>
+            {recipe.stats && (
+              <div className="meal-recipe-meta">
+                {recipe.stats.prepare_time_minutes > 0 && (
+                  <div className="meal-recipe-meta-item">
+                    <span className="meal-recipe-meta-icon">⏱️</span>
+                    <span>{recipe.stats.prepare_time_minutes} minutos</span>
+                  </div>
+                )}
+                {recipe.stats.portion_output > 0 && (
+                  <div className="meal-recipe-meta-item">
+                    <span className="meal-recipe-meta-icon">👥</span>
+                    <span>{recipe.stats.portion_output} porções</span>
+                  </div>
+                )}
+                {recipe.stats.favorites > 0 && (
+                  <div className="meal-recipe-meta-item">
+                    <span className="meal-recipe-meta-icon">⭐</span>
+                    <span>{recipe.stats.favorites} favoritos</span>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Nutrition Information */}
             {loadingNutrition && (
               <div className="meal-recipe-nutrition">
-                <h3 className="meal-recipe-section-title">📊 Informação Nutricional (Aproximada)</h3>
+                <h3 className="meal-recipe-section-title">📊 Informação Nutricional</h3>
                 <p className="meal-recipe-nutrition-loading">Calculando nutrição...</p>
               </div>
             )}
             
             {nutrition && !loadingNutrition && (
               <div className="meal-recipe-nutrition">
-                <h3 className="meal-recipe-section-title">📊 Informação Nutricional (Aproximada)</h3>
+                <h3 className="meal-recipe-section-title">📊 Informação Nutricional</h3>
                 <p className="meal-recipe-nutrition-disclaimer">
                   ⚠️ Valores aproximados baseados nos ingredientes da receita
                 </p>
@@ -302,12 +310,6 @@ export const MealRecipeDetailsModal: React.FC<MealRecipeDetailsModalProps> = ({
                     <strong>Total da receita:</strong> {nutrition.calories.toFixed(0)} kcal 
                     ({nutrition.portionOutput} {nutrition.portionOutput === 1 ? 'porção' : 'porções'})
                   </p>
-                  {nutrition.calculationMethod === 'stored' && (
-                    <p className="meal-recipe-nutrition-cached">✅ Dados em cache</p>
-                  )}
-                  {nutrition.calculationMethod === 'calculated' && (
-                    <p className="meal-recipe-nutrition-calculated">🔄 Calculado agora</p>
-                  )}
                 </div>
 
                 {/* Ingredients breakdown */}

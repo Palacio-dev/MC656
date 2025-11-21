@@ -186,6 +186,31 @@
   transition: width 0.3s ease;
 }
 
+.stats-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.uncheck-button {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #FFA726 0%, #FB8C00 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.uncheck-button:hover {
+  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 167, 38, 0.3);
+}
+
 .clear-button {
   padding: 10px 20px;
   background: #ef5350;
@@ -210,6 +235,74 @@
   border-radius: 12px;
   padding: 25px;
   box-shadow: 0 2px 8px rgba(130, 9, 177, 0.1);
+}
+
+/* List Name Section */
+.list-name-section {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(130, 9, 177, 0.1);
+}
+
+.list-name-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.list-name-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #8209B1;
+  flex: 1;
+}
+
+.button-edit-name {
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #800080 0%, #9932cc 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.button-edit-name:hover {
+  background: linear-gradient(135deg, #660066 0%, #7d26b8 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(128, 0, 128, 0.3);
+}
+
+.list-name-edit {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.list-name-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 2px solid #800080;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(128, 0, 128, 0.1);
+}
+
+.list-name-input:focus {
+  box-shadow: 0 0 0 3px rgba(128, 0, 128, 0.2);
 }
 
 /* Empty List State */

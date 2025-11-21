@@ -97,6 +97,23 @@
   box-shadow: 0 0 0 6px rgba(130,9,177,0.05);
 }
 
+/* No lists container */
+.no-lists-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.no-lists-container .muted {
+  font-style: italic;
+  color: #999;
+}
+
+.create-list-btn {
+  margin-top: 8px;
+}
+
 /* actions match page buttons */
 .inline-panel-actions {
   display: flex;
