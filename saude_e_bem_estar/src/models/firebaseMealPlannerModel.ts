@@ -20,11 +20,14 @@ export interface MealPlannerModel {
     userId: string,
     start: Date,
     end: Date
-  ): Promise<Record<string, MealEntry>>; // chave = 'YYYY-MM-DD'
+  ): Promise<Record<string, MealEntry>>;
 }
 
 function toDateKey(date: Date): string {
-  return date.toISOString().split("T")[0]; // 'YYYY-MM-DD'
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }
 
 export class FirebaseMealPlannerModel implements MealPlannerModel {
@@ -40,18 +43,24 @@ export class FirebaseMealPlannerModel implements MealPlannerModel {
 
     const docRef = doc(this.collectionRef, docId);
 
-    await setDoc(
-      docRef,
-      {
-        userId,
-        date: dateKey,
-        breakfast: meal.breakfast ?? "",
-        lunch: meal.lunch ?? "",
-        dinner: meal.dinner ?? "",
-        snack: meal.snack ?? "",
-      },
-      { merge: true }
-    );
+    // Build document data with all meal entries (including custom ones)
+    const docData: any = {
+      userId,
+      date: dateKey,
+      breakfast: meal.breakfast ?? "",
+      lunch: meal.lunch ?? "",
+      dinner: meal.dinner ?? "",
+      snack: meal.snack ?? "",
+    };
+
+    // Add any custom meal slots
+    Object.keys(meal).forEach(key => {
+      if (!['breakfast', 'lunch', 'dinner', 'snack'].includes(key)) {
+        docData[key] = meal[key] ?? "";
+      }
+    });
+
+    await setDoc(docRef, docData, { merge: true });
   }
 
   async loadMealsForRange(
@@ -62,6 +71,14 @@ export class FirebaseMealPlannerModel implements MealPlannerModel {
     const startKey = toDateKey(start);
     const endKey = toDateKey(end);
 
+    console.log("[MealPlannerModel] range:", {
+      userId,
+      start,
+      end,
+      startKey,
+      endKey,
+    });
+
     const q = query(
       this.collectionRef,
       where("userId", "==", userId),
@@ -71,17 +88,29 @@ export class FirebaseMealPlannerModel implements MealPlannerModel {
 
     const snapshot = await getDocs(q);
 
+    console.log("[MealPlannerModel] docs encontrados:", snapshot.size);
+
     const result: Record<string, MealEntry> = {};
 
     snapshot.forEach((docSnap) => {
       const data = docSnap.data() as any;
       const dateKey = data.date as string;
-      result[dateKey] = {
+
+      const mealEntry: MealEntry = {
         breakfast: data.breakfast ?? "",
         lunch: data.lunch ?? "",
         dinner: data.dinner ?? "",
         snack: data.snack ?? "",
       };
+
+      // Load any custom meal slots
+      Object.keys(data).forEach(key => {
+        if (!['userId', 'date', 'breakfast', 'lunch', 'dinner', 'snack'].includes(key)) {
+          mealEntry[key] = data[key] ?? "";
+        }
+      });
+
+      result[dateKey] = mealEntry;
     });
 
     return result;

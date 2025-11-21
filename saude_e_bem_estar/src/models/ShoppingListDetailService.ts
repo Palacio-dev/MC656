@@ -6,7 +6,7 @@ import {
     DocumentData,
     QueryDocumentSnapshot
 } from 'firebase/firestore';
-import { db } from "../config/firebase";
+import { db } from '../config/firebase';
 import { ShoppingList, ShoppingItem } from '../types/ShoppingTypes';
 
 /**
@@ -24,22 +24,29 @@ class ShoppingListDetailService {
         return {
             id: doc.id,
             name: data.name,
-            items: data.items || []
+            items: data.items || [],
+            userId: data.userId
         };
     }
 
     /**
-     * Busca uma lista específica por ID
+     * Busca uma lista específica por ID (verifica se pertence ao usuário)
      * @param id - ID da lista
+     * @param userId - ID do usuário autenticado
      * @returns Promise com ShoppingList ou null
      */
-    async getListById(id: string): Promise<ShoppingList | null> {
+    async getListById(id: string, userId: string): Promise<ShoppingList | null> {
         try {
             const docRef = doc(db, this.collectionName, id);
             const docSnap = await getDoc(docRef);
             
             if (docSnap.exists()) {
-                return this.docToShoppingList(docSnap as QueryDocumentSnapshot<DocumentData>);
+                const list = this.docToShoppingList(docSnap as QueryDocumentSnapshot<DocumentData>);
+                // Verifica se a lista pertence ao usuário
+                if (list.userId !== userId) {
+                    throw new Error('Acesso negado: esta lista não pertence ao usuário');
+                }
+                return list;
             }
             return null;
         } catch (error) {
@@ -49,15 +56,24 @@ class ShoppingListDetailService {
     }
 
     /**
-     * Atualiza uma lista existente
+     * Atualiza uma lista existente (verifica se pertence ao usuário)
      * @param id - ID da lista
+     * @param userId - ID do usuário autenticado
      * @param updates - Dados para atualizar
      */
-    async updateList(id: string, updates: Partial<ShoppingList>): Promise<void> {
+    async updateList(id: string, userId: string, updates: Partial<ShoppingList>): Promise<void> {
         try {
+            // Verifica se a lista pertence ao usuário antes de atualizar
+            const list = await this.getListById(id, userId);
+            if (!list) {
+                throw new Error('Lista não encontrada ou acesso negado');
+            }
+            
             const docRef = doc(db, this.collectionName, id);
+            // Remove userId dos updates para evitar modificação
+            const { userId: _, ...safeUpdates } = updates;
             await updateDoc(docRef, {
-                ...updates,
+                ...safeUpdates,
                 updatedAt: Timestamp.now()
             });
         } catch (error) {
@@ -73,13 +89,14 @@ class ShoppingListDetailService {
     /**
      * Adiciona um novo item à lista
      * @param listId - ID da lista
+     * @param userId - ID do usuário autenticado
      * @param itemText - Texto do item
      * @returns Promise com o item criado
      */
-    async addItem(listId: string, itemText: string): Promise<ShoppingItem> {
+    async addItem(listId: string, userId: string, itemText: string): Promise<ShoppingItem> {
         try {
             // Busca a lista atual
-            const list = await this.getListById(listId);
+            const list = await this.getListById(listId, userId);
             if (!list) {
                 throw new Error('Lista não encontrada');
             }
@@ -95,7 +112,7 @@ class ShoppingListDetailService {
             const updatedItems = [...list.items, newItem];
 
             // Atualiza no Firestore
-            await this.updateList(listId, { items: updatedItems });
+            await this.updateList(listId, userId, { items: updatedItems });
 
             return newItem;
         } catch (error) {
@@ -107,12 +124,13 @@ class ShoppingListDetailService {
     /**
      * Atualiza um item da lista (marca/desmarca)
      * @param listId - ID da lista
+     * @param userId - ID do usuário autenticado
      * @param itemId - ID do item
      * @param checked - Novo estado do checkbox
      */
-    async toggleItem(listId: string, itemId: string, checked: boolean): Promise<void> {
+    async toggleItem(listId: string, userId: string, itemId: string, checked: boolean): Promise<void> {
         try {
-            const list = await this.getListById(listId);
+            const list = await this.getListById(listId, userId);
             if (!list) {
                 throw new Error('Lista não encontrada');
             }
@@ -121,7 +139,7 @@ class ShoppingListDetailService {
                 item.id === itemId ? { ...item, checked } : item
             );
 
-            await this.updateList(listId, { items: updatedItems });
+            await this.updateList(listId, userId, { items: updatedItems });
         } catch (error) {
             console.error('Erro ao atualizar item:', error);
             throw new Error('Não foi possível atualizar o item');
@@ -131,18 +149,19 @@ class ShoppingListDetailService {
     /**
      * Deleta um item da lista
      * @param listId - ID da lista
+     * @param userId - ID do usuário autenticado
      * @param itemId - ID do item
      */
-    async deleteItem(listId: string, itemId: string): Promise<void> {
+    async deleteItem(listId: string, userId: string, itemId: string): Promise<void> {
         try {
-            const list = await this.getListById(listId);
+            const list = await this.getListById(listId, userId);
             if (!list) {
                 throw new Error('Lista não encontrada');
             }
 
             const updatedItems = list.items.filter(item => item.id !== itemId);
 
-            await this.updateList(listId, { items: updatedItems });
+            await this.updateList(listId, userId, { items: updatedItems });
         } catch (error) {
             console.error('Erro ao deletar item:', error);
             throw new Error('Não foi possível deletar o item');
@@ -152,17 +171,18 @@ class ShoppingListDetailService {
     /**
      * Remove todos os itens marcados da lista
      * @param listId - ID da lista
+     * @param userId - ID do usuário autenticado
      */
-    async clearCheckedItems(listId: string): Promise<void> {
+    async clearCheckedItems(listId: string, userId: string): Promise<void> {
         try {
-            const list = await this.getListById(listId);
+            const list = await this.getListById(listId, userId);
             if (!list) {
                 throw new Error('Lista não encontrada');
             }
 
             const updatedItems = list.items.filter(item => !item.checked);
 
-            await this.updateList(listId, { items: updatedItems });
+            await this.updateList(listId, userId, { items: updatedItems });
         } catch (error) {
             console.error('Erro ao limpar itens marcados:', error);
             throw new Error('Não foi possível limpar os itens marcados');
@@ -172,11 +192,12 @@ class ShoppingListDetailService {
     /**
      * Atualiza múltiplos items de uma vez (operação em batch)
      * @param listId - ID da lista
+     * @param userId - ID do usuário autenticado
      * @param items - Array completo de items atualizado
      */
-    async updateItems(listId: string, items: ShoppingItem[]): Promise<void> {
+    async updateItems(listId: string, userId: string, items: ShoppingItem[]): Promise<void> {
         try {
-            await this.updateList(listId, { items });
+            await this.updateList(listId, userId, { items });
         } catch (error) {
             console.error('Erro ao atualizar items:', error);
             throw new Error('Não foi possível atualizar os items');

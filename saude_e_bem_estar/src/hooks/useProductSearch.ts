@@ -1,58 +1,68 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Product } from "../types/product";
 import * as productService from "../services/ProductService";
+import { productHistoryService } from "../services/ProductHistoryService";
 import { auth } from "../config/firebase";
 
 
 const STORAGE_KEY = "product-search-history";
+const DEBOUNCE_DELAY = 500; // Wait 500ms after user stops typing
 
 
 export function useProductSearch() {
-  const [query, setQuery] = useState("");
-  const [suggestions, setSuggestions] = useState<Product[]>([]);
-  const [selected, setSelected] = useState<Product | null>(null);
-  const [history, setHistory] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(false);
+    const [query, setQuery] = useState("");
+    const [debouncedQuery, setDebouncedQuery] = useState("");
+    const [suggestions, setSuggestions] = useState<Product[]>([]);
+    const [selected, setSelected] = useState<Product | null>(null);
+    const [history, setHistory] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-  // load history once
+    /**
+    * Carrega a lista do Firebase
+    */
+    const loadHistory = useCallback(async () => {
+         try {
+            setError(null);
+            const userId = auth.currentUser?.uid || 'anonymous';
+            
+            // Busca histórico único (sem duplicatas) do Firebase
+            const userHistory = await productHistoryService.getUserHistory(userId);
+            setHistory(userHistory);
+        } catch (err) {
+            console.error("Erro ao carregar histórico:", err);
+            setError("Não foi possível carregar o histórico");
+            setHistory([]);
+        }
+    }, []);
+
+   // Carrega histórico na inicialização
+    useEffect(() => {
+        loadHistory();
+    }, [loadHistory]);
+
+  // Debounce the query - wait for user to stop typing
   useEffect(() => {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      try {
-        setHistory(JSON.parse(raw));
-      } catch (e) {
-        console.warn("Failed to parse history", e);
-        localStorage.removeItem(STORAGE_KEY);
-      }
-    }
-  }, []);
+    const timer = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, DEBOUNCE_DELAY);
 
-  // persist history
-  useEffect(() => {
-    let cancelled = false;
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [query]);
 
-    async function load() {
-      const hist = await productService.getHistory();
-      if (!cancelled) setHistory(hist);
-    }
-
-    // só busca se o usuário existir
-    if (auth.currentUser) load();
-
-    return () => { cancelled = true };
-  }, []);
-
-  // fetch suggestions when query changes
+  // fetch suggestions when debounced query changes
   useEffect(() => {
     let cancelled = false;
     const load = async () => {
-      if (query.length <= 1) {
+      if (debouncedQuery.length <= 1) {
         setSuggestions([]);
         return;
       }
       setLoading(true);
       try {
-        const res = await productService.fetchProducts(query);
+        const res = await productService.fetchProducts(debouncedQuery);
         if (!cancelled) setSuggestions(res);
       } catch (err) {
         console.error("Error fetching suggestions", err);
@@ -64,27 +74,50 @@ export function useProductSearch() {
     return () => {
       cancelled = true;
     };
-  }, [query]);
+  }, [debouncedQuery]);
 
   const select = async (product: Product) => {
+    const userId = auth.currentUser?.uid || 'anonymous';
     setSelected(product);
     setQuery("");
+    setDebouncedQuery(""); // Clear debounced query too
     setSuggestions([]);
-
-    await productService.saveHistory(product);
-
-    // atualiza local sem refetch
-    setHistory((prev) => [product, ...prev]);
+    if (!history.find((h) => h.name === product.name)) {
+      await productHistoryService.saveToHistory(userId, product);
+    }
+    loadHistory();
   };
 
-  const selectFromHistory = (product: Product) => {
-    setSelected(product);
-  };
+  // Manual search trigger for Enter key
+  const triggerSearch = useCallback(() => {
+    if (query.length > 1) {
+      setDebouncedQuery(query);
+    }
+  }, [query]);
 
-  const clearHistory = () => {
-    setHistory([]);
-    localStorage.removeItem(STORAGE_KEY);
-  };
+    const selectFromHistory = useCallback((product: Product) => {
+        setSelected(product);
+        setSuggestions([]);
+        setQuery("");
+        // Não salva novamente no histórico quando vem do histórico
+    }, []);
+
+    // ===== LIMPAR HISTÓRICO =====
+    const clearHistory = useCallback(async () => {
+        try {
+            setError(null);
+            const userId = auth.currentUser?.uid || 'anonymous';
+            
+            // Limpa histórico no Firebase
+            await productHistoryService.clearUserHistory(userId);
+            
+            // Atualiza estado local
+            setHistory([]);
+        } catch (err) {
+            console.error("Erro ao limpar histórico:", err);
+            setError("Não foi possível limpar o histórico");
+        }
+    }, []);
 
   return {
     query,
@@ -95,6 +128,7 @@ export function useProductSearch() {
     loading,
     select,
     selectFromHistory,
-    clearHistory
+    clearHistory,
+    triggerSearch
   };
 }

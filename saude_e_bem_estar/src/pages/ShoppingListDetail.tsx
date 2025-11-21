@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
+import { PageHeader } from "../components/PageHeader";
 import ListComponent from "../components/ListComponent";
 import { useShoppingListDetailViewModel } from "../hooks/useShoppingListDetailHook";
-import '../styles/shoppinglistspage.css';
+import '../styles/ShoppingList.css';
 
 interface ShoppingListDetailProps {
     listId?: string;
@@ -40,9 +41,13 @@ export default function ShoppingListDetail({
     // Estado de carregamento
     if (isLoading) {
         return (
-            <div className="fundo">
+            <div className="shopping-list-container">
                 <div className="header-top">
-                    <h1 className="titulo">Carregando do Firebase...</h1>
+                    <h1 className="titulo">Carregando...</h1>
+                </div>
+                <div className="loading-container">
+                    <div className="loading-spinner"></div>
+                    <p>Carregando do Firebase...</p>
                 </div>
             </div>
         );
@@ -51,122 +56,80 @@ export default function ShoppingListDetail({
     // Estado de erro
     if (error) {
         return (
-            <div className="fundo">
-                <div className="header-top">
-                    <button className="back-button" onClick={handleBack}>
-                        ← Voltar
-                    </button>
-                    <h1 className="titulo">Erro</h1>
-                </div>
-                <div className="error-message" style={{
-                    backgroundColor: '#fee',
-                    border: '1px solid #fcc',
-                    padding: '15px',
-                    borderRadius: '8px',
-                    margin: '20px',
-                    color: '#c00'
-                }}>
-                    <strong>⚠️ {error}</strong>
-                    <p style={{ marginTop: '10px', fontSize: '14px' }}>
-                        Verifique sua conexão com o Firebase.
-                    </p>
+            <div className="shopping-list-container">
+                <PageHeader 
+                    title="Erro"
+                    showBackButton={true}
+                    showHomeButton={true}
+                />
+                <div className="shopping-list-content">
+                    <div className="error-message">
+                        <strong>⚠️ {error}</strong>
+                        <p style={{ marginTop: '10px', fontSize: '14px' }}>
+                            Verifique sua conexão com o Firebase.
+                        </p>
+                    </div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="fundo">
-            {/* Header com botão voltar */}
-            <div className="header-top">
-                <button className="back-button" onClick={handleBack}>
-                    ← Voltar
-                </button>
-                <h1 className="titulo">{listName}</h1>
-            </div>
-
-            {/* Estatísticas da lista */}
-            {stats.total > 0 && (
-                <div className="stats-section" style={{
-                    padding: '15px 20px',
-                    backgroundColor: '#f0f9ff',
-                    borderRadius: '8px',
-                    margin: '10px 20px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                }}>
-                    <div>
-                        <p className="stats-text" style={{ 
-                            margin: 0, 
-                            fontSize: '14px',
-                            color: '#1e40af'
-                        }}>
-                            <strong>{stats.checked}</strong> de <strong>{stats.total}</strong> itens completos
-                        </p>
-                        <div style={{
-                            width: '200px',
-                            height: '6px',
-                            backgroundColor: '#dbeafe',
-                            borderRadius: '3px',
-                            marginTop: '8px',
-                            overflow: 'hidden'
-                        }}>
-                            <div style={{
-                                width: `${stats.progress}%`,
-                                height: '100%',
-                                backgroundColor: '#3b82f6',
-                                transition: 'width 0.3s ease'
-                            }} />
-                        </div>
-                    </div>
-                    
-                    {stats.checked > 0 && (
-                        <button 
-                            className="clear-button"
-                            onClick={clearCheckedItems}
-                            style={{
-                                padding: '8px 16px',
-                                backgroundColor: '#ef4444',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '6px',
-                                cursor: 'pointer',
-                                fontSize: '13px',
-                                fontWeight: '500',
-                                transition: 'background-color 0.2s'
-                            }}
-                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#dc2626'}
-                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#ef4444'}
-                        >
-                            🗑️ Limpar marcados
-                        </button>
-                    )}
-                </div>
-            )}
-
-            {/* Lista de itens */}
-            <ListComponent 
-                items={items}
-                onToggleItem={toggleItem}
-                onDeleteItem={deleteItem}
-                onAddItem={addItem}
-                placeholder="Adicione um item à lista"
+        <div className="shopping-list-container">
+            <PageHeader 
+                title={listName}
+                showBackButton={true}
+                showHomeButton={true}
             />
 
-            {/* Mensagem quando lista está vazia */}
-            {stats.total === 0 && (
-                <div style={{
-                    textAlign: 'center',
-                    padding: '40px 20px',
-                    color: '#64748b'
-                }}>
-                    <p style={{ fontSize: '48px', margin: '0 0 16px 0' }}>🛒</p>
-                    <p style={{ fontSize: '16px', margin: 0 }}>
-                        Sua lista está vazia. Adicione o primeiro item!
-                    </p>
+            <div className="shopping-list-content">
+                {/* Estatísticas da lista */}
+                {stats.total > 0 && (
+                    <div className="stats-section">
+                        <div className="stats-info">
+                            <p className="stats-text">
+                                <strong>{stats.checked}</strong> de <strong>{stats.total}</strong> itens completos
+                            </p>
+                            <div className="progress-bar-container">
+                                <div 
+                                    className="progress-bar" 
+                                    style={{ width: `${stats.progress}%` }}
+                                />
+                            </div>
+                        </div>
+                        
+                        {stats.checked > 0 && (
+                            <button 
+                                className="clear-button"
+                                onClick={clearCheckedItems}
+                            >
+                                🗑️ Limpar marcados
+                            </button>
+                        )}
+                    </div>
+                )}
+
+                {/* Lista de itens */}
+                <div className="list-items-section">
+                    <ListComponent 
+                        items={items}
+                        onToggleItem={toggleItem}
+                        onDeleteItem={deleteItem}
+                        onAddItem={addItem}
+                        placeholder="Adicione um item à lista"
+                    />
                 </div>
-            )}
+
+                {/* Mensagem quando lista está vazia */}
+                {stats.total === 0 && (
+                    <div className="empty-list-state">
+                        <div className="empty-list-icon">🛒</div>
+                        <p className="empty-list-text">
+                            Sua lista está vazia. Adicione o primeiro item!
+                        </p>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

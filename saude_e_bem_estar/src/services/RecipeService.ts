@@ -1,7 +1,6 @@
 import {
   RecipeSearchResponse,
   RecipeDetailsResponse,
-  RecipeErrorResponse,
 } from '../models/RecipeModel';
 
 // API base URL
@@ -76,5 +75,11 @@ export async function getRecipeById(id: string): Promise<RecipeDetailsResponse> 
   }
 
   const encodedId = encodeURIComponent(id.trim());
-  return recipeApiCall<RecipeDetailsResponse>(`/recipe/${encodedId}`);
+  const data = await recipeApiCall<RecipeDetailsResponse>(`/recipe/${encodedId}`);
+
+  // 👇 Aqui adicionamos o ID manualmente ao objeto
+  return {
+    ...data,
+    id // <-- mantém o ID original do TudoGostoso
+  } as RecipeDetailsResponse;
 }

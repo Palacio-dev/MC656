@@ -1,0 +1,88 @@
+.page-header {
+  background: linear-gradient(135deg, #8209B1 0%, #9c27b0 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(130, 9, 177, 0.2);
+}
+
+.page-header-nav {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.nav-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  backdrop-filter: blur(10px);
+}
+
+.nav-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.nav-btn:active {
+  transform: translateY(0);
+}
+
+.back-btn {
+  margin-right: auto;
+}
+
+.home-btn {
+  margin-left: auto;
+}
+
+.page-header-content {
+  text-align: center;
+}
+
+.page-header-title {
+  font-size: 2rem;
+  margin: 0 0 8px 0;
+  font-weight: 700;
+  color: white;
+}
+
+.page-header-subtitle {
+  font-size: 1rem;
+  margin: 0;
+  opacity: 0.95;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .page-header {
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+
+  .page-header-title {
+    font-size: 1.5rem;
+  }
+
+  .page-header-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .nav-btn {
+    font-size: 0.85rem;
+    padding: 6px 12px;
+  }
+}
