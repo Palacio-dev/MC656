@@ -43,6 +43,12 @@ export function useLoginSignUp() {
         if (form.name == ""){
           throw new Error("Por favor, preencha o campo nome");
         }
+        if (form.email == ""){
+          throw new Error("Por favor, preencha o campo email");
+        }
+        if (form.password == ""){
+          throw new Error("Por favor, preencha o campo senha");
+        }
         if (!nameRegex.test(form.name)) {
           throw new Error("Nome inválido, por favor, não coloque caracteres especiais nem espaços!");
         }
