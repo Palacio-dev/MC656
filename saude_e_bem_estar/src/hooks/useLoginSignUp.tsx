@@ -39,7 +39,7 @@ export function useLoginSignUp() {
     try {
       if (isSignUpMode) {
         // Validação do nome: apenas letras, números e underscore, sem espaços
-        const nameRegex = /^[A-Za-z0-9_]+$/;
+        const nameRegex = /^[A-Za-z0-9_~]+$/;
         if (form.name == ""){
           throw new Error("Por favor, preencha o campo nome");
         }
