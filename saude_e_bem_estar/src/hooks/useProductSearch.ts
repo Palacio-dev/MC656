@@ -6,10 +6,12 @@ import { auth } from "../config/firebase";
 
 
 const STORAGE_KEY = "product-search-history";
+const DEBOUNCE_DELAY = 500; // Wait 500ms after user stops typing
 
 
 export function useProductSearch() {
     const [query, setQuery] = useState("");
+    const [debouncedQuery, setDebouncedQuery] = useState("");
     const [suggestions, setSuggestions] = useState<Product[]>([]);
     const [selected, setSelected] = useState<Product | null>(null);
     const [history, setHistory] = useState<Product[]>([]);
@@ -39,17 +41,28 @@ export function useProductSearch() {
         loadHistory();
     }, [loadHistory]);
 
-  // fetch suggestions when query changes
+  // Debounce the query - wait for user to stop typing
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, DEBOUNCE_DELAY);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [query]);
+
+  // fetch suggestions when debounced query changes
   useEffect(() => {
     let cancelled = false;
     const load = async () => {
-      if (query.length <= 1) {
+      if (debouncedQuery.length <= 1) {
         setSuggestions([]);
         return;
       }
       setLoading(true);
       try {
-        const res = await productService.fetchProducts(query);
+        const res = await productService.fetchProducts(debouncedQuery);
         if (!cancelled) setSuggestions(res);
       } catch (err) {
         console.error("Error fetching suggestions", err);
@@ -61,18 +74,26 @@ export function useProductSearch() {
     return () => {
       cancelled = true;
     };
-  }, [query]);
+  }, [debouncedQuery]);
 
   const select = async (product: Product) => {
     const userId = auth.currentUser?.uid || 'anonymous';
     setSelected(product);
     setQuery("");
+    setDebouncedQuery(""); // Clear debounced query too
     setSuggestions([]);
     if (!history.find((h) => h.name === product.name)) {
       await productHistoryService.saveToHistory(userId, product);
     }
     loadHistory();
   };
+
+  // Manual search trigger for Enter key
+  const triggerSearch = useCallback(() => {
+    if (query.length > 1) {
+      setDebouncedQuery(query);
+    }
+  }, [query]);
 
     const selectFromHistory = useCallback((product: Product) => {
         setSelected(product);
@@ -107,6 +128,7 @@ export function useProductSearch() {
     loading,
     select,
     selectFromHistory,
-    clearHistory
+    clearHistory,
+    triggerSearch
   };
 }

@@ -38,10 +38,12 @@ function extractMainIngredient(ingredientText: string): string {
   cleaned = cleaned.replace(/\b(lata|latas|pacote|pacotes|caixa|caixas)\b/gi, '');
   cleaned = cleaned.replace(/\b(maço|maços|molho|molhos|ramo|ramos)\b/gi, '');
   
-  // Remove preposições e artigos
-  cleaned = cleaned.replace(/\b(de|da|do|das|dos|em|no|na|nos|nas)\b/gi, '');
-  cleaned = cleaned.replace(/\b(à|ao|aos|às|para|por|com|sem)\b/gi, '');
-  cleaned = cleaned.replace(/\b(o|a|os|as|um|uma|uns|umas)\b/gi, '');
+  // Remove preposições e artigos (apenas quando isolados, não parte de palavras)
+  cleaned = cleaned.replace(/\s+(de|da|do|das|dos)\s+/gi, ' ');
+  cleaned = cleaned.replace(/\s+(em|no|na|nos|nas)\s+/gi, ' ');
+  cleaned = cleaned.replace(/\s+(à|ao|aos|às)\s+/gi, ' ');
+  cleaned = cleaned.replace(/\s+(para|por|com|sem)\s+/gi, ' ');
+  cleaned = cleaned.replace(/\s+(o|os|um|uma|uns|umas)\s+/gi, ' ');
   
   // Remove adjetivos e estados comuns
   cleaned = cleaned.replace(/\b(picado|picada|picados|picadas)\b/gi, '');
@@ -75,6 +77,26 @@ function extractMainIngredient(ingredientText: string): string {
   cleaned = cleaned.replace(/\btomates\b/g, 'tomate');
   cleaned = cleaned.replace(/\bcebolas\b/g, 'cebola');
   cleaned = cleaned.replace(/\balhos\b/g, 'alho');
+  cleaned = cleaned.replace(/\bcenouras\b/g, 'cenoura');
+  cleaned = cleaned.replace(/\bbatatas\b/g, 'batata');
+  cleaned = cleaned.replace(/\bbananas\b/g, 'banana');
+  cleaned = cleaned.replace(/\bmaçãs\b/g, 'maçã');
+  cleaned = cleaned.replace(/\blaranjas\b/g, 'laranja');
+  
+  // Regra geral para plurais terminados em 'as' ou 'es' (mais agressiva)
+  // Apenas para palavras que não são artigos/preposições
+  cleaned = cleaned.split(' ').map(word => {
+    if (word.length > 4) {
+      // Remove 's' final de palavras no plural
+      if (word.endsWith('ras')) return word.slice(0, -1); // cenouras -> cenoura
+      if (word.endsWith('tas')) return word.slice(0, -1); // batatas -> batata
+      if (word.endsWith('nas')) return word.slice(0, -1); // bananas -> banana
+      if (word.endsWith('ões')) return word.slice(0, -3) + 'ão'; // limões -> limão
+      if (word.endsWith('ães')) return word.slice(0, -3) + 'ão'; // pães -> pão
+      if (word.endsWith('es') && !word.endsWith('res')) return word.slice(0, -2); // tomates -> tomat
+    }
+    return word;
+  }).join(' ');
   
   // Se ficou vazio, retorna o texto original
   if (!cleaned || cleaned.length < 2) {
