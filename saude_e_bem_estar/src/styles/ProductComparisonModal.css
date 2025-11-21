@@ -14,7 +14,7 @@
 }
 
 .comparison-modal {
-  background: white;
+  background: var(--card-bg);
   border-radius: 16px;
   max-width: 900px;
   width: 100%;
@@ -68,7 +68,7 @@
 }
 
 .comparison-instruction {
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 16px;
   font-size: 1rem;
 }
@@ -106,7 +106,7 @@
 }
 
 .comparison-search-results {
-  background: #f9f9f9;
+  background: var(--bg-secondary);
   border-radius: 8px;
   padding: 12px;
   max-height: 300px;
@@ -124,7 +124,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px;
-  background: white;
+  background: var(--card-bg);
   border-radius: 8px;
   margin-bottom: 8px;
   cursor: pointer;
@@ -140,7 +140,7 @@
 
 .comparison-result-name {
   font-weight: 500;
-  color: #333;
+  color: var(--text-primary);
   flex: 1;
 }
 
@@ -181,7 +181,7 @@
 }
 
 .comparison-body {
-  background: #f9f9f9;
+  background: var(--bg-secondary);
   border-radius: 8px;
   padding: 8px;
 }
@@ -191,7 +191,7 @@
   grid-template-columns: 2fr 2fr 2fr 1.5fr;
   gap: 12px;
   padding: 12px;
-  background: white;
+  background: var(--card-bg);
   border-radius: 8px;
   margin-bottom: 8px;
   align-items: center;
@@ -199,13 +199,13 @@
 
 .comparison-label {
   font-weight: 500;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .comparison-value {
   text-align: center;
   font-weight: 600;
-  color: #666;
+  color: var(--text-secondary);
   padding: 4px;
   border-radius: 4px;
 }
@@ -253,7 +253,7 @@
 }
 
 .comparison-change-btn {
-  background: white;
+  background: var(--card-bg);
   border: 2px solid #8209B1;
   color: #8209B1;
   border-radius: 8px;
@@ -277,7 +277,7 @@
   justify-content: center;
   margin-top: 20px;
   padding-top: 20px;
-  border-top: 2px solid #f0f0f0;
+  border-top: 2px solid var(--border-color);
 }
 
 .legend-item {
@@ -285,7 +285,7 @@
   align-items: center;
   gap: 8px;
   font-size: 0.85rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .legend-dot {

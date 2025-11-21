@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import ThemeToggle from './ThemeToggle';
 import '../styles/PageHeader.css';
 
 interface PageHeaderProps {
@@ -8,6 +9,7 @@ interface PageHeaderProps {
   showBackButton?: boolean;
   showHomeButton?: boolean;
   showSettingsButton?: boolean;
+  showThemeToggle?: boolean;
 }
 
 /**
@@ -19,6 +21,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   showBackButton = true,
   showHomeButton = true,
   showSettingsButton = false,
+  showThemeToggle = true,
 }) => {
   const navigate = useNavigate();
 
@@ -66,6 +69,11 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           >
             ⚙️ Configurações
           </button>
+        )}
+        {showThemeToggle && (
+          <div className="page-header-theme">
+            <ThemeToggle />
+          </div>
         )}
       </div>
       <div className="page-header-content">

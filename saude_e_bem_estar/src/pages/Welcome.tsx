@@ -31,6 +31,12 @@ export default function Welcome() {
                         <div className="card-description">Encontre receitas deliciosas e saudáveis</div>
                     </div>
 
+                    <div className="welcome-card" onClick={() => navigate("Favorites")}>
+                        <div className="card-icon">❤️</div>
+                        <div className="card-title">Receitas Favoritas</div>
+                        <div className="card-description">Acesse suas receitas salvas</div>
+                    </div>
+
                     <div className="welcome-card" onClick={() => navigate("ShoppingList")}>
                         <div className="card-icon">🛒</div>
                         <div className="card-title">Listas de Compras</div>

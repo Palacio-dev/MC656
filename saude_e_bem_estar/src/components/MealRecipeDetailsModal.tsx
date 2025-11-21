@@ -1,10 +1,13 @@
 import React from 'react';
+import { observer } from 'mobx-react-lite';
 import { RecipeDetailsResponse } from '../models/RecipeModel';
 import { FirebaseRecipeService } from '../services/FirebaseRecipeService';
 import { getRecipeNutrition, RecipeNutrition, calculateRecipeNutrition } from '../services/RecipeNutritionService';
 import { Product } from '../types/product';
 import { IngredientSubstitutionModal } from './IngredientSubstitutionModal';
 import { getUserSubstitutions, saveUserSubstitutions, IngredientSubstitution } from '../services/IngredientSubstitutionService';
+import { FavoritesViewModel } from '../hooks/useFavorites';
+import { FirebaseFavoritesModel } from '../models/firebaseFavoritesModel';
 import { getAuth } from 'firebase/auth';
 import '../styles/MealRecipeDetailsModal.css';
 
@@ -14,11 +17,14 @@ interface MealRecipeDetailsModalProps {
   onClose: () => void;
 }
 
-export const MealRecipeDetailsModal: React.FC<MealRecipeDetailsModalProps> = ({
+export const MealRecipeDetailsModal: React.FC<MealRecipeDetailsModalProps> = observer(({
   isOpen,
   recipeId,
   onClose
 }) => {
+  const auth = getAuth();
+  const userId = auth.currentUser?.uid || null;
+
   const [recipe, setRecipe] = React.useState<RecipeDetailsResponse | null>(null);
   const [nutrition, setNutrition] = React.useState<RecipeNutrition | null>(null);
   const [loadingRecipe, setLoadingRecipe] = React.useState(false);
@@ -32,6 +38,12 @@ export const MealRecipeDetailsModal: React.FC<MealRecipeDetailsModalProps> = ({
     currentProduct: Product | null;
   } | null>(null);
   const [recalculating, setRecalculating] = React.useState(false);
+
+  // Initialize Favorites ViewModel
+  const favoritesViewModel = React.useMemo(() => {
+    const model = new FirebaseFavoritesModel();
+    return new FavoritesViewModel(model, userId);
+  }, [userId]);
 
   React.useEffect(() => {
     if (isOpen && recipeId) {
@@ -245,9 +257,27 @@ export const MealRecipeDetailsModal: React.FC<MealRecipeDetailsModalProps> = ({
   return (
     <div className="meal-recipe-modal-overlay" onClick={onClose}>
       <div className="meal-recipe-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="meal-recipe-modal-close" onClick={onClose}>
-          ✕
-        </button>
+        <div className="meal-recipe-modal-header">
+          <button
+            className={`meal-recipe-favorite-btn ${recipeId && favoritesViewModel.isFavorite(recipeId) ? 'favorited' : ''}`}
+            onClick={async (e) => {
+              e.stopPropagation();
+              if (recipeId && recipe) {
+                try {
+                  await favoritesViewModel.toggleFavorite(recipeId, recipe.title);
+                } catch (err: any) {
+                  alert(err.message || 'Erro ao atualizar favoritos');
+                }
+              }
+            }}
+            title={recipeId && favoritesViewModel.isFavorite(recipeId) ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+          >
+            {recipeId && favoritesViewModel.isFavorite(recipeId) ? '❤️' : '🤍'}
+          </button>
+          <button className="meal-recipe-modal-close" onClick={onClose}>
+            ✕
+          </button>
+        </div>
 
         {loadingRecipe && (
           <div className="meal-recipe-loading">
@@ -466,4 +496,4 @@ export const MealRecipeDetailsModal: React.FC<MealRecipeDetailsModalProps> = ({
       </div>
     </div>
   );
-};
+});

@@ -12,6 +12,11 @@
   gap: 10px;
   margin-bottom: 15px;
   flex-wrap: wrap;
+  align-items: center;
+}
+
+.page-header-theme {
+  margin-left: auto;
 }
 
 .nav-btn {
