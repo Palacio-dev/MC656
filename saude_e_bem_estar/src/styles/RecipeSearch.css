@@ -225,6 +225,29 @@
   align-items: center;
 }
 
+.favorite-btn-small {
+  padding: 8px 12px;
+  background: none;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.favorite-btn-small:hover {
+  border-color: #ff4444;
+  transform: scale(1.1);
+}
+
+.favorite-btn-small.favorited {
+  border-color: #ff4444;
+  background-color: #fff0f0;
+}
+
 .add-to-plan-btn-small {
   padding: 8px 12px;
   background-color: #4a90e2;

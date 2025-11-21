@@ -1,6 +1,6 @@
 /* Product Search Container */
 .product-search-container {
-  background-color: #E7D0FF;
+  background-color: var(--bg-primary);
   min-height: 100vh;
   padding: 0;
   margin: 0;
@@ -33,10 +33,10 @@
 
 /* Search Box */
 .search-box-wrapper {
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 25px;
-  box-shadow: 0 4px 12px rgba(130, 9, 177, 0.15);
+  box-shadow: 0 4px 12px var(--shadow-color);
   margin-bottom: 25px;
   position: relative;
 }
@@ -49,16 +49,17 @@
   width: 100%;
   padding: 15px 50px 15px 20px;
   font-size: 1.05rem;
-  border: 2px solid #ddd;
+  border: 2px solid var(--border-color);
   border-radius: 10px;
   outline: none;
   transition: all 0.3s;
-  background: #fafafa;
+  background: var(--input-bg);
+  color: var(--text-primary);
 }
 
 .search-input:focus {
   border-color: #8209B1;
-  background: white;
+  background: var(--input-bg);
   box-shadow: 0 0 0 3px rgba(130, 9, 177, 0.1);
 }
 
@@ -94,10 +95,10 @@
   top: calc(100% + 5px);
   left: 0;
   right: 0;
-  background: white;
-  border: 1px solid #e0e0e0;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 20px var(--shadow-color);
   overflow: hidden;
   z-index: 100;
   max-height: 400px;
@@ -107,9 +108,10 @@
 .suggestion-item {
   padding: 14px 20px;
   cursor: pointer;
-  border-bottom: 1px solid #f5f5f5;
+  border-bottom: 1px solid var(--border-color);
   transition: all 0.2s;
   font-size: 0.95rem;
+  color: var(--text-primary);
 }
 
 .suggestion-item:last-child {
@@ -117,17 +119,17 @@
 }
 
 .suggestion-item:hover {
-  background: linear-gradient(90deg, #f3e5ff 0%, #faf5ff 100%);
+  background: var(--bg-secondary);
   color: #8209B1;
   font-weight: 500;
 }
 
 /* Product Details Card */
 .product-details-card {
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 30px;
-  box-shadow: 0 4px 12px rgba(130, 9, 177, 0.15);
+  box-shadow: 0 4px 12px var(--shadow-color);
   margin-bottom: 25px;
 }
 
@@ -137,7 +139,7 @@
   color: #8209B1;
   margin-bottom: 20px;
   padding-bottom: 15px;
-  border-bottom: 2px solid #E7D0FF;
+  border-bottom: 2px solid var(--border-color);
 }
 
 .nutrition-grid {
@@ -147,7 +149,7 @@
 }
 
 .nutrition-item {
-  background: linear-gradient(135deg, #f8f4fc 0%, #fdfbff 100%);
+  background: var(--bg-secondary);
   padding: 15px 20px;
   border-radius: 8px;
   border-left: 4px solid #8209B1;
@@ -161,7 +163,7 @@
 
 .nutrition-label {
   font-size: 0.85rem;
-  color: #666;
+  color: var(--text-secondary);
   text-transform: uppercase;
   font-weight: 600;
   margin-bottom: 5px;
@@ -169,23 +171,23 @@
 
 .nutrition-value {
   font-size: 1.3rem;
-  color: #333;
+  color: var(--text-primary);
   font-weight: 700;
 }
 
 .nutrition-unit {
   font-size: 0.9rem;
-  color: #888;
+  color: var(--text-tertiary);
   font-weight: 400;
   margin-left: 2px;
 }
 
 /* Search History */
 .search-history-card {
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 25px;
-  box-shadow: 0 4px 12px rgba(130, 9, 177, 0.15);
+  box-shadow: 0 4px 12px var(--shadow-color);
 }
 
 .history-header {
@@ -194,7 +196,7 @@
   align-items: center;
   margin-bottom: 20px;
   padding-bottom: 15px;
-  border-bottom: 2px solid #E7D0FF;
+  border-bottom: 2px solid var(--border-color);
 }
 
 .history-title {
@@ -206,8 +208,8 @@
 
 .clear-history-btn {
   padding: 8px 18px;
-  background: #f5f5f5;
-  color: #666;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -229,15 +231,15 @@
 
 .history-tag {
   padding: 10px 18px;
-  background: linear-gradient(135deg, #E7D0FF 0%, #f3e5ff 100%);
+  background: var(--bg-secondary);
   color: #8209B1;
-  border: none;
+  border: 1px solid var(--border-color);
   border-radius: 20px;
   cursor: pointer;
   font-size: 0.9rem;
   font-weight: 500;
   transition: all 0.3s;
-  box-shadow: 0 2px 4px rgba(130, 9, 177, 0.1);
+  box-shadow: 0 2px 4px var(--shadow-color);
 }
 
 .history-tag:hover {
@@ -250,7 +252,7 @@
 .history-empty {
   text-align: center;
   padding: 30px;
-  color: #999;
+  color: var(--text-tertiary);
   font-style: italic;
 }
 

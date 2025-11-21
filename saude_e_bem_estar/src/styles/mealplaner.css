@@ -21,10 +21,10 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 8px;
-  background-color: #f9f9f9;
+  background-color: var(--bg-secondary);
   min-height: 180px;
 }
 
@@ -39,7 +39,9 @@
   min-height: 40px;
   padding: 4px;
   border-radius: 4px;
-  border: 1px solid #aaa;
+  border: 1px solid var(--border-color);
+  background: var(--input-bg);
+  color: var(--text-primary);
   font-size: 14px;
 }
 
@@ -49,7 +51,7 @@
   align-items: flex-start;
   gap: 8px;
   padding: 10px;
-  background-color: white;
+  background-color: var(--card-bg);
   border: 2px solid #4a90e2;
   border-radius: 8px;
   min-height: 50px;
@@ -59,7 +61,7 @@
   flex: 1;
   font-size: 14px;
   line-height: 1.4;
-  color: #333;
+  color: var(--text-primary);
   word-wrap: break-word;
 }
 
@@ -150,34 +152,36 @@
 }
 
 .custom-input-modal {
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 24px;
   max-width: 500px;
   width: 100%;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 32px var(--shadow-color);
 }
 
 .custom-input-modal h3 {
   margin: 0 0 12px 0;
   font-size: 1.3rem;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .modal-date-info {
   margin-bottom: 16px;
   padding: 8px 12px;
-  background: #f5f5f5;
+  background: var(--bg-secondary);
   border-radius: 6px;
   font-size: 0.9rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .custom-meal-textarea {
   width: 100%;
   min-height: 100px;
   padding: 12px;
-  border: 2px solid #ddd;
+  border: 2px solid var(--border-color);
+  background: var(--input-bg);
+  color: var(--text-primary);
   border-radius: 8px;
   font-size: 1rem;
   font-family: inherit;
@@ -208,13 +212,13 @@
 }
 
 .cancel-btn {
-  background: #f5f5f5;
-  color: #666;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
 }
 
 .cancel-btn:hover {
-  background: #e0e0e0;
-  color: #333;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
 }
 
 .save-btn {
@@ -236,7 +240,9 @@
 .custom-slot-input {
   width: 100%;
   padding: 12px;
-  border: 2px solid #ddd;
+  border: 2px solid var(--border-color);
+  background: var(--input-bg);
+  color: var(--text-primary);
   border-radius: 8px;
   font-size: 1rem;
   font-family: inherit;
@@ -257,9 +263,9 @@
 .nutrition-toggle {
   margin: 15px 0;
   padding: 12px;
-  background: #f8f4fc;
+  background: var(--bg-secondary);
   border-radius: 8px;
-  border: 1px solid #E7D0FF;
+  border: 1px solid var(--border-color);
 }
 
 .nutrition-toggle label {
@@ -268,7 +274,7 @@
   gap: 10px;
   cursor: pointer;
   font-weight: 500;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .nutrition-toggle input[type="checkbox"] {
@@ -279,8 +285,8 @@
 }
 
 .custom-nutrition-fields {
-  background: linear-gradient(135deg, #f8f4fc 0%, #fdfbff 100%);
-  border: 2px solid #E7D0FF;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
   border-radius: 10px;
   padding: 20px;
   margin: 15px 0;
@@ -308,12 +314,14 @@
 .nutrition-input-item label {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .nutrition-input-item input {
   padding: 10px;
-  border: 2px solid #ddd;
+  border: 2px solid var(--border-color);
+  background: var(--input-bg);
+  color: var(--text-primary);
   border-radius: 6px;
   font-size: 0.95rem;
   font-family: inherit;
@@ -323,7 +331,7 @@
 .nutrition-input-item input:focus {
   outline: none;
   border-color: #8209B1;
-  background: white;
+  background: var(--input-bg);
 }
 
 .nutrition-input-item input::placeholder {
@@ -399,12 +407,12 @@
   cursor: pointer;
   font-weight: 600;
   color: #8209B1;
-  background-color: white;
+  background-color: var(--card-bg);
   transition: all 0.3s;
 }
 
 .meal-planner-buttons button:hover {
-  background-color: #f3e5f5;
+  background-color: var(--bg-secondary);
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(130, 9, 177, 0.2);
 }
@@ -429,7 +437,7 @@
   cursor: pointer;
   font-weight: 600;
   color: #8209B1;
-  background-color: white;
+  background-color: var(--card-bg);
   transition: all 0.3s;
   font-size: 1rem;
 }
@@ -504,10 +512,10 @@
   top: 100%;
   right: 0;
   margin-top: 8px;
-  background-color: white;
-  border: 1px solid #ddd;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px var(--shadow-color);
   z-index: 1000;
   min-width: 180px;
   overflow: hidden;
@@ -525,11 +533,11 @@
   gap: 10px;
   font-size: 0.95rem;
   transition: background-color 0.2s;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .share-option:hover {
-  background-color: #f5f5f5;
+  background-color: var(--bg-secondary);
 }
 
 .share-icon {
