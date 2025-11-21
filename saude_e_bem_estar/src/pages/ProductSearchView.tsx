@@ -6,6 +6,7 @@ import { SearchInput } from "../components/SearchInput";
 import { SuggestionsList } from "../components/SuggestionsList";
 import { ProductDetails } from "../components/ProductDetails";
 import { SearchHistory } from "../components/SearchHistory";
+import { ProductComparisonModal } from "../components/ProductComparisonModal";
 import "../styles/ProductSearch.css";
 import AddProductToShoppingListModal from '../components/AddProductToShoppingListModal';
 
@@ -14,6 +15,7 @@ const ProductSearchView: React.FC = () => {
   const vm = useProductSearch();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+  const [comparisonModalOpen, setComparisonModalOpen] = useState(false);
 
   // Open modal automatically whenever vm.selected changes (user picks a product).
   useEffect(() => {
@@ -74,7 +76,17 @@ const ProductSearchView: React.FC = () => {
         </div>
 
         {vm.selected && (
-          <ProductDetails product={vm.selected} />
+          <div>
+            <ProductDetails product={vm.selected} />
+            <div className="product-actions">
+              <button
+                className="compare-btn"
+                onClick={() => setComparisonModalOpen(true)}
+              >
+                🔍 Comparar com outro produto
+              </button>
+            </div>
+          </div>
         )}
 
         <SearchHistory 
@@ -91,6 +103,14 @@ const ProductSearchView: React.FC = () => {
         onClose={closeAddModal}
         product={selectedProduct}
       />
+
+      {vm.selected && (
+        <ProductComparisonModal
+          isOpen={comparisonModalOpen}
+          baseProduct={Array.isArray(vm.selected) ? vm.selected[0] : vm.selected}
+          onClose={() => setComparisonModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

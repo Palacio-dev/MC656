@@ -5,6 +5,7 @@ import { MealRecipeDetailsModal } from "../components/MealRecipeDetailsModal";
 import { NutritionSummary } from "../components/NutritionSummary";
 import { PageHeader } from "../components/PageHeader";
 import { calculatePeriodNutrition, PeriodNutritionSummary } from "../services/MealPlanNutritionService";
+import { WeeklyStrategy } from "../components/strategies/WeeklyStrategy";
 import React from "react";
 import "../styles/mealplaner.css";
 
@@ -196,7 +197,7 @@ export const MealPlannerView = observer(({ vm }: { vm: MealPlannerViewModel }) =
    */
   React.useEffect(() => {
     calculateNutritionForView();
-  }, [calculateNutritionForView, vm.mealsByDate]);
+  }, [calculateNutritionForView, vm.mealsByDate, currentView]);
 
   /**
    * Toggle share menu
@@ -383,31 +384,105 @@ export const MealPlannerView = observer(({ vm }: { vm: MealPlannerViewModel }) =
         </div>
       </div>
 
-      <div className="meal-planner-buttons">
-        <button 
-          onClick={() => {
-            vm.setDailyView(new Date());
-            setCurrentView('daily');
-          }}
-        >
-          Diária
-        </button>
-        <button 
-          onClick={() => {
-            vm.setWeeklyView();
-            setCurrentView('weekly');
-          }}
-        >
-          Semanal
-        </button>
-        <button
-          onClick={() => {
-            vm.setMonthlyView(new Date().getMonth(), new Date().getFullYear());
-            setCurrentView('monthly');
-          }}
-        >
-          Mensal
-        </button>
+      <div className="meal-planner-view-controls">
+        <div className="meal-planner-buttons">
+          <button 
+            className={currentView === 'daily' ? 'active' : ''}
+            onClick={() => {
+              vm.setDailyView(new Date());
+              setCurrentView('daily');
+            }}
+          >
+            Diária
+          </button>
+          <button 
+            className={currentView === 'weekly' ? 'active' : ''}
+            onClick={() => {
+              vm.setWeeklyView();
+              setCurrentView('weekly');
+            }}
+          >
+            Semanal
+          </button>
+          <button
+            className={currentView === 'monthly' ? 'active' : ''}
+            onClick={() => {
+              vm.setMonthlyView(new Date().getMonth(), new Date().getFullYear());
+              setCurrentView('monthly');
+            }}
+          >
+            Mensal
+          </button>
+        </div>
+
+        <div className="meal-planner-navigation">
+          <button 
+            className="nav-arrow"
+            onClick={() => {
+              const currentRange = vm.strategy.getDateRange();
+              const currentStart = currentRange.start;
+              
+              if (currentView === 'daily') {
+                const prevDay = new Date(currentStart);
+                prevDay.setDate(prevDay.getDate() - 1);
+                vm.setDailyView(prevDay);
+              } else if (currentView === 'weekly') {
+                const prevWeek = new Date(currentStart);
+                prevWeek.setDate(prevWeek.getDate() - 7);
+                vm.strategy = new WeeklyStrategy(prevWeek);
+                vm.loadMealsForCurrentView();
+              } else if (currentView === 'monthly') {
+                const prevMonth = new Date(currentStart);
+                prevMonth.setMonth(prevMonth.getMonth() - 1);
+                vm.setMonthlyView(prevMonth.getMonth(), prevMonth.getFullYear());
+              }
+            }}
+            title="Anterior"
+          >
+            ←
+          </button>
+          <button 
+            className="nav-arrow nav-today"
+            onClick={() => {
+              const today = new Date();
+              if (currentView === 'daily') {
+                vm.setDailyView(today);
+              } else if (currentView === 'weekly') {
+                vm.setWeeklyView();
+              } else if (currentView === 'monthly') {
+                vm.setMonthlyView(today.getMonth(), today.getFullYear());
+              }
+            }}
+            title={currentView === 'daily' ? 'Hoje' : currentView === 'weekly' ? 'Esta Semana' : 'Este Mês'}
+          >
+            {currentView === 'daily' ? 'Hoje' : currentView === 'weekly' ? 'Esta Semana' : 'Este Mês'}
+          </button>
+          <button 
+            className="nav-arrow"
+            onClick={() => {
+              const currentRange = vm.strategy.getDateRange();
+              const currentStart = currentRange.start;
+              
+              if (currentView === 'daily') {
+                const nextDay = new Date(currentStart);
+                nextDay.setDate(nextDay.getDate() + 1);
+                vm.setDailyView(nextDay);
+              } else if (currentView === 'weekly') {
+                const nextWeek = new Date(currentStart);
+                nextWeek.setDate(nextWeek.getDate() + 7);
+                vm.strategy = new WeeklyStrategy(nextWeek);
+                vm.loadMealsForCurrentView();
+              } else if (currentView === 'monthly') {
+                const nextMonth = new Date(currentStart);
+                nextMonth.setMonth(nextMonth.getMonth() + 1);
+                vm.setMonthlyView(nextMonth.getMonth(), nextMonth.getFullYear());
+              }
+            }}
+            title="Próximo"
+          >
+            →
+          </button>
+        </div>
       </div>
 
       {/* Nutrition Summary */}

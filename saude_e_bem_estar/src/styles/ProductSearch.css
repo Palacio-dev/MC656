@@ -281,4 +281,47 @@
   .clear-history-btn {
     width: 100%;
   }
+
+  .product-actions {
+    flex-direction: column;
+  }
+
+  .compare-btn {
+    width: 100%;
+  }
+}
+
+/* Product Actions */
+.product-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.compare-btn {
+  background: linear-gradient(135deg, #8209B1 0%, #9c27b0 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(130, 9, 177, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.compare-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(130, 9, 177, 0.4);
+}
+
+.compare-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(130, 9, 177, 0.3);
 }
