@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { PageHeader } from "../components/PageHeader";
 import { useProductSearch } from "../hooks/useProductSearch";
 import { SearchInput } from "../components/SearchInput";
 import { SuggestionsList } from "../components/SuggestionsList";
 import { ProductDetails } from "../components/ProductDetails";
 import { SearchHistory } from "../components/SearchHistory";
-import { useNavigate } from "react-router-dom";
 import "../styles/ProductSearch.css";
 import AddProductToShoppingListModal from '../components/AddProductToShoppingListModal';
 
-export default function ProductSearchView(/* props */) {
+const ProductSearchView: React.FC = () => {
   const navigate = useNavigate();
   const vm = useProductSearch();
   const [modalOpen, setModalOpen] = useState(false);
@@ -50,12 +51,10 @@ export default function ProductSearchView(/* props */) {
 
   return (
     <div className="product-search-container">
-      <div className="header-top">
-        <button className="back-button" onClick={() => navigate(-1)}>
-          ← Voltar
-        </button>
-        <h1 className="titulo">Busca de Produtos</h1>
-      </div>
+      <PageHeader 
+        title="Busca de Produtos"
+        subtitle="Digite o nome do produto para buscar informações nutricionais"
+      />
       
       <div className="product-search-content">
         <div className="search-box-wrapper">

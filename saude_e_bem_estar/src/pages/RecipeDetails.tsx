@@ -8,7 +8,9 @@ import { RecipeToMealPlanService } from '../services/RecipeToMealPlanService';
 import { MealPlannerViewModel } from '../hooks/MealPlannerHook';
 import { FirebaseMealPlannerModel } from '../models/firebaseMealPlannerModel';
 import { useAuth } from '../hooks/useAuth';
+import { PageHeader } from '../components/PageHeader';
 import '../styles/RecipeDetails.css';
+import { FirebaseRecipeService } from "../services/FirebaseRecipeService";
 
 /**
  * Recipe Details Page
@@ -157,6 +159,7 @@ const RecipeDetails: React.FC = () => {
       const count = await RecipeToMealPlanService.addRecipeToMealPlan(
         mealPlannerViewModel,
         recipe.title,
+        recipe.id,
         config
       );
 
@@ -207,12 +210,15 @@ const RecipeDetails: React.FC = () => {
 
   return (
     <div className="recipe-details-container">
-      {/* Header with back button and share button */}
-      <div className="recipe-details-header">
-        <button onClick={handleBack} className="back-btn" aria-label="Voltar">
-          ← Voltar
-        </button>
-        {recipe && (
+      {/* Header with navigation */}
+      <PageHeader 
+        title={recipe?.title || "Detalhes da Receita"}
+        showBackButton={true}
+        showHomeButton={true}
+      />
+      
+      {recipe && (
+        <div className="recipe-details-header">
           <div className="header-actions">
             <button 
               onClick={handleOpenMealPlanModal} 
@@ -247,8 +253,8 @@ const RecipeDetails: React.FC = () => {
               )}
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Loading State */}
       {isLoading && (

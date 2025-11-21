@@ -5,12 +5,17 @@ import { WeeklyStrategy } from "../components/strategies/WeeklyStrategy";
 import { MonthlyStrategy } from "../components/strategies/MonthlyStrategy";
 import type { MealPlannerModel } from "../models/firebaseMealPlannerModel";
 
+export interface MealData {
+  title: string;
+  recipeId?: string; // Optional: TudoGostoso recipe ID if it's from a recipe
+}
+
 export interface MealEntry {
-  breakfast?: string;
-  lunch?: string;
-  dinner?: string;
-  snack?: string;
-  [key: string]: string | undefined; // Allow custom meal slots
+  breakfast?: MealData | string; // Support both new format and legacy string
+  lunch?: MealData | string;
+  dinner?: MealData | string;
+  snack?: MealData | string;
+  [key: string]: MealData | string | undefined; // Allow custom meal slots
 }
 
 function toDateKey(date: Date): string {
@@ -125,7 +130,7 @@ export class MealPlannerViewModel {
   async updateMeal(
     date: Date,
     mealType: keyof MealEntry,
-    value: string
+    value: string | MealData
   ) {
     const key = toDateKey(date);
     const current = this.mealsByDate[key] || {};
@@ -146,5 +151,18 @@ export class MealPlannerViewModel {
     } catch (err) {
       console.error(err);
     }
+  }
+
+  // Helper to get meal title (works with both string and MealData format)
+  getMealTitle(meal: string | MealData | undefined): string {
+    if (!meal) return "";
+    if (typeof meal === "string") return meal;
+    return meal.title;
+  }
+
+  // Helper to get meal recipe ID
+  getMealRecipeId(meal: string | MealData | undefined): string | undefined {
+    if (!meal || typeof meal === "string") return undefined;
+    return meal.recipeId;
   }
 }

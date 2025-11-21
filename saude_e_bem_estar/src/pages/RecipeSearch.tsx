@@ -6,6 +6,9 @@ import { RecipeToMealPlanService } from '../services/RecipeToMealPlanService';
 import { MealPlannerViewModel } from '../hooks/MealPlannerHook';
 import { FirebaseMealPlannerModel } from '../models/firebaseMealPlannerModel';
 import { useAuth } from '../hooks/useAuth';
+import { getRecipeById } from "../services/RecipeService";
+import { FirebaseRecipeService } from "../services/FirebaseRecipeService";
+import { PageHeader } from '../components/PageHeader';
 import '../styles/RecipeSearch.css';
 
 /**
@@ -78,9 +81,21 @@ const RecipeSearch: React.FC = () => {
     if (!selectedRecipe || !currentUser) return;
 
     try {
+      // 1️⃣ Buscar detalhes completos da receita com ID do TudoGostoso
+      const recipeDetails = await getRecipeById(selectedRecipe.id);
+
+      console.log("Recipe details:", recipeDetails);
+
+      // 2️⃣ Salvar no Firebase (AGORA funciona!)
+      await FirebaseRecipeService.saveRecipe(recipeDetails);
+
+      console.log("Receita salva no Firebase!");
+
+      // 3️⃣ Adicionar ao planejamento usando o título e ID
       const count = await RecipeToMealPlanService.addRecipeToMealPlan(
         mealPlannerViewModel,
         selectedRecipe.title,
+        recipeDetails.id,
         config
       );
 
@@ -89,26 +104,22 @@ const RecipeSearch: React.FC = () => {
       } else {
         alert(`Receita "${selectedRecipe.title}" adicionada a ${count} refeições!`);
       }
-      
+
       setIsMealPlanModalOpen(false);
       setSelectedRecipe(null);
     } catch (err: any) {
-      console.error('Erro ao adicionar ao planejamento:', err);
-      alert(err.message || 'Erro ao adicionar ao planejamento');
+      console.error("Erro ao adicionar ao planejamento:", err);
+      alert(err.message || "Erro ao adicionar ao planejamento");
     }
   };
 
+
   return (
     <div className="recipe-search-container">
-      <div className="recipe-search-header">
-        <button onClick={() => navigate(-1)} className="back-btn" aria-label="Voltar">
-          ← Voltar
-        </button>
-        <h1>Buscar Receitas</h1>
-        <p className="recipe-search-subtitle">
-          Encontre receitas deliciosas para adicionar ao seu planejamento
-        </p>
-      </div>
+      <PageHeader
+        title="Buscar Receitas"
+        subtitle="Encontre receitas deliciosas para adicionar ao seu planejamento"
+      />
 
       {/* Search Bar */}
       <form onSubmit={handleSubmit} className="recipe-search-form">
