@@ -94,3 +94,5 @@ const ProductSearchView: React.FC = () => {
     </div>
   );
 }
+
+export default ProductSearchView;
