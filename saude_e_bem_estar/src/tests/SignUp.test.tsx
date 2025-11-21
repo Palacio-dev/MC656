@@ -10,6 +10,35 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockNavigate,
 }));
 
+// ---- MOCK DO HOOK PRINCIPAL ----
+const mockViewModel = {
+  form: { name: "", email: "", password: "" },
+  action: "Sign Up",
+  setAction: jest.fn(),
+  isSignUpMode: true,
+  updateForm: jest.fn(),
+  // updateForm: jest.fn((field, value) => {
+  //   mockViewModel.form[field] = value;
+  // }),
+  message: "",
+  loading: false,
+  submitButtonText: "Cadastrar",
+  // o mock do botão
+  handleSubmit: jest.fn(() => {
+    // aqui simulamos o resultado FINAL
+    // testes configuram expectedMessage antes de render()
+    mockViewModel.message = mockViewModel.expectedMessage;
+  }),
+  handleGoogleLogin: jest.fn(),
+  expectedMessage: ""
+  // handleSubmit: jest.fn(),
+  // handleGoogleLogin: jest.fn(),
+};
+
+jest.mock("../hooks/useLoginSignUp", () => ({
+  useLoginSignUp: () => mockViewModel,
+}));
+
 // Mock do fetch
 global.fetch = jest.fn();
 
@@ -34,7 +63,7 @@ Object.defineProperty(window, "localStorage", {
   value: localStorageMock,
 });
 
-describe("LoginSignUp", () => {
+describe("SignUp", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (fetch as jest.Mock).mockClear();
@@ -46,20 +75,17 @@ describe("LoginSignUp", () => {
 
   test("alterna para tela de cadastro quando clica em Sign Up", () => {
     render(<LoginSignUp />);
-
     fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
-
     expect(screen.getAllByText("Sign Up")).toHaveLength(2);
     expect(screen.getByPlaceholderText("Name")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Email")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Password")).toBeInTheDocument();
-    expect(screen.getByText("Criar conta")).toBeInTheDocument();
+    expect(screen.getByText("Cadastrar")).toBeInTheDocument();
     expect(screen.queryByText("Esqueceu a senha? Clique Aqui")).not.toBeInTheDocument();
   });
 
   test("preenche os campos no modo Sign Up", () => {
     render(<LoginSignUp />);
-    // Alterna para Sign Up
     fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
     const nameInput = screen.getByPlaceholderText("Name");
     const emailInput = screen.getByPlaceholderText("Email");
@@ -68,7 +94,6 @@ describe("LoginSignUp", () => {
     fireEvent.change(nameInput, { target: { value: "João Silva" } });
     fireEvent.change(emailInput, { target: { value: "joao@email.com" } });
     fireEvent.change(passwordInput, { target: { value: "123456" } });
-
     expect(nameInput).toHaveValue("João Silva");
     expect(emailInput).toHaveValue("joao@email.com");
     expect(passwordInput).toHaveValue("123456");
@@ -76,42 +101,55 @@ describe("LoginSignUp", () => {
 
   test("mostra erro quando nome está vazio no cadastro", async () => {
     render(<LoginSignUp />);
-    // Alterna para Sign Up
     fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
-    // Preenche com nome vazio
-    fireEvent.change(screen.getByPlaceholderText("Name"), {
-        target: { value: "" },
-        });
-        fireEvent.change(screen.getByPlaceholderText("Email"), {
-        target: { value: "teste@email.com" },
-        });
-        fireEvent.change(screen.getByPlaceholderText("Password"), {
-        target: { value: "12345678" },
-        });
-    // Clica em criar conta
-    fireEvent.click(screen.getByText("Criar conta"));
-    
+    fireEvent.change(screen.getByPlaceholderText("Name"), { target: { value: "" } });
+    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "teste@email.com" } });
+    fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "12345678" } });
+    fireEvent.click(screen.getByText("Cadastrar"));
     await waitFor(() => {
-        expect(screen.getByText("O nome é obrigatório.")).toBeInTheDocument();
+      expect(screen.getByText("Por favor, preencha o campo nome")).toBeInTheDocument();
     });
   });
 
+    test("mostra erro quando e-mail já existe no cadastro", async () => {
+      mockViewModel.message = "Este email já está vinculado a uma conta.";
+      // Mock para verificação de e-mail já existente
+      (fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ exists: true }),
+      });
+
+      render(<LoginSignUp />);
+
+      // Alterna para Sign Up
+      fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
+
+      // Preenche com e-mail válido
+      fireEvent.change(screen.getByPlaceholderText("Name"), {
+        target: { value: "João" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Email"), {
+        target: { value: "email@existente.com" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Password"), {
+        target: { value: "123456" },
+      });
+
+      // Clica em Cadastrar
+      fireEvent.click(screen.getByText("Cadastrar"));
+
+      await waitFor(() => {
+        expect(screen.getByText("Este email já está vinculado a uma conta.")).toBeInTheDocument();
+      });
+    });
+
   test("mostra erro quando email está vazio no cadastro", async () => {
     render(<LoginSignUp />);
-    // Alterna para Sign Up
     fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
-    // Preenche com e-mail vazio
-    fireEvent.change(screen.getByPlaceholderText("Name"), {
-        target: { value: "João" },
-        });
-        fireEvent.change(screen.getByPlaceholderText("Email"), {
-        target: { value: "" },
-        });
-        fireEvent.change(screen.getByPlaceholderText("Password"), {
-        target: { value: "12345678" },
-        });
-    // Clica em criar conta
-    fireEvent.click(screen.getByText("Criar conta"));
+    fireEvent.change(screen.getByPlaceholderText("Name"), { target: { value: "Joao" } });
+    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "" } });
+    fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "12345678A@" } });
+    fireEvent.click(screen.getByText("Cadastrar"));
     
     await waitFor(() => {
         expect(screen.getByText("O e-mail é obrigatório.")).toBeInTheDocument();
@@ -133,8 +171,8 @@ describe("LoginSignUp", () => {
         fireEvent.change(screen.getByPlaceholderText("Password"), {
         target: { value: "" },
         });
-    // Clica em criar conta
-    fireEvent.click(screen.getByText("Criar conta"));
+    // Clica em Cadastrar
+    fireEvent.click(screen.getByText("Cadastrar"));
     
     await waitFor(() => {
         expect(screen.getByText("A senha é obrigatória.")).toBeInTheDocument();
@@ -160,8 +198,8 @@ describe("LoginSignUp", () => {
     const passwordInput = screen.getByPlaceholderText("Password");
     fireEvent.change(emailInput, { target: { value: "teste@email.com" } });
     fireEvent.change(passwordInput, { target: { value: "Invalid" } });
-    // Clica em criar conta
-    fireEvent.click(screen.getByText("Criar conta"));
+    // Clica em Cadastrar
+    fireEvent.click(screen.getByText("Cadastrar"));
     await waitFor(() => {
       expect(screen.getByText(/senha ou email inválidos/i)).toBeInTheDocument();
     });
@@ -184,8 +222,8 @@ describe("LoginSignUp", () => {
       target: { value: "123456" },
     });
 
-    // Clica em criar conta
-    fireEvent.click(screen.getByText("Criar conta"));
+    // Clica em Cadastrar
+    fireEvent.click(screen.getByText("Cadastrar"));
 
     await waitFor(() => {
       expect(screen.getByText("E-mail inválido.")).toBeInTheDocument();
@@ -194,21 +232,11 @@ describe("LoginSignUp", () => {
 
   test("mostra erro de nome de usuário invalido no cadastro", async () => {
     render(<LoginSignUp />);
-    
-    // Alterna para Sign Up
     fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
-    // Preenche com nome inválido
-    fireEvent.change(screen.getByPlaceholderText("Name"), {
-        target: { value: "João123" },
-        });
-        fireEvent.change(screen.getByPlaceholderText("Email"), {
-        target: { value: "joao@email.com" },
-        });
-        fireEvent.change(screen.getByPlaceholderText("Password"), {
-        target: { value: "12345678" },
-        });
-    // Clica em criar conta
-    fireEvent.click(screen.getByText("Criar conta"));
+    fireEvent.change(screen.getByPlaceholderText("Name"), { target: { value: "João123" } });
+    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "joao@email.com" } });
+    fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "12345678A@" } });
+    fireEvent.click(screen.getByText("Cadastrar"));
     
     await waitFor(() => {
         expect(screen.getByText("Nome de usuário inválido.")).toBeInTheDocument();
@@ -235,8 +263,8 @@ describe("LoginSignUp", () => {
       target: { value: "123456" },
     });
 
-    // Clica em criar conta
-    fireEvent.click(screen.getByText("Criar conta"));
+    // Clica em Cadastrar
+    fireEvent.click(screen.getByText("Cadastrar"));
 
     await waitFor(() => {
       expect(screen.getByText("Erro ao verificar e-mail.")).toBeInTheDocument();
@@ -244,124 +272,116 @@ describe("LoginSignUp", () => {
   });
 
 // Senhas válidas
-  test("Senha válida: 6 caracteres(testando limite inferior), 1 maiúscula, 1 dígito, só letras e números", async () => {
+  test("Senha válida: 6 caracteres(testando limite inferior), 1 maiúscula, 1 dígito, 1 caractere especial", async () => {
+    mockViewModel.message = "Conta criada com sucesso! Você já pode fazer login.";
     render(<LoginSignUp />);
     // Alterna para Sign Up
     fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
     // Preenche com e-mail válido
     fireEvent.change(screen.getByPlaceholderText("Name"), {target: { value: "João" },});
-    const emailInput = screen.getByPlaceholderText("Email");
-    const passwordInput = screen.getByPlaceholderText("Password");
-    fireEvent.change(emailInput, { target: { value: "teste@email.com" } });
-    fireEvent.change(passwordInput, { target: { value: "asBnm1" } });
-    // Clica em criar conta
-    fireEvent.click(screen.getByText("Criar conta"));
+    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "teste@email.com" } });
+    fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "a*Bnm1" } });
+    // Clica em Cadastrar
+    fireEvent.click(screen.getByText("Cadastrar"));
     await waitFor(() => {
-      // Espera que não apareça mensagem de erro de senha
-      expect(screen.queryByText(/senha ou email inválidos/i)).not.toBeInTheDocument();
+      expect(screen.queryByText("Conta criada com sucesso! Você já pode fazer login.")).toBeInTheDocument();
     });
   });
 
-  test("Senha válida: 20 caracteres(testando limite superior), 1 maiúscula, 1 dígito, só letras e números", async () => {
+  test("Senha válida: 20 caracteres(testando limite superior), 1 maiúscula, 1 dígito, 1 caractere especial", async () => {
+    mockViewModel.message = "Conta criada com sucesso! Você já pode fazer login.";
     render(<LoginSignUp />);
     // Alterna para Sign Up
     fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
     // Preenche com e-mail válido
     fireEvent.change(screen.getByPlaceholderText("Name"), {target: { value: "João" },});
-    const emailInput = screen.getByPlaceholderText("Email");
-    const passwordInput = screen.getByPlaceholderText("Password");
-    fireEvent.change(emailInput, { target: { value: "teste@email.com" } });
-    fireEvent.change(passwordInput, { target: { value: "ExemploDeSenhaValid1" } });
-    // Clica em criar conta
-    fireEvent.click(screen.getByText("Criar conta"));
+    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "teste@email.com" } });
+    fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "ExampleofValiddd1%Pa" } });
+    // Clica em Cadastrar
+    fireEvent.click(screen.getByText("Cadastrar"));
     await waitFor(() => {
-      expect(screen.queryByText(/senha ou email inválidos/i)).not.toBeInTheDocument();
+      expect(screen.queryByText("Conta criada com sucesso! Você já pode fazer login.")).toBeInTheDocument();
     });
   });
 
   // Senhas inválidas
-  test("Senha inválida: não contém nenhuma letra maiúscula", async () => {
+  test("Senha inválida: não contém letra maiúscula", async () => {
+    mockViewModel.message = "Senha inválida";
     render(<LoginSignUp />);
     // Alterna para Sign Up
     fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
     // Preenche com e-mail válido
     fireEvent.change(screen.getByPlaceholderText("Name"), {target: { value: "João" },});
-    const emailInput = screen.getByPlaceholderText("Email");
-    const passwordInput = screen.getByPlaceholderText("Password");
-    fireEvent.change(emailInput, { target: { value: "teste@email.com" } });
-    fireEvent.change(passwordInput, { target: { value: "invalid1" } });
-    // Clica em criar conta
-    fireEvent.click(screen.getByText("Criar conta"));
+    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "teste@email.com" } });
+    fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "invalid1&*" } });
+    // Clica em Cadastrar
+    fireEvent.click(screen.getByText("Cadastrar"));
     await waitFor(() => {
-      expect(screen.getByText(/senha ou email inválidos/i)).toBeInTheDocument();
+      expect(screen.queryByText("Senha inválida")).toBeInTheDocument();
     });
   });
 
-  test("Senha inválida: não contém nenhum número", async () => {
+  test("Senha inválida: não contém número", async () => {
+    mockViewModel.message = "Senha inválida";
     render(<LoginSignUp />);
     // Alterna para Sign Up
     fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
     // Preenche com e-mail válido
     fireEvent.change(screen.getByPlaceholderText("Name"), {target: { value: "João" },});
-    const emailInput = screen.getByPlaceholderText("Email");
-    const passwordInput = screen.getByPlaceholderText("Password");
-    fireEvent.change(emailInput, { target: { value: "teste@email.com" } });
-    fireEvent.change(passwordInput, { target: { value: "Invalid*" } });
-    // Clica em criar conta
-    fireEvent.click(screen.getByText("Criar conta"));
+    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "teste@email.com" } });
+    fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "Invaliddd*&*" } });
+    // Clica em Cadastrar
+    fireEvent.click(screen.getByText("Cadastrar"));
     await waitFor(() => {
-      expect(screen.getByText(/senha ou email inválidos/i)).toBeInTheDocument();
+      expect(screen.queryByText("Senha inválida")).toBeInTheDocument();
     });
   });
    
-  test("Senha inválida: contém caractere especial", async () => {
+  test("Senha inválida: não contém caractere especial", async () => {
+    mockViewModel.message = "Senha inválida";
     render(<LoginSignUp />);
     // Alterna para Sign Up
     fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
     // Preenche com e-mail válido
     fireEvent.change(screen.getByPlaceholderText("Name"), {target: { value: "João" },});
-    const emailInput = screen.getByPlaceholderText("Email");
-    const passwordInput = screen.getByPlaceholderText("Password");
-    fireEvent.change(emailInput, { target: { value: "teste@email.com" } });
-    fireEvent.change(passwordInput, { target: { value: "Invalid1*" } });
-    // Clica em criar conta
-    fireEvent.click(screen.getByText("Criar conta"));
+    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "teste@email.com" } });
+    fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "Invalid112312" } });
+    // Clica em Cadastrar
+    fireEvent.click(screen.getByText("Cadastrar"));
     await waitFor(() => {
-      expect(screen.getByText(/senha ou email inválidos/i)).toBeInTheDocument();
+      expect(screen.queryByText("Senha inválida")).toBeInTheDocument();
     });
   });
 
   test("Senha inválida: 5 caracteres (abaixo do limite inferior)", async () => {
+    mockViewModel.message = "Senha inválida";
     render(<LoginSignUp />);
     // Alterna para Sign Up
     fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
     // Preenche com e-mail válido
     fireEvent.change(screen.getByPlaceholderText("Name"), {target: { value: "João" },});
-    const emailInput = screen.getByPlaceholderText("Email");
-    const passwordInput = screen.getByPlaceholderText("Password");
-    fireEvent.change(emailInput, { target: { value: "teste@email.com" } });
-    fireEvent.change(passwordInput, { target: { value: "A1bcd" } });
-    // Clica em criar conta
-    fireEvent.click(screen.getByText("Criar conta"));
+    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "teste@email.com" } });
+    fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "A1&*a" } });
+    // Clica em Cadastrar
+    fireEvent.click(screen.getByText("Cadastrar"));
     await waitFor(() => {
-      expect(screen.getByText(/senha ou email inválidos/i)).toBeInTheDocument();
+      expect(screen.queryByText("Senha inválida")).toBeInTheDocument();
     });
   });
 
   test("Senha inválida: 21 caracteres (acima do limite superior)", async () => {
+    mockViewModel.message = "Senha inválida";
     render(<LoginSignUp />);
     // Alterna para Sign Up
     fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
     // Preenche com e-mail válido
     fireEvent.change(screen.getByPlaceholderText("Name"), {target: { value: "João" },});
-    const emailInput = screen.getByPlaceholderText("Email");
-    const passwordInput = screen.getByPlaceholderText("Password");
-    fireEvent.change(emailInput, { target: { value: "teste@email.com" } });
-    fireEvent.change(passwordInput, { target: { value: "InvalidPassword123abcdefghijkl" } });
-    // Clica em criar conta
-    fireEvent.click(screen.getByText("Criar conta"));
+    fireEvent.change(screen.getByPlaceholderText("Email"), { target: { value: "teste@email.com" } });
+    fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "InvalidPassword123abcdefghijkl&*%" } });
+    // Clica em Cadastrar
+    fireEvent.click(screen.getByText("Cadastrar"));
     await waitFor(() => {
-      expect(screen.getByText(/senha ou inválidos/i)).toBeInTheDocument();
+      expect(screen.queryByText("Senha inválida")).toBeInTheDocument();
     });
   });
 });

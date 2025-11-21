@@ -9,7 +9,17 @@ import {
 
 export class FirebaseAuthModel {
   async signUp(email: string, password: string): Promise<UserCredential> {
-    return await createUserWithEmailAndPassword(auth, email, password);
+    try {
+      return await createUserWithEmailAndPassword(auth, email, password);
+    } catch (error: any) {
+      if (error.code === "auth/email-already-in-use") {
+        throw new Error("Este email já está vinculado a uma conta.");
+      }
+      if (error.code === "auth/invalid-email") {
+        throw new Error("Este email não é válido.");
+      }
+      throw error;
+    }
   }
 
   async login(email: string, password: string): Promise<UserCredential> {

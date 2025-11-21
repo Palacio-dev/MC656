@@ -38,10 +38,31 @@ export function useLoginSignUp() {
 
     try {
       if (isSignUpMode) {
+        // Validação do nome: apenas letras, números e underscore, sem espaços
+        const nameRegex = /^[A-Za-z0-9_]+$/;
+        if (form.name == ""){
+          throw new Error("Por favor, preencha o campo nome");
+        }
+        if (!nameRegex.test(form.name)) {
+          throw new Error("Nome inválido, por favor, não coloque caracteres especiais nem espaços!");
+        }
+        // Validação da senha
+        // - Entre 6 e 20 caracteres
+        // - Pelo menos uma letra maiúscula
+        // - Pelo menos um número
+        // - Pelo menos um caractere especial
+        const password = form.password;
+        const lengthValid = password.length >= 6 && password.length <= 20;
+        const hasUppercase = /[A-Z]/.test(password);
+        const hasNumber = /[0-9]/.test(password);
+        const hasSpecialChar = /[^A-Za-z0-9]/.test(password);
+        if (!(lengthValid && hasUppercase && hasNumber && hasSpecialChar)) {
+          throw new Error("Senha inválida");
+        }
+
         await AuthModel.signUp(form.email, form.password);
         setMessage("Conta criada com sucesso! Você já pode fazer login.");
         setAction("Login");
-
       } else {
         await AuthModel.login(form.email, form.password);
         navigate("/Welcome");
