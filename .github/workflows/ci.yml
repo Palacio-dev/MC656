@@ -36,6 +36,7 @@ jobs:
           CI: false
         run: |
           while true; do echo "Still getting dependencies..."; sleep 60; done &
+          npm install
           npm ci
           kill %1
         working-directory: saude_e_bem_estar
