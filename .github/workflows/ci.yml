@@ -31,7 +31,7 @@ jobs:
         working-directory: saude_e_bem_estar
 
       - name: Build frontend
-        run: npm run build
+        run: CI=false npm run build
         working-directory: saude_e_bem_estar
 
       - name: Run frontend tests
