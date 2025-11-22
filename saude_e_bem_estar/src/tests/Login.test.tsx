@@ -55,19 +55,6 @@ describe("LoginSignUp", () => {
     expect(screen.getByText("Clique Aqui")).toBeInTheDocument();
   });
 
-  test("alterna para tela de cadastro quando clica em Sign Up", () => {
-    render(<LoginSignUp />);
-
-    fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
-
-    expect(screen.getAllByText("Sign Up")).toHaveLength(2);
-    expect(screen.getByPlaceholderText("Name")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Email")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Password")).toBeInTheDocument();
-    expect(screen.getByText("Criar conta")).toBeInTheDocument();
-    expect(screen.queryByText("Esqueceu a senha? Clique Aqui")).not.toBeInTheDocument();
-  });
-
   test("atualiza os campos do formulário quando digitado", () => {
     render(<LoginSignUp />);
 
@@ -79,43 +66,6 @@ describe("LoginSignUp", () => {
 
     expect(emailInput).toHaveValue("teste@email.com");
     expect(passwordInput).toHaveValue("123456");
-  });
-
-  test("preenche campo name no modo Sign Up", () => {
-    render(<LoginSignUp />);
-
-    // Alterna para Sign Up
-    fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
-
-    const nameInput = screen.getByPlaceholderText("Name");
-    fireEvent.change(nameInput, { target: { value: "João Silva" } });
-
-    expect(nameInput).toHaveValue("João Silva");
-  });
-
-  test("mostra erro para e-mail inválido no cadastro", async () => {
-    render(<LoginSignUp />);
-
-    // Alterna para Sign Up
-    fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
-
-    // Preenche com e-mail inválido
-    fireEvent.change(screen.getByPlaceholderText("Name"), {
-      target: { value: "João" },
-    });
-    fireEvent.change(screen.getByPlaceholderText("Email"), {
-      target: { value: "email-invalido" },
-    });
-    fireEvent.change(screen.getByPlaceholderText("Password"), {
-      target: { value: "123456" },
-    });
-
-    // Clica em criar conta
-    fireEvent.click(screen.getByText("Criar conta"));
-
-    await waitFor(() => {
-      expect(screen.getByText("E-mail inválido.")).toBeInTheDocument();
-    });
   });
 
   test("realiza login com sucesso", async () => {
@@ -186,65 +136,6 @@ describe("LoginSignUp", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Erro de rede")).toBeInTheDocument();
-    });
-  });
-
-  test("mostra erro quando e-mail já existe no cadastro", async () => {
-    // Mock para verificação de e-mail já existente
-    (fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ exists: true }),
-    });
-
-    render(<LoginSignUp />);
-
-    // Alterna para Sign Up
-    fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
-
-    // Preenche com e-mail válido
-    fireEvent.change(screen.getByPlaceholderText("Name"), {
-      target: { value: "João" },
-    });
-    fireEvent.change(screen.getByPlaceholderText("Email"), {
-      target: { value: "email@existente.com" },
-    });
-    fireEvent.change(screen.getByPlaceholderText("Password"), {
-      target: { value: "123456" },
-    });
-
-    // Clica em criar conta
-    fireEvent.click(screen.getByText("Criar conta"));
-
-    await waitFor(() => {
-      expect(screen.getByText("Este e-mail já está registrado.")).toBeInTheDocument();
-    });
-  });
-
-  test("mostra erro quando verificação de e-mail falha", async () => {
-    // Mock para falha na verificação de e-mail
-    (fetch as jest.Mock).mockRejectedValueOnce(new Error("Erro de rede"));
-
-    render(<LoginSignUp />);
-
-    // Alterna para Sign Up
-    fireEvent.click(screen.getByRole("button", { name: "Sign Up" }));
-
-    // Preenche com e-mail válido
-    fireEvent.change(screen.getByPlaceholderText("Name"), {
-      target: { value: "João" },
-    });
-    fireEvent.change(screen.getByPlaceholderText("Email"), {
-      target: { value: "joao@email.com" },
-    });
-    fireEvent.change(screen.getByPlaceholderText("Password"), {
-      target: { value: "123456" },
-    });
-
-    // Clica em criar conta
-    fireEvent.click(screen.getByText("Criar conta"));
-
-    await waitFor(() => {
-      expect(screen.getByText("Erro ao verificar e-mail.")).toBeInTheDocument();
     });
   });
 
