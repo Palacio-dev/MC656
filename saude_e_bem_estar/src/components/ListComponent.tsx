@@ -2,10 +2,11 @@ import CheckItem from "./CheckItem";
 import ButtonAddItem from "./ButtonAddItem";
 
 interface ListComponentProps {
-    items: Array<{ id: string; text: string; checked: boolean }>;
+    items: Array<{ id: string; text: string; quantity?: string; checked: boolean }>;
     onToggleItem: (id: string, checked: boolean) => void;
     onDeleteItem: (id: string) => void;
-    onAddItem: (itemText: string) => void;
+    onEditItem: (id: string, text: string, quantity?: string) => void;
+    onAddItem: (itemText: string, quantity?: string) => void;
     placeholder?: string;
 }
 
@@ -15,6 +16,7 @@ interface ListComponentProps {
  * @param items - Array de itens da lista
  * @param onToggleItem - Função para marcar/desmarcar item
  * @param onDeleteItem - Função para deletar item
+ * @param onEditItem - Função para editar item
  * @param onAddItem - Função para adicionar novo item
  * @param placeholder - Texto placeholder para o input
  * @returns {JSX.Element} - O componente ListComponent renderizado
@@ -23,6 +25,7 @@ export default function ListComponent({
     items,
     onToggleItem,
     onDeleteItem,
+    onEditItem,
     onAddItem,
     placeholder = "Adicione um item"
 }: ListComponentProps) {
@@ -34,9 +37,11 @@ export default function ListComponent({
                     key={item.id}
                     id={item.id}
                     text={item.text}
+                    quantity={item.quantity}
                     isChecked={item.checked}
                     onToggle={onToggleItem}
                     onDelete={onDeleteItem}
+                    onEdit={onEditItem}
                 />
             ))}
 
@@ -44,6 +49,7 @@ export default function ListComponent({
             <ButtonAddItem 
                 onAddItem={onAddItem}
                 placeholder={placeholder}
+                showQuantityInput={true}
             />
         </div>
     );

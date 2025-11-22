@@ -14,6 +14,7 @@ export function useRecipeDetails(recipeId: string | null) {
 
   /**
    * Fetch recipe details by ID
+   * First checks Firebase cache, then falls back to API
    */
   const fetchRecipeDetails = useCallback(async (id: string) => {
     setIsLoading(true);
@@ -21,8 +22,22 @@ export function useRecipeDetails(recipeId: string | null) {
     setRecipe(null);
 
     try {
-      const data = await getRecipeById(id);
-      setRecipe(data);
+      // First, try to get the recipe from Firebase
+      const cachedRecipe = await FirebaseRecipeService.getRecipe(id);
+      
+      if (cachedRecipe) {
+        console.log('Recipe loaded from Firebase:', cachedRecipe.title);
+        setRecipe(cachedRecipe);
+      } else {
+        // If not in Firebase, fetch from API
+        console.log('Recipe not in Firebase, fetching from API...');
+        const data = await getRecipeById(id);
+        setRecipe(data);
+        
+        // Save to Firebase for future use
+        await FirebaseRecipeService.saveRecipe(data);
+        console.log('Recipe saved to Firebase:', data.title);
+      }
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -51,14 +66,6 @@ export function useRecipeDetails(recipeId: string | null) {
       fetchRecipeDetails(recipeId);
     }
   }, [recipeId, fetchRecipeDetails]);
-
-  useEffect(() => {
-    if (recipe) {
-      FirebaseRecipeService.saveRecipe(recipe)
-        .then(() => console.log("Receita salva no Firebase:", recipe.title))
-        .catch(err => console.error("Erro ao salvar receita:", err));
-    }
-  }, [recipe]);
 
   return {
     // State

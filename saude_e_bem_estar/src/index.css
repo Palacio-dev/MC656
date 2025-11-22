@@ -7,6 +7,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
   height: 100vh;
   background: linear-gradient(#2a00b7, #42006c);
+  transition: background 0.3s ease;
+}
+
+/* Dark mode gradient */
+.dark-mode body {
+  background: linear-gradient(#0a0a0a, #1a1a1a);
 }
 
 code {

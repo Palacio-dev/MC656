@@ -1,4 +1,5 @@
 import React from 'react';
+import { observer } from 'mobx-react-lite';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useRecipeDetails } from '../hooks/useRecipeDetails';
 import { IngredientMatchModal } from '../components/IngredientMatchModal';
@@ -7,7 +8,10 @@ import { AddRecipeToMealPlanModal, MealPlanConfig } from '../components/AddRecip
 import { RecipeToMealPlanService } from '../services/RecipeToMealPlanService';
 import { MealPlannerViewModel } from '../hooks/MealPlannerHook';
 import { FirebaseMealPlannerModel } from '../models/firebaseMealPlannerModel';
+import { FavoritesViewModel } from '../hooks/useFavorites';
+import { FirebaseFavoritesModel } from '../models/firebaseFavoritesModel';
 import { useAuth } from '../hooks/useAuth';
+import { PageHeader } from '../components/PageHeader';
 import '../styles/RecipeDetails.css';
 import { FirebaseRecipeService } from "../services/FirebaseRecipeService";
 
@@ -15,7 +19,7 @@ import { FirebaseRecipeService } from "../services/FirebaseRecipeService";
  * Recipe Details Page
  * Displays full recipe information including ingredients and instructions
  */
-const RecipeDetails: React.FC = () => {
+const RecipeDetails: React.FC = observer(() => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const recipeId = searchParams.get('id');
@@ -32,6 +36,12 @@ const RecipeDetails: React.FC = () => {
   const mealPlannerViewModel = React.useMemo(() => {
     const model = new FirebaseMealPlannerModel();
     return new MealPlannerViewModel(model, currentUser?.uid || null);
+  }, [currentUser]);
+
+  // Initialize Favorites ViewModel
+  const favoritesViewModel = React.useMemo(() => {
+    const model = new FirebaseFavoritesModel();
+    return new FavoritesViewModel(model, currentUser?.uid || null);
   }, [currentUser]);
 
   /**
@@ -158,6 +168,7 @@ const RecipeDetails: React.FC = () => {
       const count = await RecipeToMealPlanService.addRecipeToMealPlan(
         mealPlannerViewModel,
         recipe.title,
+        recipe.id,
         config
       );
 
@@ -208,13 +219,31 @@ const RecipeDetails: React.FC = () => {
 
   return (
     <div className="recipe-details-container">
-      {/* Header with back button and share button */}
-      <div className="recipe-details-header">
-        <button onClick={handleBack} className="back-btn" aria-label="Voltar">
-          ← Voltar
-        </button>
-        {recipe && (
+      {/* Header with navigation */}
+      <PageHeader 
+        title={recipe?.title || "Detalhes da Receita"}
+        showBackButton={true}
+        showHomeButton={true}
+      />
+      
+      {recipe && (
+        <div className="recipe-details-header">
           <div className="header-actions">
+            <button
+              onClick={async () => {
+                if (recipeId && recipe) {
+                  try {
+                    await favoritesViewModel.toggleFavorite(recipeId, recipe.title);
+                  } catch (err: any) {
+                    alert(err.message || 'Erro ao atualizar favoritos');
+                  }
+                }
+              }}
+              className={`favorite-detail-btn ${recipeId && favoritesViewModel.isFavorite(recipeId) ? 'favorited' : ''}`}
+              aria-label={recipeId && favoritesViewModel.isFavorite(recipeId) ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+            >
+              {recipeId && favoritesViewModel.isFavorite(recipeId) ? '❤️ Favorito' : '🤍 Favoritar'}
+            </button>
             <button 
               onClick={handleOpenMealPlanModal} 
               className="add-to-meal-plan-btn"
@@ -248,8 +277,8 @@ const RecipeDetails: React.FC = () => {
               )}
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Loading State */}
       {isLoading && (
@@ -371,6 +400,6 @@ const RecipeDetails: React.FC = () => {
       )}
     </div>
   );
-};
+});
 
 export default RecipeDetails;

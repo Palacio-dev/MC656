@@ -6,7 +6,7 @@ export class DailyStrategy implements MealPlannerStrategy {
   }
 
   getTitle() {
-    return `Planejamento do Dia - ${this.date.toLocaleDateString()}`;
+    return `Planejamento do Dia - ${this.date.toLocaleDateString('pt-BR')}`;
   }
 
   getGrid(): MealPlannerCell[][] {

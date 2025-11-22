@@ -80,10 +80,14 @@ export const AddRecipeToMealPlanModal: React.FC<AddRecipeToMealPlanModalProps> =
     }
     
     if (mode === 'single') {
+      // Parse ISO date string and create date at noon to avoid timezone issues
+      const [year, month, day] = selectedDate.split('-').map(Number);
+      const date = new Date(year, month - 1, day, 12, 0, 0);
+      
       onAddToMealPlan({
         mode: 'single',
         mealType: finalMealType,
-        date: new Date(selectedDate)
+        date
       });
     } else {
       if (selectedWeekdays.length === 0) {

@@ -19,7 +19,7 @@ export class MonthlyStrategy implements MealPlannerStrategy {
 
   getTitle(): string {
     const start = this.getStartOfMonth();
-    return `Planejamento mensal - ${start.toLocaleDateString(undefined, {
+    return `Planejamento mensal - ${start.toLocaleDateString('pt-BR', {
       month: "long",
       year: "numeric",
     })}`;
