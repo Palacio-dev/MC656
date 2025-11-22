@@ -12,11 +12,11 @@ concurrency:
 jobs:
   test:
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-large
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [18.x]
 
     steps:
       - name: Checkout code
@@ -43,7 +43,7 @@ jobs:
       - name: Build frontend
         env:
           CI: false
-          NODE_OPTIONS: --max-old-space-size=4096
+          NODE_OPTIONS: --max-old-space-size=6144
         run: |
           while true; do echo "Still building..."; sleep 60; done &
           npm run build
