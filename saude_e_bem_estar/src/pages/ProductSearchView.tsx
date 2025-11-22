@@ -7,6 +7,7 @@ import { ProductDetails } from "../components/ProductDetails";
 import { SearchHistory } from "../components/SearchHistory";
 import "../styles/ProductSearch.css";
 import AddProductToShoppingListModal from '../components/AddProductToShoppingListModal';
+import { ProductComparisonModal } from "../components/ProductComparisonModal";
 
 const ProductSearchView: React.FC = () => {
   const vm = useProductSearch();
