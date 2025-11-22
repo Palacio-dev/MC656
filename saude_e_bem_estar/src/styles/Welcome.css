@@ -1,0 +1,142 @@
+/* Welcome Page Styles */
+.welcome-container {
+  background-color: #E7D0FF;
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.welcome-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.welcome-subtitle {
+  font-size: 1.4rem;
+  color: #8209B1;
+  margin: 30px 0 40px 0;
+  font-weight: 600;
+  text-align: center;
+}
+
+.welcome-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  width: 100%;
+  max-width: 900px;
+}
+
+.welcome-card {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(130, 9, 177, 0.15);
+  border: 2px solid transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #8209B1 0%, #9c27b0 100%);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.welcome-card:hover::before {
+  transform: scaleX(1);
+}
+
+.welcome-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(130, 9, 177, 0.25);
+  border-color: #8209B1;
+}
+
+.card-icon {
+  font-size: 3.5rem;
+  margin-bottom: 20px;
+  transition: transform 0.3s ease;
+}
+
+.welcome-card:hover .card-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.card-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #8209B1;
+  margin-bottom: 10px;
+}
+
+.card-description {
+  font-size: 0.95rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* Logout Button */
+.welcome-logout {
+  margin-top: 40px;
+  padding: 12px 30px;
+  background: white;
+  color: #8209B1;
+  border: 2px solid #8209B1;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.welcome-logout:hover {
+  background: #8209B1;
+  color: white;
+  transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .welcome-content {
+    padding: 20px 15px;
+  }
+
+  .welcome-subtitle {
+    font-size: 1.2rem;
+    margin: 20px 0 30px 0;
+  }
+
+  .welcome-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .welcome-card {
+    padding: 25px;
+  }
+
+  .card-icon {
+    font-size: 3rem;
+  }
+}

@@ -1,19 +1,48 @@
 import React from 'react';
+import { observer } from 'mobx-react-lite';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useRecipeDetails } from '../hooks/useRecipeDetails';
+import { IngredientMatchModal } from '../components/IngredientMatchModal';
+import { searchIngredientMatches, IngredientMatch } from '../services/IngredientMatcherService';
+import { AddRecipeToMealPlanModal, MealPlanConfig } from '../components/AddRecipeToMealPlanModal';
+import { RecipeToMealPlanService } from '../services/RecipeToMealPlanService';
+import { MealPlannerViewModel } from '../hooks/MealPlannerHook';
+import { FirebaseMealPlannerModel } from '../models/firebaseMealPlannerModel';
+import { FavoritesViewModel } from '../hooks/useFavorites';
+import { FirebaseFavoritesModel } from '../models/firebaseFavoritesModel';
+import { useAuth } from '../hooks/useAuth';
+import { PageHeader } from '../components/PageHeader';
 import '../styles/RecipeDetails.css';
+import { FirebaseRecipeService } from "../services/FirebaseRecipeService";
 
 /**
  * Recipe Details Page
  * Displays full recipe information including ingredients and instructions
  */
-const RecipeDetails: React.FC = () => {
+const RecipeDetails: React.FC = observer(() => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const recipeId = searchParams.get('id');
+  const { currentUser } = useAuth();
   const [showShareMenu, setShowShareMenu] = React.useState(false);
+  const [selectedIngredient, setSelectedIngredient] = React.useState<IngredientMatch | null>(null);
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [isSearching, setIsSearching] = React.useState(false);
+  const [isMealPlanModalOpen, setIsMealPlanModalOpen] = React.useState(false);
   
   const { recipe, isLoading, error, retry } = useRecipeDetails(recipeId);
+  
+  // Initialize MealPlanner ViewModel
+  const mealPlannerViewModel = React.useMemo(() => {
+    const model = new FirebaseMealPlannerModel();
+    return new MealPlannerViewModel(model, currentUser?.uid || null);
+  }, [currentUser]);
+
+  // Initialize Favorites ViewModel
+  const favoritesViewModel = React.useMemo(() => {
+    const model = new FirebaseFavoritesModel();
+    return new FavoritesViewModel(model, currentUser?.uid || null);
+  }, [currentUser]);
 
   /**
    * Navigate back to search page
@@ -87,6 +116,76 @@ const RecipeDetails: React.FC = () => {
   };
 
   /**
+   * Handle adding ingredient to shopping list
+   */
+  const handleAddIngredient = async (ingredientText: string) => {
+    setIsSearching(true);
+    try {
+      const match = await searchIngredientMatches(ingredientText);
+      setSelectedIngredient(match);
+      setIsModalOpen(true);
+    } catch (err) {
+      console.error('Erro ao buscar ingrediente:', err);
+      alert('Não foi possível buscar o ingrediente. Tente novamente.');
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  /**
+   * Handle closing the modal
+   */
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedIngredient(null);
+  };
+
+  /**
+   * Handle successful addition to list
+   */
+  const handleAddToList = (ingredientName: string) => {
+    console.log(`Ingrediente "${ingredientName}" adicionado à lista!`);
+  };
+
+  /**
+   * Open meal plan modal
+   */
+  const handleOpenMealPlanModal = () => {
+    if (!currentUser) {
+      alert('Você precisa estar logado para adicionar receitas ao planejamento');
+      return;
+    }
+    setIsMealPlanModalOpen(true);
+  };
+
+  /**
+   * Handle adding recipe to meal plan
+   */
+  const handleAddToMealPlan = async (config: MealPlanConfig) => {
+    if (!recipe || !currentUser) return;
+
+    try {
+      const count = await RecipeToMealPlanService.addRecipeToMealPlan(
+        mealPlannerViewModel,
+        recipe.title,
+        recipe.id,
+        config
+      );
+
+      if (config.mode === 'single') {
+        alert(`Receita "${recipe.title}" adicionada ao planejamento!`);
+      } else {
+        alert(`Receita "${recipe.title}" adicionada a ${count} refeições!`);
+      }
+      
+      setIsMealPlanModalOpen(false);
+    } catch (err: any) {
+      console.error('Erro ao adicionar ao planejamento:', err);
+      alert(err.message || 'Erro ao adicionar ao planejamento');
+    }
+  };
+
+  /**
    * Close share menu when clicking outside
    */
   React.useEffect(() => {
@@ -120,39 +219,66 @@ const RecipeDetails: React.FC = () => {
 
   return (
     <div className="recipe-details-container">
-      {/* Header with back button and share button */}
-      <div className="recipe-details-header">
-        <button onClick={handleBack} className="back-btn" aria-label="Voltar">
-          ← Voltar
-        </button>
-        {recipe && (
-          <div className="share-menu-container">
-            <button onClick={toggleShareMenu} className="share-btn" aria-label="Compartilhar">
-              🔗 Compartilhar
+      {/* Header with navigation */}
+      <PageHeader 
+        title={recipe?.title || "Detalhes da Receita"}
+        showBackButton={true}
+        showHomeButton={true}
+      />
+      
+      {recipe && (
+        <div className="recipe-details-header">
+          <div className="header-actions">
+            <button
+              onClick={async () => {
+                if (recipeId && recipe) {
+                  try {
+                    await favoritesViewModel.toggleFavorite(recipeId, recipe.title);
+                  } catch (err: any) {
+                    alert(err.message || 'Erro ao atualizar favoritos');
+                  }
+                }
+              }}
+              className={`favorite-detail-btn ${recipeId && favoritesViewModel.isFavorite(recipeId) ? 'favorited' : ''}`}
+              aria-label={recipeId && favoritesViewModel.isFavorite(recipeId) ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+            >
+              {recipeId && favoritesViewModel.isFavorite(recipeId) ? '❤️ Favorito' : '🤍 Favoritar'}
             </button>
-            {showShareMenu && (
-              <div className="share-menu">
-                <button onClick={shareToWhatsApp} className="share-option whatsapp">
-                  <span className="share-icon">💬</span>
-                  <span>WhatsApp</span>
-                </button>
-                <button onClick={shareToFacebook} className="share-option facebook">
-                  <span className="share-icon">📘</span>
-                  <span>Facebook</span>
-                </button>
-                <button onClick={shareToTwitter} className="share-option twitter">
-                  <span className="share-icon">🐦</span>
-                  <span>Twitter</span>
-                </button>
-                <button onClick={copyToClipboard} className="share-option copy-link">
-                  <span className="share-icon">📋</span>
-                  <span>Copiar Link</span>
-                </button>
-              </div>
-            )}
+            <button 
+              onClick={handleOpenMealPlanModal} 
+              className="add-to-meal-plan-btn"
+              aria-label="Adicionar ao planejamento"
+            >
+              📅 Adicionar ao Planejamento
+            </button>
+            <div className="share-menu-container">
+              <button onClick={toggleShareMenu} className="share-btn" aria-label="Compartilhar">
+                🔗 Compartilhar
+              </button>
+              {showShareMenu && (
+                <div className="share-menu">
+                  <button onClick={shareToWhatsApp} className="share-option whatsapp">
+                    <span className="share-icon">💬</span>
+                    <span>WhatsApp</span>
+                  </button>
+                  <button onClick={shareToFacebook} className="share-option facebook">
+                    <span className="share-icon">📘</span>
+                    <span>Facebook</span>
+                  </button>
+                  <button onClick={shareToTwitter} className="share-option twitter">
+                    <span className="share-icon">🐦</span>
+                    <span>Twitter</span>
+                  </button>
+                  <button onClick={copyToClipboard} className="share-option copy-link">
+                    <span className="share-icon">📋</span>
+                    <span>Copiar Link</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Loading State */}
       {isLoading && (
@@ -212,8 +338,18 @@ const RecipeDetails: React.FC = () => {
                   <ul className="ingredients-list">
                     {section.items.map((item, itemIndex) => (
                       <li key={itemIndex} className="ingredient-item">
-                        <span className="ingredient-bullet">•</span>
-                        {item}
+                        <div className="ingredient-content">
+                          <span className="ingredient-bullet">•</span>
+                          <span className="ingredient-text">{item}</span>
+                        </div>
+                        <button
+                          className="add-ingredient-btn"
+                          onClick={() => handleAddIngredient(item)}
+                          disabled={isSearching}
+                          title="Adicionar à lista de compras"
+                        >
+                          {isSearching ? '⏳' : '🛒'}
+                        </button>
                       </li>
                     ))}
                   </ul>
@@ -244,8 +380,26 @@ const RecipeDetails: React.FC = () => {
           )}
         </div>
       )}
+
+      {/* Ingredient Match Modal */}
+      <IngredientMatchModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        ingredientMatch={selectedIngredient}
+        onAddToList={handleAddToList}
+      />
+
+      {/* Meal Plan Modal */}
+      {recipe && (
+        <AddRecipeToMealPlanModal
+          isOpen={isMealPlanModalOpen}
+          onClose={() => setIsMealPlanModalOpen(false)}
+          recipeTitle={recipe.title}
+          onAddToMealPlan={handleAddToMealPlan}
+        />
+      )}
     </div>
   );
-};
+});
 
 export default RecipeDetails;

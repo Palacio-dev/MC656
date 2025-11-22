@@ -32,10 +32,12 @@ export interface RecipeSection {
  * Complete recipe details
  */
 export interface RecipeDetails {
+  id: string;
   title: string;
   stats: RecipeStats;
   ingredients: RecipeSection[];
   instructions: RecipeSection[];
+  isCustom?: boolean; // Flag to indicate if this is a custom user-created recipe
 }
 
 /**

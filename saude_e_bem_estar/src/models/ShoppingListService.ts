@@ -8,7 +8,7 @@ import {
     updateDoc, 
     deleteDoc,
     query,
-    orderBy,
+    where,
     Timestamp,
     DocumentData,
     QueryDocumentSnapshot
@@ -30,39 +30,73 @@ class ShoppingListService {
         return {
             id: doc.id,
             name: data.name,
-            items: data.items || []
+            items: data.items || [],
+            userId: data.userId
         };
     }
 
     /**
-     * Busca todas as listas de compras
+     * Busca todas as listas de compras de um usuário específico
+     * @param userId - ID do usuário autenticado
      * @returns Promise com array de ShoppingList
      */
-    async getAllLists(): Promise<ShoppingList[]> {
+    async getAllLists(userId: string): Promise<ShoppingList[]> {
         try {
+            if (!userId) {
+                throw new Error('ID do usuário é obrigatório');
+            }
+            
+            console.log('Buscando listas para userId:', userId);
+            
             const listsCollection = collection(db, this.collectionName);
-            const q = query(listsCollection, orderBy('createdAt', 'desc'));
+            // Removido orderBy para evitar necessidade de índice composto
+            // As listas serão ordenadas no cliente
+            const q = query(
+                listsCollection, 
+                where('userId', '==', userId)
+            );
             const querySnapshot = await getDocs(q);
             
-            return querySnapshot.docs.map(doc => this.docToShoppingList(doc));
-        } catch (error) {
-            console.error('Erro ao buscar listas:', error);
-            throw new Error('Não foi possível carregar as listas');
+            console.log('Listas encontradas:', querySnapshot.docs.length);
+            
+            // Ordena as listas no cliente por createdAt (mais recente primeiro)
+            const lists = querySnapshot.docs.map(doc => this.docToShoppingList(doc));
+            return lists.sort((a, b) => {
+                // Se não tiver createdAt, coloca no final
+                const aData = querySnapshot.docs.find(d => d.id === a.id)?.data();
+                const bData = querySnapshot.docs.find(d => d.id === b.id)?.data();
+                const aTime = aData?.createdAt?.toMillis() || 0;
+                const bTime = bData?.createdAt?.toMillis() || 0;
+                return bTime - aTime; // desc
+            });
+        } catch (error: any) {
+            console.error('Erro detalhado ao buscar listas:', {
+                message: error?.message,
+                code: error?.code,
+                details: error
+            });
+            throw error;
         }
     }
 
     /**
-     * Busca uma lista específica por ID
+     * Busca uma lista específica por ID (verifica se pertence ao usuário)
      * @param id - ID da lista
+     * @param userId - ID do usuário autenticado
      * @returns Promise com ShoppingList ou null
      */
-    async getListById(id: string): Promise<ShoppingList | null> {
+    async getListById(id: string, userId: string): Promise<ShoppingList | null> {
         try {
             const docRef = doc(db, this.collectionName, id);
             const docSnap = await getDoc(docRef);
             
             if (docSnap.exists()) {
-                return this.docToShoppingList(docSnap as QueryDocumentSnapshot<DocumentData>);
+                const list = this.docToShoppingList(docSnap as QueryDocumentSnapshot<DocumentData>);
+                // Verifica se a lista pertence ao usuário
+                if (list.userId !== userId) {
+                    throw new Error('Acesso negado: esta lista não pertence ao usuário');
+                }
+                return list;
             }
             return null;
         } catch (error) {
@@ -72,42 +106,67 @@ class ShoppingListService {
     }
 
     /**
-     * Cria uma nova lista de compras
+     * Cria uma nova lista de compras para um usuário específico
      * @param listName - Nome da lista
+     * @param userId - ID do usuário autenticado
      * @returns Promise com a lista criada
      */
-    async createList(listName: string): Promise<ShoppingList> {
+    async createList(listName: string, userId: string): Promise<ShoppingList> {
         try {
+            if (!userId) {
+                throw new Error('ID do usuário é obrigatório');
+            }
+            
+            console.log('Criando lista:', { listName, userId });
+            
             const newList = {
                 name: listName.trim(),
                 items: [],
+                userId: userId,
                 createdAt: Timestamp.now(),
                 updatedAt: Timestamp.now()
             };
 
+            console.log('Dados da nova lista:', newList);
             const docRef = await addDoc(collection(db, this.collectionName), newList);
+            console.log('Lista criada com sucesso! ID:', docRef.id);
             
             return {
                 id: docRef.id,
                 name: newList.name,
-                items: newList.items
+                items: newList.items,
+                userId: newList.userId
             };
-        } catch (error) {
-            console.error('Erro ao criar lista:', error);
-            throw new Error('Não foi possível criar a lista');
+        } catch (error: any) {
+            console.error('Erro detalhado ao criar lista:', {
+                message: error?.message,
+                code: error?.code,
+                stack: error?.stack,
+                details: error
+            });
+            throw error; // Propaga o erro original para debug
         }
     }
 
     /**
-     * Atualiza uma lista existente
+     * Atualiza uma lista existente (verifica se pertence ao usuário)
      * @param id - ID da lista
+     * @param userId - ID do usuário autenticado
      * @param updates - Dados para atualizar
      */
-    async updateList(id: string, updates: Partial<ShoppingList>): Promise<void> {
+    async updateList(id: string, userId: string, updates: Partial<ShoppingList>): Promise<void> {
         try {
+            // Verifica se a lista pertence ao usuário antes de atualizar
+            const list = await this.getListById(id, userId);
+            if (!list) {
+                throw new Error('Lista não encontrada ou acesso negado');
+            }
+            
             const docRef = doc(db, this.collectionName, id);
+            // Remove userId dos updates para evitar modificação
+            const { userId: _, ...safeUpdates } = updates;
             await updateDoc(docRef, {
-                ...updates,
+                ...safeUpdates,
                 updatedAt: Timestamp.now()
             });
         } catch (error) {
@@ -117,16 +176,38 @@ class ShoppingListService {
     }
 
     /**
-     * Deleta uma lista de compras
+     * Deleta uma lista de compras (verifica se pertence ao usuário)
      * @param id - ID da lista
+     * @param userId - ID do usuário autenticado
      */
-    async deleteList(id: string): Promise<void> {
+    async deleteList(id: string, userId: string): Promise<void> {
         try {
+            // Verifica se a lista pertence ao usuário antes de deletar
+            const list = await this.getListById(id, userId);
+            if (!list) {
+                throw new Error('Lista não encontrada ou acesso negado');
+            }
+            
             const docRef = doc(db, this.collectionName, id);
             await deleteDoc(docRef);
         } catch (error) {
             console.error('Erro ao deletar lista:', error);
             throw new Error('Não foi possível deletar a lista');
+        }
+    }
+
+    /**
+     * Busca as listas de um usuário
+     * @param userId - ID do usuário
+     * @returns Promise com array de listas { id, name, items }
+     */
+    async getUserLists(userId: string): Promise<{ id: string, name: string, items: any[] }[]> {
+        try {
+            const lists = await this.getAllLists(userId);
+            return lists.map(list => ({ id: list.id, name: list.name, items: list.items }));
+        } catch (error) {
+            console.error('Erro ao buscar listas do usuário:', error);
+            throw new Error('Não foi possível carregar as listas do usuário');
         }
     }
 }
