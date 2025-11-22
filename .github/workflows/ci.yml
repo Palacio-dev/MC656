@@ -27,7 +27,7 @@ jobs:
       # FRONTEND
       # ---------------------------
       - name: Install frontend dependencies
-        run: npm ci
+        run: CI=false npm ci
         working-directory: saude_e_bem_estar
 
       - name: Build frontend
@@ -35,5 +35,5 @@ jobs:
         working-directory: saude_e_bem_estar
 
       - name: Run frontend tests
-        run: npm test
+        run: CI=false npm test
         working-directory: saude_e_bem_estar
