@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { PageHeader } from "../components/PageHeader";
 import "../styles/Welcome.css";
 
 export default function Welcome() {
@@ -6,9 +7,13 @@ export default function Welcome() {
 
     return (
         <div className="welcome-container">
-            <div className="header-top">
-                <h1 className="titulo">Bem-vinde!</h1>
-            </div>
+            <PageHeader 
+                title="Bem-vinde!" 
+                showBackButton={false}
+                showHomeButton={false}
+                showSettingsButton={true}
+                subtitle="Sua jornada para uma vida mais saudável começa aqui"
+            />
 
             <div className="welcome-content">
                 <h2 className="welcome-subtitle">Escolha uma das opções abaixo</h2>
@@ -24,6 +29,12 @@ export default function Welcome() {
                         <div className="card-icon">🍳</div>
                         <div className="card-title">Buscar Receitas</div>
                         <div className="card-description">Encontre receitas deliciosas e saudáveis</div>
+                    </div>
+
+                    <div className="welcome-card" onClick={() => navigate("Favorites")}>
+                        <div className="card-icon">❤️</div>
+                        <div className="card-title">Receitas Favoritas</div>
+                        <div className="card-description">Acesse suas receitas salvas</div>
                     </div>
 
                     <div className="welcome-card" onClick={() => navigate("ShoppingList")}>

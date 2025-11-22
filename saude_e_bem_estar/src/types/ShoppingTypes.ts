@@ -1,6 +1,7 @@
 export interface ShoppingItem {
     id: string;
     text: string;
+    quantity?: string; // Optional quantity field (e.g., "2kg", "500g", "3 unidades")
     checked: boolean;
 }
 

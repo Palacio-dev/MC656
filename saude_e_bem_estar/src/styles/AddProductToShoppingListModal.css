@@ -1,0 +1,313 @@
+/* Styles aligned with ProductSearch.css look & feel */
+
+.inline-panel {
+  /* inline side-panel card that sits next to main content */
+  width: 360px;
+  min-width: 320px;
+  margin-left: 20px;
+  align-self: start;
+  box-sizing: border-box;
+  font-family: inherit;
+
+  /* when .product-search-content uses grid with two columns,
+     force the panel to span both columns and center */
+  grid-column: 1 / -1;
+  justify-self: center;
+}
+
+.inline-panel-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 0;
+  box-shadow: 0 4px 12px var(--shadow-color);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.inline-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px;
+  border-bottom: 2px solid var(--border-color);
+  background: linear-gradient(180deg, rgba(130,9,177,0.02), transparent);
+}
+
+.inline-panel-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #8209B1;
+}
+
+.inline-panel-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #8209B1;
+  font-size: 1.1rem;
+}
+
+.inline-panel-body {
+  display: flex;
+  gap: 0px;
+  padding: 0px;
+}
+
+/* left area: reuse product-details look (smaller padding) */
+.inline-panel-left {
+  flex: 1;
+}
+
+/* right area: controls */
+.inline-panel-right {
+  /* increase right column so dropdown has room */
+  width: 360px; /* was 260px */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Label + select styled like inputs on the page */
+.field-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.list-select {
+  /* make select fill the available space and allow a minimum width */
+  width: 100%;
+  min-width: 500px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 2px solid var(--border-color);
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.list-select:focus {
+  border-color: #8209B1;
+  background: var(--input-bg);
+  box-shadow: 0 0 0 6px rgba(130,9,177,0.05);
+}
+
+/* No lists container */
+.no-lists-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.no-lists-container .muted {
+  font-style: italic;
+  color: var(--text-tertiary);
+}
+
+.create-list-btn {
+  margin-top: 8px;
+}
+
+/* actions match page buttons */
+.inline-panel-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.btn {
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  border: none;
+  font-size: 0.95rem;
+}
+
+.btn-primary {
+  background: #8209B1;
+  color: white;
+  box-shadow: 0 6px 12px rgba(130,9,177,0.08);
+}
+
+.btn-ghost {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+/* small status toasts */
+.toast {
+  margin-top: 8px;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.toast-success {
+  background: linear-gradient(180deg, rgba(34,197,94,0.06), rgba(34,197,94,0.02));
+  color: #166534;
+}
+
+.toast-error {
+  background: linear-gradient(180deg, rgba(239,68,68,0.06), rgba(239,68,68,0.02));
+  color: #991b1b;
+}
+
+/* inline panel centered and same width as product search */
+.inline-panel {
+  /* make the panel take the same visual width as .product-search-content */
+  width: 100%;
+  max-width: 865px; /* <-- match ProductSearch.css max-width (adjust to 1200px if you changed it) */
+  margin: 0 auto 20px; /* center horizontally and add spacing below */
+  align-self: start;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.inline-panel-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 12px var(--shadow-color);
+  margin-bottom: 25px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.inline-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.inline-panel-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #8209B1;
+  margin: 0;
+}
+
+.inline-panel-close {
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  color: #8209B1;
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 6px;
+}
+
+/* Body layout mirrors card internals */
+.inline-panel-body {
+  display: flex;
+  gap: 20px;
+}
+
+/* Left: product details card reuse */
+.inline-panel-left {
+  flex: 1;
+}
+
+/* Right: controls area narrow like history tag column */
+.inline-panel-right {
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Labels & select styled like the rest of the page */
+.field-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 6px;
+}
+
+.list-select {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 2px solid var(--border-color);
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.list-select:focus {
+  border-color: #8209B1;
+  background: var(--input-bg);
+  box-shadow: 0 0 0 6px rgba(130,9,177,0.05);
+}
+
+/* Actions reuse button visual language */
+.inline-panel-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+  align-items: center;
+}
+
+.btn {
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: none;
+}
+
+.btn-primary {
+  background: #8209B1;
+  color: white;
+  box-shadow: 0 6px 12px rgba(130,9,177,0.08);
+}
+
+.btn-ghost {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+/* Status toasts */
+.toast {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.toast-success {
+  background: linear-gradient(180deg, rgba(34,197,94,0.06), rgba(34,197,94,0.02));
+  color: #166534;
+}
+
+.toast-error {
+  background: linear-gradient(180deg, rgba(239,68,68,0.06), rgba(239,68,68,0.02));
+  color: #991b1b;
+}
+
+/* Responsive: stack on small screens like other cards */
+@media (max-width: 865px) {
+  .inline-panel-body {
+    flex-direction: column;
+  }
+  .inline-panel-right {
+    width: 100%;
+  }
+}

@@ -195,6 +195,21 @@ class ShoppingListService {
             throw new Error('Não foi possível deletar a lista');
         }
     }
+
+    /**
+     * Busca as listas de um usuário
+     * @param userId - ID do usuário
+     * @returns Promise com array de listas { id, name, items }
+     */
+    async getUserLists(userId: string): Promise<{ id: string, name: string, items: any[] }[]> {
+        try {
+            const lists = await this.getAllLists(userId);
+            return lists.map(list => ({ id: list.id, name: list.name, items: list.items }));
+        } catch (error) {
+            console.error('Erro ao buscar listas do usuário:', error);
+            throw new Error('Não foi possível carregar as listas do usuário');
+        }
+    }
 }
 
 // Exporta uma instância única (Singleton)

@@ -108,16 +108,27 @@ export function useProductSearch() {
             setError(null);
             const userId = auth.currentUser?.uid || 'anonymous';
             
+            console.log('🗑️ Limpando histórico para usuário:', userId);
+            
             // Limpa histórico no Firebase
             await productHistoryService.clearUserHistory(userId);
             
-            // Atualiza estado local
+            console.log('✅ Histórico limpo no Firebase');
+            
+            // Atualiza estado local imediatamente
             setHistory([]);
+            
+            console.log('✅ Estado local atualizado');
+            
+            // Recarrega do Firebase para garantir sincronização
+            await loadHistory();
+            
+            console.log('✅ Histórico recarregado');
         } catch (err) {
-            console.error("Erro ao limpar histórico:", err);
+            console.error("❌ Erro ao limpar histórico:", err);
             setError("Não foi possível limpar o histórico");
         }
-    }, []);
+    }, [loadHistory]);
 
   return {
     query,

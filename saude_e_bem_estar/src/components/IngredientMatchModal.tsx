@@ -62,20 +62,35 @@ export const IngredientMatchModal: React.FC<IngredientMatchModalProps> = ({
     setError(null);
 
     try {
-      // Adiciona o ingrediente à lista selecionada
-      await shoppingListService.getListById(selectedListId, currentUser.uid)
-        .then(list => {
-          if (list) {
-            const updatedItems = [...list.items, {
-              id: Date.now().toString(),
-              text: ingredientName,
-              checked: false
-            }];
-            return shoppingListService.updateList(selectedListId, currentUser.uid, {
-              items: updatedItems
-            });
+      // Check for duplicate items before adding
+      const list = await shoppingListService.getListById(selectedListId, currentUser.uid);
+      
+      if (list) {
+        const normalizedIngredientName = ingredientName.toLowerCase().trim();
+        const duplicate = list.items.find(
+          item => item.text.toLowerCase().trim() === normalizedIngredientName
+        );
+        
+        if (duplicate) {
+          const confirmAdd = window.confirm(
+            `O item "${ingredientName}" já existe na lista. Deseja adicionar mesmo assim?`
+          );
+          if (!confirmAdd) {
+            setIsLoading(false);
+            return;
           }
+        }
+
+        // Adiciona o ingrediente à lista selecionada
+        const updatedItems = [...list.items, {
+          id: Date.now().toString(),
+          text: ingredientName,
+          checked: false
+        }];
+        await shoppingListService.updateList(selectedListId, currentUser.uid, {
+          items: updatedItems
         });
+      }
 
       setSuccess(true);
       onAddToList(ingredientName);

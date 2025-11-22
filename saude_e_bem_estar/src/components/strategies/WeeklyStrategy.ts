@@ -24,7 +24,7 @@ export class WeeklyStrategy implements MealPlannerStrategy {
   getTitle(): string {
     const start = this.getStartOfWeek();
     const end = this.getEndOfWeek();
-    return `Planejamento semanal: ${start.toLocaleDateString()} - ${end.toLocaleDateString()}`;
+    return `Planejamento semanal: ${start.toLocaleDateString('pt-BR')} - ${end.toLocaleDateString('pt-BR')}`;
   }
 
   getGrid(): MealPlannerCell[][] {

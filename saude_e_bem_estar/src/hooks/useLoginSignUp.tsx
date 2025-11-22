@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FirebaseAuthModel } from "../models/firebaseAuthModel";
+import { sendEmailVerification } from "firebase/auth";
+
 
 // Model types
 type FormState = {
@@ -38,13 +40,20 @@ export function useLoginSignUp() {
 
     try {
       if (isSignUpMode) {
-        await AuthModel.signUp(form.email, form.password);
-        setMessage("Conta criada com sucesso! Você já pode fazer login.");
+        const userCredential = await AuthModel.signUp(form.email, form.password);
+        if (userCredential.user) {
+          await sendEmailVerification(userCredential.user);
+        }
+        setMessage("Conta criada com sucesso! Um email de verificação foi enviado para seu email.");
         setAction("Login");
 
       } else {
-        await AuthModel.login(form.email, form.password);
-        navigate("/Welcome");
+        const userCredential = await AuthModel.login(form.email, form.password);
+        if (userCredential.user.emailVerified) {
+          navigate("/Welcome");
+        } else {
+          setMessage("Por favor, verifique seu email antes de fazer login.");
+        }
       }
     } catch (error: any) {
       console.error(error);

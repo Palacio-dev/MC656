@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { PageHeader } from "../components/PageHeader";
 import ListComponent from "../components/ListComponent";
 import { useShoppingListDetailViewModel } from "../hooks/useShoppingListDetailHook";
 import '../styles/ShoppingList.css';
@@ -20,11 +22,6 @@ export default function ShoppingListDetail({
     
     const navigate = useNavigate();
 
-    const handleBack = () => {
-        if (onBack) onBack();
-        else navigate(-1);
-    };
-
     const {
         items,
         isLoading,
@@ -33,9 +30,41 @@ export default function ShoppingListDetail({
         stats,
         addItem,
         toggleItem,
+        editItem,
         deleteItem,
-        clearCheckedItems
+        updateListName,
+        clearCheckedItems,
+        uncheckAllItems
     } = useShoppingListDetailViewModel({ listId });
+
+    // Estado para edição do nome da lista (must be before any early returns)
+    const [isEditingName, setIsEditingName] = useState(false);
+    const [editedName, setEditedName] = useState(listName);
+
+    const handleBack = () => {
+        if (onBack) onBack();
+        else navigate(-1);
+    };
+
+    const handleSaveListName = async () => {
+        if (editedName.trim()) {
+            await updateListName(editedName);
+            setIsEditingName(false);
+        }
+    };
+
+    const handleCancelEditName = () => {
+        setEditedName(listName);
+        setIsEditingName(false);
+    };
+
+    const handleKeyPressName = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            handleSaveListName();
+        } else if (e.key === 'Escape') {
+            handleCancelEditName();
+        }
+    };
 
     // Estado de carregamento
     if (isLoading) {
@@ -56,12 +85,11 @@ export default function ShoppingListDetail({
     if (error) {
         return (
             <div className="shopping-list-container">
-                <div className="header-top">
-                    <button className="back-button" onClick={handleBack}>
-                        ← Voltar
-                    </button>
-                    <h1 className="titulo">Erro</h1>
-                </div>
+                <PageHeader 
+                    title="Erro"
+                    showBackButton={true}
+                    showHomeButton={true}
+                />
                 <div className="shopping-list-content">
                     <div className="error-message">
                         <strong>⚠️ {error}</strong>
@@ -76,15 +104,35 @@ export default function ShoppingListDetail({
 
     return (
         <div className="shopping-list-container">
-            {/* Header com botão voltar */}
-            <div className="header-top">
-                <button className="back-button" onClick={handleBack}>
-                    ← Voltar
-                </button>
-                <h1 className="titulo">{listName}</h1>
-            </div>
+            <PageHeader 
+                title={listName}
+                showBackButton={true}
+                showHomeButton={true}
+            />
 
             <div className="shopping-list-content">
+                {/* Edição do nome da lista */}
+                <div className="list-name-section">
+                    {isEditingName ? (
+                        <div className="list-name-edit">
+                            <input 
+                                type="text"
+                                value={editedName}
+                                onChange={(e) => setEditedName(e.target.value)}
+                                onKeyDown={handleKeyPressName}
+                                className="list-name-input"
+                                autoFocus
+                            />
+                            <button onClick={handleSaveListName} className="button-save">💾</button>
+                            <button onClick={handleCancelEditName} className="button-cancel">✖️</button>
+                        </div>
+                    ) : (
+                        <div className="list-name-display">
+                            <h2 className="list-name-title">{listName}</h2>
+                            <button onClick={() => setIsEditingName(true)} className="button-edit-name">✏️ Editar</button>
+                        </div>
+                    )}
+                </div>
                 {/* Estatísticas da lista */}
                 {stats.total > 0 && (
                     <div className="stats-section">
@@ -101,12 +149,22 @@ export default function ShoppingListDetail({
                         </div>
                         
                         {stats.checked > 0 && (
-                            <button 
-                                className="clear-button"
-                                onClick={clearCheckedItems}
-                            >
-                                🗑️ Limpar marcados
-                            </button>
+                            <div className="stats-buttons">
+                                <button 
+                                    className="uncheck-button"
+                                    onClick={uncheckAllItems}
+                                    title="Desmarcar todos os itens"
+                                >
+                                    ↩️ Desmarcar todos
+                                </button>
+                                <button 
+                                    className="clear-button"
+                                    onClick={clearCheckedItems}
+                                    title="Deletar itens marcados da lista"
+                                >
+                                    🗑️ Deletar marcados
+                                </button>
+                            </div>
                         )}
                     </div>
                 )}
@@ -117,6 +175,7 @@ export default function ShoppingListDetail({
                         items={items}
                         onToggleItem={toggleItem}
                         onDeleteItem={deleteItem}
+                        onEditItem={editItem}
                         onAddItem={addItem}
                         placeholder="Adicione um item à lista"
                     />

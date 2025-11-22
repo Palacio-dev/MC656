@@ -1,5 +1,6 @@
 // pages/ShoppingListPage.tsx
 import { useNavigate } from "react-router-dom";
+import { PageHeader } from "../components/PageHeader";
 import ShoppingListCard from "../components/ShoppingListCard";
 import ButtonAddItem from "../components/ButtonAddItem";
 import { useShoppingListsViewModel } from "../hooks/useShoppingListHook";
@@ -39,13 +40,7 @@ export default function ShoppingListsPage() {
 
     return (
         <div className="shopping-list-container">
-            {/* Header */}
-            <div className="header-top">
-                <button className="back-button" onClick={() => navigate("Welcome")}>
-                    ← Voltar
-                </button>
-                <h1 className="titulo">Listas de Compras</h1>
-            </div>
+            <PageHeader title="Listas de Compras" />
 
             <div className="shopping-list-content">
                 {/* Mensagem de erro */}
