@@ -52,5 +52,5 @@ jobs:
         working-directory: saude_e_bem_estar
 
       - name: Run frontend tests
-        run: CI=false npm test
+        run: CI=false npm test -- --verbose
         working-directory: saude_e_bem_estar
