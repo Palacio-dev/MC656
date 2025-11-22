@@ -32,15 +32,23 @@ jobs:
       # FRONTEND
       # ---------------------------
       - name: Install frontend dependencies
-        run: CI=false npm ci
+        env:
+          CI: false
+        run: |
+          while true; do echo "Still getting dependencies..."; sleep 60; done &
+          npm ci
+          kill %1
         working-directory: saude_e_bem_estar
 
       - name: Build frontend
         env:
           CI: false
-        run: npm run build
+          NODE_OPTIONS: --max-old-space-size=4096
+        run: |
+          while true; do echo "Still building..."; sleep 60; done &
+          npm run build
+          kill %1
         working-directory: saude_e_bem_estar
-
 
       - name: Run frontend tests
         run: CI=false npm test
