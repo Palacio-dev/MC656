@@ -22,11 +22,24 @@ service cloud.firestore {
 
       allow read: if request.auth != null && request.auth.uid == resource.data.userId;
       allow write: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      allow delete: if resource.data.userId == request.auth.uid;
+
     }
     match /recipes/{recipeId} {
 
       allow create, read, update: if true;
       allow delete: if false;
     }
+    match /recipeSubstitutions/{substitutionId} {
+      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow write: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      allow delete: if request.auth != null && request.auth.uid == resource.data.userId;
+    }
+    match /favorites/{favoriteId} {
+  		allow read, write, update: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+  		allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
+		}
   }
 }

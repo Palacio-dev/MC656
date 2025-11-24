@@ -1,10 +1,8 @@
-// pages/ShoppingListPage.tsx
-import { useNavigate } from "react-router-dom";
 import { PageHeader } from "../components/PageHeader";
 import ShoppingListCard from "../components/ShoppingListCard";
 import ButtonAddItem from "../components/ButtonAddItem";
 import { useShoppingListsViewModel } from "../hooks/useShoppingListHook";
-import '../styles/ShoppingList.css';
+import '../styles/shoppinglistspage.css';
 
 /**
  * ShoppingListsPage - View (Componente de apresentação)
@@ -12,8 +10,6 @@ import '../styles/ShoppingList.css';
  * Agora com suporte a Firebase através da arquitetura MVVM
  */
 export default function ShoppingListsPage() {
-    const navigate = useNavigate();
-
     const {
         lists,
         isLoading,
