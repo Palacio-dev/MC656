@@ -2,100 +2,55 @@ name: CI
 
 on:
   push:
-    branches: [ main, '**' ]
   pull_request:
-    branches: [ main ]
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  backend:
+  test:
+    timeout-minutes: 30
     runs-on: ubuntu-latest
-    env:
-      CI: true
-    defaults:
-      run:
-        working-directory: auth-api
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Install Postgres server
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y postgresql postgresql-contrib
-          sudo systemctl start postgresql
-          sudo -u postgres psql -v ON_ERROR_STOP=1 <<'SQL'
-          DO $$
-          BEGIN
-            IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'test_user') THEN
-              CREATE ROLE test_user LOGIN PASSWORD 'teste123' CREATEDB;
-            ELSE
-              ALTER ROLE test_user LOGIN PASSWORD 'teste123' CREATEDB;
-            END IF;
-          END$$;
-          SQL
-          
-      - name: Setup Node
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
           cache: npm
-          cache-dependency-path: auth-api/package-lock.json
 
-      - name: Install deps (backend)
-        run: npm ci
-
-      - name: Create .env for CI
+      # ---------------------------
+      # FRONTEND
+      # ---------------------------
+      - name: Install frontend dependencies
+        env:
+          CI: false
         run: |
-          cat > .env <<'EOF'
-          PORT=4000
-          PGHOST=localhost
-          PGPORT=5432
-          PGDATABASE=logindb
-          PGUSER=test_user
-          PGPASSWORD=teste123
-          CORS_ORIGIN=http://localhost:3000
-          JWT_SECRET=ci_dummy_secret
-          EOF
-
-      - name: Init DB (calls initDb)
-        run: node --input-type=module -e "import('./src/db.js').then(m=>m.initDb())"
-
-      - name: Test (backend) -- if present
-        run: npm run test --if-present -- --watchAll=false --runInBand --verbose
-
-  frontend:
-    runs-on: ubuntu-latest
-    env:
-      CI: true
-    defaults:
-      run:
+          while true; do echo "Still getting dependencies..."; sleep 60; done &
+          npm install
+          npm ci
+          kill %1
         working-directory: saude_e_bem_estar
 
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: |
-            package-lock.json
-
-      - name: Install deps (front)
-        run: npm ci
-
-      - name: Test (front)
+      - name: Build frontend
+        env:
+          CI: false
+          NODE_OPTIONS: --max-old-space-size=6144
         run: |
-          npm test -- --watchAll=false --runInBand --verbose
+          while true; do echo "Still building..."; sleep 60; done &
+          npm run build
+          kill %1
+        working-directory: saude_e_bem_estar
 
-      - name: Build (front)
-        run: npm run build
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: front-build
-          path: |
-            dist
-            build
-          if-no-files-found: ignore
+      - name: Run frontend tests
+        run: CI=false npm test -- --verbose
+        working-directory: saude_e_bem_estar

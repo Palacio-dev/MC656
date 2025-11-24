@@ -5,9 +5,9 @@ import { SearchInput } from "../components/SearchInput";
 import { SuggestionsList } from "../components/SuggestionsList";
 import { ProductDetails } from "../components/ProductDetails";
 import { SearchHistory } from "../components/SearchHistory";
-import { ProductComparisonModal } from "../components/ProductComparisonModal";
 import "../styles/ProductSearch.css";
 import AddProductToShoppingListModal from '../components/AddProductToShoppingListModal';
+import { ProductComparisonModal } from "../components/ProductComparisonModal";
 
 const ProductSearchView: React.FC = () => {
   const vm = useProductSearch();

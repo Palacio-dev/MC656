@@ -59,6 +59,7 @@ const RecipeSearch: React.FC = observer(() => {
    */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!searchQuery.trim()) return;
     handleSearchSubmit();
   };
 
