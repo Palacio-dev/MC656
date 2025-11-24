@@ -4,7 +4,7 @@ import { PageHeader } from "../components/PageHeader";
 import ShoppingListCard from "../components/ShoppingListCard";
 import ButtonAddItem from "../components/ButtonAddItem";
 import { useShoppingListsViewModel } from "../hooks/useShoppingListHook";
-import '../styles/ShoppingList.css';
+import '../styles/listShopping.css';
 
 /**
  * ShoppingListsPage - View (Componente de apresentação)

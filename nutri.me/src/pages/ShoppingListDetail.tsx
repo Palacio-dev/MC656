@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { PageHeader } from "../components/PageHeader";
 import ListComponent from "../components/ListComponent";
 import { useShoppingListDetailViewModel } from "../hooks/useShoppingListDetailHook";
-import '../styles/ShoppingList.css';
+import '../styles/listShopping.css';
 
 interface ShoppingListDetailProps {
     listId?: string;

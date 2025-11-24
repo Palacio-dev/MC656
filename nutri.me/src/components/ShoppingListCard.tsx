@@ -1,4 +1,4 @@
-import '../styles/ShoppingList.css';
+import '../styles/listShopping.css';
 
 interface ShoppingListCardProps {
     id: string;

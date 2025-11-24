@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { ShoppingItem, ShoppingList } from "../types/ShoppingTypes";
-import { shoppingListDetailService } from "../models/ShoppingListDetailService";
+import { shoppingListDetailService } from "../services/ShoppingListDetailService";
 import { useAuth } from "./useAuth";
 
 interface UseShoppingListDetailViewModelProps {

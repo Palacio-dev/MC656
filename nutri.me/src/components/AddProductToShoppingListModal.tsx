@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import {shoppingListService} from '../models/ShoppingListService';
-import {shoppingListDetailService} from '../models/ShoppingListDetailService';
+import {shoppingListService} from '../services/ShoppingListService';
+import {shoppingListDetailService} from '../services/ShoppingListDetailService';
 import '../styles/AddProductToShoppingListModal.css';
 
 type Props = {

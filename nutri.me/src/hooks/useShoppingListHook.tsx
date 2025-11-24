@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ShoppingList } from "../types/ShoppingTypes";
-import { shoppingListService } from "../models/ShoppingListService";
+import { shoppingListService } from "../services/ShoppingListService";
 import { useAuth } from "./useAuth";
 
 /**

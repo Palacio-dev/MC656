@@ -39,7 +39,7 @@ jobs:
           npm install
           npm ci
           kill %1
-        working-directory: saude_e_bem_estar
+        working-directory: nutri.me
 
       - name: Build frontend
         env:
@@ -49,8 +49,8 @@ jobs:
           while true; do echo "Still building..."; sleep 60; done &
           npm run build
           kill %1
-        working-directory: saude_e_bem_estar
+        working-directory: nutri.me
 
       - name: Run frontend tests
         run: CI=false npm test -- --verbose
-        working-directory: saude_e_bem_estar
+        working-directory: nutri.me

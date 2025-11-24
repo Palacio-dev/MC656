@@ -30,7 +30,7 @@ export const MealPlannerView = observer(({ vm }: { vm: MealPlannerViewModel }) =
   const [showRecipeModal, setShowRecipeModal] = React.useState(false);
   const [nutritionSummary, setNutritionSummary] = React.useState<PeriodNutritionSummary | null>(null);
   const [loadingNutrition, setLoadingNutrition] = React.useState(false);
-  const [currentView, setCurrentView] = React.useState<'daily' | 'weekly' | 'monthly'>('weekly');
+  const [currentView, setCurrentView] = React.useState<'daily' | 'weekly' | 'monthly'>('daily');
   const [nutritionUpdateTrigger, setNutritionUpdateTrigger] = React.useState(0);
 
   const getMealKey = (label: string) => {

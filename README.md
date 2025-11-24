@@ -38,7 +38,7 @@ Ao alinhar dados nutricionais com esses objetivos globais, o projeto busca contr
 1. Clone o repositório
    ```
     git clone https://github.com/Palacio-dev/MC656.git
-    cd MC656/saude_e_bem_estar
+    cd MC656/nutri.me
    ```
 2. Instale as Dependências
     ```
@@ -48,32 +48,19 @@ Ao alinhar dados nutricionais com esses objetivos globais, o projeto busca contr
    ```
    npm run build  
    ```
-4. Execute
+4. Agora faça as intalações necessarias para a api
    ```
-   npm start  
+   cd MC656/api_tudogostoso
+   npm install
    ```
-5. Abra um novo terminal e entre no diretório do backend
+6. Agora você pode rodar os dois com o unico comando ao voltar na raiz do projeto
    ```
-   cd MC656/auth-api
-   ```
-6. Dê permissão ao usuário para executar CREATE_DATABASE no banco de dados Postgres
-   ```
-   psql -h localhost -U postgres -p 5432 -c "ALTER ROLE test_user CREATEDB;"
-   ```
-7. Execute
-   ```
-   npm run dev
-   ```
-8. Para verificar se os dados de autenticação foram armazenados no banco, execute
-   ```
-   cd MC656/auth-api
-
-   PGPASSWORD=teste123 psql -h localhost -p 5432 -U test_user -d logindb
-   SELECT id, name, email FROM users ORDER BY id;
+   cd ..
+   npm start
    ```
 8. Para rodar os testes, execute
    ```
-   cd MC656/saude_e_bem_estar
+   cd MC656/nutri.me
    npm test 
    ```
 
@@ -89,7 +76,7 @@ O frontend segue o padrão MVVM, que separa a lógica de apresentação da lógi
 
 Aqui está uma visão de como faremos a organização dos arquivos:
 ```
-saude_e_bem_estar/src
+nutri.me/src
 ├── components    # Views
 ├── hooks         # ViewModel (lógica)
 ├── pages         # Telas principais
