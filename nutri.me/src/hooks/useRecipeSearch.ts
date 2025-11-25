@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { searchRecipes } from '../services/RecipeService';
-import { RecipeSearchResult } from '../models/RecipeModel';
+import { RecipeSearchResult } from '../services/RecipeModel';
 
 /**
  * Custom hook for recipe search functionality

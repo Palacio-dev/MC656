@@ -14,7 +14,7 @@ import Settings from "./pages/Settings";
 
 import { MealPlannerViewModel } from "./hooks/MealPlannerHook";
 import { MealPlannerView } from "./pages/MealPlanner";
-import { FirebaseMealPlannerModel } from "./models/firebaseMealPlannerModel";
+import { FirebaseMealPlannerModel } from "./services/firebaseMealPlannerModel";
 import RecoverPassword from "./pages/RecoverPassword";
 
 import { onAuthStateChanged, User } from "firebase/auth";

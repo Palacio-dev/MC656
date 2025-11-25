@@ -1,13 +1,13 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { RecipeDetailsResponse } from '../models/RecipeModel';
+import { RecipeDetailsResponse } from '../services/RecipeModel';
 import { FirebaseRecipeService } from '../services/FirebaseRecipeService';
 import { getRecipeNutrition, RecipeNutrition, calculateRecipeNutrition } from '../services/RecipeNutritionService';
 import { Product } from '../types/product';
 import { IngredientSubstitutionModal } from './IngredientSubstitutionModal';
 import { getUserSubstitutions, saveUserSubstitutions, IngredientSubstitution } from '../services/IngredientSubstitutionService';
 import { FavoritesViewModel } from '../hooks/useFavorites';
-import { FirebaseFavoritesModel } from '../models/firebaseFavoritesModel';
+import { FirebaseFavoritesModel } from '../services/firebaseFavoritesModel';
 import { getAuth } from 'firebase/auth';
 import '../styles/MealRecipeDetailsModal.css';
 

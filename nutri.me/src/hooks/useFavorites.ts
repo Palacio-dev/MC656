@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import type { FavoritesModel, FavoriteRecipe } from "../models/firebaseFavoritesModel";
+import type { FavoritesModel, FavoriteRecipe } from "../services/firebaseFavoritesModel";
 
 /**
  * Favorites ViewModel

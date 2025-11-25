@@ -1,5 +1,5 @@
 import { doc, setDoc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
-import { RecipeDetailsResponse } from "../models/RecipeModel";
+import { RecipeDetailsResponse } from "./RecipeModel";
 import { RecipeNutrition } from "./RecipeNutritionService";
 import { db } from "../config/firebase";
 

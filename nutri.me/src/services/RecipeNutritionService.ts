@@ -1,4 +1,4 @@
-import { RecipeDetailsResponse } from '../models/RecipeModel';
+import { RecipeDetailsResponse } from './RecipeModel';
 import { searchIngredientMatches } from './IngredientMatcherService';
 import { Product } from '../types/product';
 

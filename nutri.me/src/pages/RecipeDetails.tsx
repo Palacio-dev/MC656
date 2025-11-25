@@ -7,9 +7,9 @@ import { searchIngredientMatches, IngredientMatch } from '../services/Ingredient
 import { AddRecipeToMealPlanModal, MealPlanConfig } from '../components/AddRecipeToMealPlanModal';
 import { RecipeToMealPlanService } from '../services/RecipeToMealPlanService';
 import { MealPlannerViewModel } from '../hooks/MealPlannerHook';
-import { FirebaseMealPlannerModel } from '../models/firebaseMealPlannerModel';
+import { FirebaseMealPlannerModel } from '../services/firebaseMealPlannerModel';
 import { FavoritesViewModel } from '../hooks/useFavorites';
-import { FirebaseFavoritesModel } from '../models/firebaseFavoritesModel';
+import { FirebaseFavoritesModel } from '../services/firebaseFavoritesModel';
 import { useAuth } from '../hooks/useAuth';
 import { PageHeader } from '../components/PageHeader';
 import '../styles/RecipeDetails.css';

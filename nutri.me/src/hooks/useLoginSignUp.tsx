@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FirebaseAuthModel } from "../models/firebaseAuthModel";
+import { FirebaseAuthModel } from "../services/firebaseAuthModel";
 import { sendEmailVerification } from "firebase/auth";
 
 

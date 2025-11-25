@@ -2,7 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { useNavigate } from 'react-router-dom';
 import { FavoritesViewModel } from '../hooks/useFavorites';
-import { FirebaseFavoritesModel } from '../models/firebaseFavoritesModel';
+import { FirebaseFavoritesModel } from '../services/firebaseFavoritesModel';
 import { useAuth } from '../hooks/useAuth';
 import { PageHeader } from '../components/PageHeader';
 import '../styles/Favorites.css';

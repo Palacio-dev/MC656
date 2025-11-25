@@ -1,7 +1,7 @@
 import {
   RecipeSearchResponse,
   RecipeDetailsResponse,
-} from '../models/RecipeModel';
+} from './RecipeModel';
 
 // API base URL
 // In development: connect directly to backend on port 4000

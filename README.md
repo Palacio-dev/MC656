@@ -85,33 +85,27 @@ nutri.me/src
 └── types         # Tipos próprios criados
 ```
 
-**Backend — Clean Architecture**
+**Backend — Firebase**
 
-O backend foi desenvolvido seguindo os princípios da Clean Architecture, garantindo independência entre as camadas e facilitando a substituição de tecnologias.
+No projeto para a estruturação do backend foi usado o Firebase (https://firebase.google.com/?hl=pt-br) para de forma pratica e rapida realizar a authenticação do usuario e salvar/resgatar dados necessarios. Além de permitir um facil deploy do nossa aplicação.
 
-- **Entities (Domínio)**: Contém as regras de negócio fundamentais e entidades da aplicação.
-- **Use Cases (Aplicação)**: Define os casos de uso e orquestra as regras do domínio.
-- **Interface Adapters**: Faz a mediação entre o domínio e o mundo externo (bancos de dados, APIs, frameworks).
-- **Frameworks & Drivers (Infraestrutura)**: Contém implementações específicas de persistência, serviços externos e detalhes técnicos.
+- Firebase Auth: usando autenticação pelo google e manual com escrita de email e senha propria
+- Firestore Database: estuturação dos nossos dados e criação das regras para quem altera e acessa esses dados
 
-Aqui está uma exemplificação de como faremos a organização dos arquivos:
-```
-backend/
-├── app/
-│   ├── domain/               # Regra de negócio pura (Entidades + Interfaces de Repositório)
-│   ├── use_cases/            # Casos de uso (application layer)
-│   ├── interfaces/           # Adapters -> comunicação entre casos de uso e mundo externo
-│   ├── infrastructure/       # Detalhes de tecnologia (não atinge o domínio)
-│   └── core /                # Regras compartilhadas (erros, helpers)
-│
-├── tests/                    # Testes unitários e de integração
-└── README.md
+O backend foi isolado ao apenas se conectar com o frontend usando os codigos em model (indicado pela pasta services)
 
-```
+A pasta backend tem os scripts que permitiu extrair os dados de alimentos e criar o csv (tbca_clean), e em seguida com o script import.js foram enviados para o firebase
+
+**API tudo gostoso**
+
+Como o site tudo gostoso aplamente conhecido para pesquisa de receitas, utilizamos a api criado no repositorio: https://github.com/carol-caires/receitas-web-scrapper 
+Para a sua utilização clonamos o repositorio na pasta api_tudogostos, realizando algumas alterações para que esteja atualizada e funcionando completamente com o nosso frontend.
+Sendo que toda comunicação para a nossa aplicação é feita pelo model.
+
 ---
 
 ### Diagrama C4 (Contexto, Container, e Componentes)
-![A4 - C4 drawio](https://github.com/user-attachments/assets/101353df-7748-4857-ade4-d145cf97195f)
+![A4 - C4 drawio](./Imagens/C4.drawio.svg)
 
 Para implementar a arquitetura proposta para Mobile App (frontend) cada um dos componentes abaixo deve ser implementado para cada uma das cinco features planejadas:
 
@@ -136,23 +130,6 @@ Para implementar a arquitetura proposta para Mobile App (frontend) cada um dos c
   - Nutrição de Alimentos Model: solicita dados nutricionais de um alimento no banco, devolvendo-o ao Hook.
   - Planejador de Refeições Model: envia e atualiza os planos de refeições do backend e recupera o cardápio salvo quando o usuário abre o app.
 
-Para implementar a arquitetura proposta para o backend é necessário haver os componentes descritos abaixo:
-
-* **Interface Adapters**: responsáveis por ser as portas de entrada do sistema, receber as requisições externas (do Mobile App e de outras APIs), validar os dados, traduzir os formatos e encaminar para use cases. Além disso, transformam a resposta dos use cases em formatos adequados ao envio para o cliente. Ex.:
-  - Controller recebe o nome de um alimento e aciona o caso de uso de consulta nutricional.
-  - Endpoint recebe uma receita marcada como favorita e aciona o caso de uso de salvamento.
-
-* **Use cases**: Implementam ações específicas que o sistema executa como salvar receitas, buscar alimentos, gerar cardápios etc. Também contêm a lógica de aplicação e coordenam as interações entre Domain e Infrastructure. Ex.:
-  - Caso de uso para buscar cardápio recebe um objeto de cardápio, valida regras e chama o domínio e repositórios.
-  - Caso de uso para buscar valor nutricional recebe o nome do alimento e coordena a consulta ao repositório de nutrição.
-
-* **Domain**: responsável por conter as regras de negócio puras além de definir entidades, regras de validação, cálculos e invariantes do domínio. Ex.:
-  - Entidade Cardapio validando se uma semana possui todas as refeições cadastradas.
-
-* **Infrastructure**: Implementa acesso ao banco de dados, faz integração com serviços externos, faz o contato direto com PostgresSQL, DuckDB e API do TudoGostoso. Ex.:
-  - Adapter para chamar a API do TudoGostoso e transformar JSON em objetos internos.
-  - Implementação das receitas salvas no perfil de um usuário usando PostgreSQL.
-
 ---
 
 ### Padrão de Projeto — Strategy no Planejador de Refeições
@@ -176,6 +153,7 @@ Esse padrão facilita a extensibilidade e a personalização das estratégias se
 ### 📄 Licença
 Este projeto é de uso acadêmico e está sujeito às diretrizes da disciplina MC656 da Unicamp oferecida no segundo semestre de 2025.
 
+Importante que os dados utilizados nesse repositorio foram extraidos de https://github.com/carol-caires/receitas-web-scrapper e da pesquisa (adicionar sobre alimentos), e se forem utilizados estão sujeito ás diretirzes impostas pelos reponsaveis de ambos os dados
  
 
 

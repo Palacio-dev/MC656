@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import LoginSignUp from "../pages/LoginSignUp";
-import { FirebaseAuthModel } from "../models/firebaseAuthModel";
+import { FirebaseAuthModel } from "../services/firebaseAuthModel";
 
 jest.mock("../components/PageHeader", () => ({
   PageHeader: () => <div data-testid="page-header">Header Mock</div>

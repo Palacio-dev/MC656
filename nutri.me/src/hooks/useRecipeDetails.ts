@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getRecipeById } from '../services/RecipeService';
-import { RecipeDetailsResponse } from '../models/RecipeModel';
+import { RecipeDetailsResponse } from '../services/RecipeModel';
 import { FirebaseRecipeService } from '../services/FirebaseRecipeService';
 
 /**

@@ -3,7 +3,7 @@ import { MealPlannerStrategy } from "../components/strategies/MealPlannerStrateg
 import { DailyStrategy } from "../components/strategies/DailyStrategy";
 import { WeeklyStrategy } from "../components/strategies/WeeklyStrategy";
 import { MonthlyStrategy } from "../components/strategies/MonthlyStrategy";
-import type { MealPlannerModel } from "../models/firebaseMealPlannerModel";
+import type { MealPlannerModel } from "../services/firebaseMealPlannerModel";
 
 export interface MealData {
   title: string;
