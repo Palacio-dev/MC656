@@ -50,7 +50,7 @@ Ao alinhar dados nutricionais com esses objetivos globais, o projeto busca contr
    ```
 4. Agora faça as intalações necessarias para a api
    ```
-   cd MC656/api_tudogostoso
+   cd ../api_tudogostoso
    npm install
    ```
 6. Agora você pode rodar os dois com o unico comando ao voltar na raiz do projeto
@@ -60,7 +60,7 @@ Ao alinhar dados nutricionais com esses objetivos globais, o projeto busca contr
    ```
 8. Para rodar os testes, execute
    ```
-   cd MC656/nutri.me
+   cd /nutri.me
    npm test 
    ```
 
@@ -94,7 +94,7 @@ No projeto para a estruturação do backend foi usado o Firebase (https://fireba
 
 O backend foi isolado ao apenas se conectar com o frontend usando os codigos em model (indicado pela pasta services)
 
-A pasta backend tem os scripts que permitiu extrair os dados de alimentos e criar o csv (tbca_clean), e em seguida com o script import.js foram enviados para o firebase
+A pasta backend tem os scripts que permitiu extrair os dados de alimentos (tbca_clean) e criar o csv Alimentos, e em seguida com o script import.js foram enviados para o firebase.
 
 **API tudo gostoso**
 
@@ -153,10 +153,5 @@ Esse padrão facilita a extensibilidade e a personalização das estratégias se
 ### 📄 Licença
 Este projeto é de uso acadêmico e está sujeito às diretrizes da disciplina MC656 da Unicamp oferecida no segundo semestre de 2025.
 
-Importante que os dados utilizados nesse repositorio foram extraidos de https://github.com/carol-caires/receitas-web-scrapper e da pesquisa (adicionar sobre alimentos), e se forem utilizados estão sujeito ás diretirzes impostas pelos reponsaveis de ambos os dados
+Importante que os dados utilizados nesse repositorio foram extraidos de https://github.com/carol-caires/receitas-web-scrapper e da pesquisa ([tbca da usp](https://www.tbca.net.br/base-dados/composicao_alimentos.php)), e se forem utilizados estão sujeito ás diretirzes impostas pelos reponsaveis de ambos os dados
  
-
-
-   
-
-
