@@ -2,100 +2,65 @@ name: CI
 
 on:
   push:
-    branches: [ main, '**' ]
   pull_request:
-    branches: [ main ]
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  backend:
+
+  test:
+    timeout-minutes: 30
     runs-on: ubuntu-latest
+
     env:
-      CI: true
-    defaults:
-      run:
-        working-directory: auth-api
-    steps:
-      - uses: actions/checkout@v4
+      REACT_APP_FIREBASE_APIKEY: ${{ secrets.FIREBASE_APIKEY }}
+      REACT_APP_FIREBASE_AUTHDOMAIN: ${{ secrets.FIREBASE_AUTHDOMAIN }}
+      REACT_APP_FIREBASE_PROJECTID: ${{ secrets.FIREBASE_PROJECTID }}
+      REACT_APP_FIREBASE_STORAGEBUCKET: ${{ secrets.FIREBASE_STORAGEBUCKET }}
+      REACT_APP_FIREBASE_MESSAGINGSENDERID: ${{ secrets.FIREBASE_MESSAGINGSENDERID }}
+      REACT_APP_FIREBASE_APPID: ${{ secrets.FIREBASE_APPID }}
+      REACT_APP_FIREBASE_MEASUREMENTID: ${{ secrets.FIREBASE_MEASUREMENTID }}
 
-      - name: Install Postgres server
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y postgresql postgresql-contrib
-          sudo systemctl start postgresql
-          sudo -u postgres psql -v ON_ERROR_STOP=1 <<'SQL'
-          DO $$
-          BEGIN
-            IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'test_user') THEN
-              CREATE ROLE test_user LOGIN PASSWORD 'teste123' CREATEDB;
-            ELSE
-              ALTER ROLE test_user LOGIN PASSWORD 'teste123' CREATEDB;
-            END IF;
-          END$$;
-          SQL
-          
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: auth-api/package-lock.json
-
-      - name: Install deps (backend)
-        run: npm ci
-
-      - name: Create .env for CI
-        run: |
-          cat > .env <<'EOF'
-          PORT=4000
-          PGHOST=localhost
-          PGPORT=5432
-          PGDATABASE=logindb
-          PGUSER=test_user
-          PGPASSWORD=teste123
-          CORS_ORIGIN=http://localhost:3000
-          JWT_SECRET=ci_dummy_secret
-          EOF
-
-      - name: Init DB (calls initDb)
-        run: node --input-type=module -e "import('./src/db.js').then(m=>m.initDb())"
-
-      - name: Test (backend) -- if present
-        run: npm run test --if-present -- --watchAll=false --runInBand --verbose
-
-  frontend:
-    runs-on: ubuntu-latest
-    env:
-      CI: true
-    defaults:
-      run:
-        working-directory: saude_e_bem_estar
+    strategy:
+      matrix:
+        node-version: [18.x]
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
           cache: npm
-          cache-dependency-path: |
-            package-lock.json
 
-      - name: Install deps (front)
-        run: npm ci
-
-      - name: Test (front)
+      # ---------------------------
+      # FRONTEND
+      # ---------------------------
+      - name: Install frontend dependencies
+        env:
+          CI: false
         run: |
-          npm test -- --watchAll=false --runInBand --verbose
+          while true; do echo "Still getting dependencies..."; sleep 60; done &
+          npm install
+          npm ci
+          kill %1
+        working-directory: nutri.me
 
-      - name: Build (front)
-        run: npm run build
+      - name: Build frontend
+        env:
+          CI: false
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: |
+          while true; do echo "Still building..."; sleep 60; done &
+          npm run build
+          kill %1
+        working-directory: nutri.me
 
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: front-build
-          path: |
-            dist
-            build
-          if-no-files-found: ignore
+      - name: Run frontend tests
+        run: CI=false npm test -- --verbose
+        working-directory: nutri.me

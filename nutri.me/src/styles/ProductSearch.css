@@ -1,0 +1,329 @@
+/* Product Search Container */
+.product-search-container {
+  background-color: var(--bg-primary);
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+}
+
+.product-search-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Back Button */
+.back-button {
+  background: transparent;
+  color: #e2dede;
+  border: 2px solid #e2dede;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.3s;
+  margin-left: 20px;
+}
+
+.back-button:hover {
+  background: #e2dede;
+  color: #8209B1;
+}
+
+/* Search Box */
+.search-box-wrapper {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 12px var(--shadow-color);
+  margin-bottom: 25px;
+  position: relative;
+}
+
+.search-input-container {
+  position: relative;
+}
+
+.search-input {
+  width: 100%;
+  padding: 15px 50px 15px 20px;
+  font-size: 1.05rem;
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  outline: none;
+  transition: all 0.3s;
+  background: var(--input-bg);
+  color: var(--text-primary);
+}
+
+.search-input:focus {
+  border-color: #8209B1;
+  background: var(--input-bg);
+  box-shadow: 0 0 0 3px rgba(130, 9, 177, 0.1);
+}
+
+.search-input:disabled {
+  background-color: #f0f0f0;
+  cursor: not-allowed;
+}
+
+.search-loading-spinner {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #8209B1;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Suggestions Dropdown */
+.suggestions-dropdown {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  right: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: 0 6px 20px var(--shadow-color);
+  overflow: hidden;
+  z-index: 100;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.suggestion-item {
+  padding: 14px 20px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-color);
+  transition: all 0.2s;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item:hover {
+  background: var(--bg-secondary);
+  color: #8209B1;
+  font-weight: 500;
+}
+
+/* Product Details Card */
+.product-details-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 12px var(--shadow-color);
+  margin-bottom: 25px;
+}
+
+.product-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #8209B1;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.nutrition-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.nutrition-item {
+  background: var(--bg-secondary);
+  padding: 15px 20px;
+  border-radius: 8px;
+  border-left: 4px solid #8209B1;
+  transition: all 0.3s;
+}
+
+.nutrition-item:hover {
+  transform: translateX(5px);
+  box-shadow: 0 2px 8px rgba(130, 9, 177, 0.2);
+}
+
+.nutrition-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.nutrition-value {
+  font-size: 1.3rem;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.nutrition-unit {
+  font-size: 0.9rem;
+  color: var(--text-tertiary);
+  font-weight: 400;
+  margin-left: 2px;
+}
+
+/* Search History */
+.search-history-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.history-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #8209B1;
+  margin: 0;
+}
+
+.clear-history-btn {
+  padding: 8px 18px;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.clear-history-btn:hover {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+.history-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.history-tag {
+  padding: 10px 18px;
+  background: var(--bg-secondary);
+  color: #8209B1;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s;
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.history-tag:hover {
+  background: linear-gradient(135deg, #8209B1 0%, #9c27b0 100%);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(130, 9, 177, 0.25);
+}
+
+.history-empty {
+  text-align: center;
+  padding: 30px;
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .product-search-content {
+    padding: 15px;
+  }
+
+  .search-box-wrapper {
+    padding: 20px;
+  }
+
+  .product-details-card {
+    padding: 20px;
+  }
+
+  .nutrition-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .history-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: stretch;
+  }
+
+  .clear-history-btn {
+    width: 100%;
+  }
+
+  .product-actions {
+    flex-direction: column;
+  }
+
+  .compare-btn {
+    width: 100%;
+  }
+}
+
+/* Product Actions */
+.product-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.compare-btn {
+  background: linear-gradient(135deg, #8209B1 0%, #9c27b0 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(130, 9, 177, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.compare-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(130, 9, 177, 0.4);
+}
+
+.compare-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(130, 9, 177, 0.3);
+}

@@ -1,0 +1,264 @@
+/* Dark Mode Variables */
+:root {
+  /* Light mode colors (default) */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --bg-tertiary: #fafafa;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-tertiary: #999999;
+  --border-color: #e0e0e0;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --card-bg: #ffffff;
+  --input-bg: #ffffff;
+  --button-bg: #4CAF50;
+  --button-hover: #45a049;
+  --error-color: #d32f2f;
+  --success-color: #4CAF50;
+  --link-color: #4a90e2;
+  --overlay-bg: rgba(0, 0, 0, 0.5);
+}
+
+/* Dark mode colors */
+.dark-mode {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #242424;
+  --text-primary: #e0e0e0;
+  --text-secondary: #b0b0b0;
+  --text-tertiary: #808080;
+  --border-color: #404040;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --card-bg: #2d2d2d;
+  --input-bg: #353535;
+  --button-bg: #4CAF50;
+  --button-hover: #66bb6a;
+  --error-color: #ef5350;
+  --success-color: #66bb6a;
+  --link-color: #64b5f6;
+  --overlay-bg: rgba(0, 0, 0, 0.7);
+}
+
+/* Apply dark mode colors globally */
+.dark-mode body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.dark-mode .welcome-container,
+.dark-mode .recipe-search-container,
+.dark-mode .recipe-details-container,
+.dark-mode .favorites-container,
+.dark-mode .meal-planner-container,
+.dark-mode .shopping-list-container,
+.dark-mode .settings-container {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Cards */
+.dark-mode .welcome-card,
+.dark-mode .recipe-card,
+.dark-mode .favorite-card,
+.dark-mode .meal-planner-cell,
+.dark-mode .shopping-list-card {
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.dark-mode .welcome-card:hover,
+.dark-mode .recipe-card:hover,
+.dark-mode .favorite-card:hover {
+  box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+/* Text elements */
+.dark-mode h1,
+.dark-mode h2,
+.dark-mode h3,
+.dark-mode h4,
+.dark-mode h5,
+.dark-mode h6,
+.dark-mode .recipe-title,
+.dark-mode .favorite-title,
+.dark-mode .card-title {
+  color: var(--text-primary);
+}
+
+.dark-mode p,
+.dark-mode .card-description,
+.dark-mode .favorite-date,
+.dark-mode .recipe-search-subtitle {
+  color: var(--text-secondary);
+}
+
+/* Inputs */
+.dark-mode input,
+.dark-mode textarea,
+.dark-mode select {
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.dark-mode input::placeholder,
+.dark-mode textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+.dark-mode input:focus,
+.dark-mode textarea:focus,
+.dark-mode select:focus {
+  border-color: var(--link-color);
+}
+
+/* Modals */
+.dark-mode .meal-recipe-modal,
+.dark-mode .custom-input-modal,
+.dark-mode .modal-content {
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+}
+
+.dark-mode .meal-recipe-modal-header {
+  background-color: var(--card-bg);
+  border-bottom-color: var(--border-color);
+}
+
+/* Buttons - keep primary colors but adjust backgrounds */
+.dark-mode .favorite-btn-small,
+.dark-mode .favorite-detail-btn,
+.dark-mode .meal-recipe-favorite-btn {
+  border-color: var(--border-color);
+  background-color: var(--bg-secondary);
+}
+
+.dark-mode .favorite-btn-small:hover,
+.dark-mode .favorite-detail-btn:hover,
+.dark-mode .meal-recipe-favorite-btn:hover {
+  border-color: #ff4444;
+}
+
+/* Recipe details */
+.dark-mode .recipe-content,
+.dark-mode .meal-recipe-content {
+  background-color: var(--bg-primary);
+}
+
+.dark-mode .recipe-stats,
+.dark-mode .meal-recipe-meta {
+  background-color: var(--bg-secondary);
+}
+
+.dark-mode .recipe-section,
+.dark-mode .meal-recipe-section {
+  border-color: var(--border-color);
+}
+
+.dark-mode .ingredients-list,
+.dark-mode .instructions-list {
+  color: var(--text-primary);
+}
+
+.dark-mode .ingredient-item,
+.dark-mode .instruction-item {
+  border-color: var(--border-color);
+}
+
+/* Share menu */
+.dark-mode .share-menu {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+  box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.dark-mode .share-option {
+  color: var(--text-primary);
+}
+
+.dark-mode .share-option:hover {
+  background-color: var(--bg-secondary);
+}
+
+/* Loading and error states */
+.dark-mode .recipe-loading,
+.dark-mode .favorites-loading,
+.dark-mode .meal-recipe-loading {
+  color: var(--text-primary);
+}
+
+.dark-mode .loading-spinner {
+  border-color: var(--border-color);
+  border-top-color: var(--success-color);
+}
+
+.dark-mode .recipe-error,
+.dark-mode .favorites-error,
+.dark-mode .meal-recipe-error {
+  color: var(--error-color);
+}
+
+/* Empty states */
+.dark-mode .recipe-empty-state,
+.dark-mode .favorites-empty {
+  color: var(--text-secondary);
+}
+
+/* Navigation */
+.dark-mode .nav-arrow,
+.dark-mode .meal-planner-buttons button {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.dark-mode .meal-planner-buttons button.active {
+  background-color: var(--button-bg);
+  color: white;
+}
+
+/* Nutrition summary */
+.dark-mode .nutrition-summary,
+.dark-mode .meal-recipe-nutrition {
+  background-color: var(--bg-secondary);
+  border-color: var(--border-color);
+}
+
+/* Filter toggle */
+.dark-mode .recipe-filter-toggle {
+  background-color: var(--bg-secondary);
+  border-color: var(--border-color);
+}
+
+/* Custom recipe badge */
+.dark-mode .custom-recipe-badge {
+  color: var(--link-color);
+}
+
+/* Meal planner specific */
+.dark-mode .meal-date strong {
+  color: var(--text-primary);
+}
+
+.dark-mode .meal-text {
+  color: var(--text-primary);
+}
+
+/* Overlays */
+.dark-mode .meal-recipe-modal-overlay,
+.dark-mode .custom-input-modal-overlay,
+.dark-mode .modal-overlay {
+  background-color: var(--overlay-bg);
+}
+
+/* Settings page */
+.dark-mode .settings-card {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+/* Smooth transitions for theme changes */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}

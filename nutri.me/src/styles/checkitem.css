@@ -1,0 +1,123 @@
+.checkitem {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: white;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    width: 100%;
+    box-sizing: border-box;
+    transition: box-shadow 0.2s ease;
+}
+
+.checkitem:hover {
+    box-shadow: 0 2px 8px rgba(128, 0, 128, 0.1);
+}
+
+.checkitem.editing {
+    border-color: #800080;
+    box-shadow: 0 0 0 2px rgba(128, 0, 128, 0.1);
+}
+
+.checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin: 0;
+    flex-shrink: 0;
+    accent-color: #800080;
+}
+
+.item-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    margin-left: 12px;
+}
+
+.textitem {
+    flex: 1;
+    font-size: 16px;
+    color: #333;
+    word-break: break-word;
+}
+
+.quantity-badge {
+    background-color: #f0e6f6;
+    color: #800080;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.edit-input,
+.edit-quantity-input {
+    padding: 8px 12px;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.edit-input {
+    flex: 1;
+    margin-left: 12px;
+}
+
+.edit-quantity-input {
+    width: 100px;
+    margin-left: 8px;
+}
+
+.edit-input:focus,
+.edit-quantity-input:focus {
+    border-color: #800080;
+    box-shadow: 0 0 0 2px rgba(128, 0, 128, 0.1);
+}
+
+.item-actions {
+    display: flex;
+    gap: 6px;
+    margin-left: 12px;
+}
+
+.button-edit,
+.button-delete,
+.button-save,
+.button-cancel {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button-edit:hover {
+    background-color: #f0e6f6;
+}
+
+.button-delete:hover {
+    background-color: #ffe6e6;
+}
+
+.button-save {
+    color: #800080;
+}
+
+.button-save:hover {
+    background-color: #e6ffe6;
+}
+
+.button-cancel:hover {
+    background-color: #ffe6e6;
+}
