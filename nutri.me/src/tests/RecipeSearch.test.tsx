@@ -17,8 +17,8 @@ jest.mock("../components/AddRecipeToMealPlanModal", () => ({
 jest.mock("../services/RecipeService");
 jest.mock("../hooks/useFavorites");
 jest.mock("../hooks/MealPlannerHook");
-jest.mock("../models/firebaseMealPlannerModel");
-jest.mock("../models/firebaseFavoritesModel");
+jest.mock("../services/firebaseMealPlannerModel");
+jest.mock("../services/firebaseFavoritesModel");
 
 // Mock do React Router
 const mockNavigate = jest.fn();

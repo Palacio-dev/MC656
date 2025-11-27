@@ -8,7 +8,7 @@ jest.mock("../components/PageHeader", () => ({
 }));
 
 // Mockamos os modelos
-jest.mock("../models/firebaseAuthModel");
+jest.mock("../services/firebaseAuthModel");
 jest.mock("../hooks/useAuth");
 
 const mockNavigate = jest.fn();
